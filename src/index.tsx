@@ -4,8 +4,20 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { rootRoute } from "@/components/Layout.tsx";
 import { indexRoute } from "@/routes/AboutMe.tsx";
 import { notFoundRoute } from "@/routes/NotFound.tsx";
+import { wordleRoute } from "@/routes/Wordle.tsx";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 
-const routeTree = rootRoute.addChildren([indexRoute, notFoundRoute]);
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  wordleRoute,
+  notFoundRoute,
+]);
 
 const router = createRouter({ routeTree });
 
@@ -15,10 +27,15 @@ declare module "@tanstack/react-router" {
   }
 }
 
+// Create a client
+const queryClient = new QueryClient();
+
 const rootElement = document.getElementById("root")!;
 const app = (
   <StrictMode>
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </StrictMode>
 );
 
