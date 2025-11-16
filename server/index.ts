@@ -9,7 +9,6 @@ const app = new Hono()
   .get("/hc", (c) => c.text("Hello", 200))
   .route("/wordle", WordleRoutes);
 export type ServerRoutes = typeof app;
-showRoutes(app);
 
 const server = serve({
   routes: {
@@ -28,3 +27,7 @@ const server = serve({
 });
 
 console.log(`🚀 Server running at ${server.url}`);
+
+if (process.env.NODE_ENV !== "production") {
+  showRoutes(app);
+}
