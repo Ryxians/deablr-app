@@ -17,8 +17,8 @@ export const rootRoute = createRootRoute({
 
 export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-background text-foreground font-mono p-6">
-      <div className="max-w-5xl min-w-4xl mx-auto border border-border shadow-sm bg-card">
+    <div className="min-h-screen text-foreground font-mono p-6">
+      <div className="max-w-5xl min-w-4xl mx-auto border border-border shadow-sm bg-background">
         <Header />
         <Navbar />
         <main className="p-8 leading-relaxed">{children}</main>
