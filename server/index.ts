@@ -1,13 +1,11 @@
 import { serve } from "bun";
 import index from "#/index.html";
-import notfound from "#/notfound.html";
 
 const server = serve({
   routes: {
     // Serve index.html for all unmatched routes.
     "/": index,
     "/index.html": index,
-    "/*.html": notfound,
     "/api/hello": {
       async GET(req) {
         return Response.json({
