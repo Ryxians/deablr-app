@@ -140,6 +140,22 @@ const cardContent: { content: React.FC }[] = [
       ></iframe>
     ),
   },
+  {
+    content: () => (
+      <div className={"flex flex-col [&>*]:h-50!"}>
+        <img
+          src={
+            "https://media1.tenor.com/m/ugZ4MdSxr9MAAAAd/rascal-does-not-dream-of-a-knapsack-kid-mai-sakurajima.gif"
+          }
+        />
+        <img
+          src={
+            "https://media1.tenor.com/m/FesEnU-SLqoAAAAd/rascal-does-not-dream-of-a-knapsack-kid-mai-sakurajima.gif"
+          }
+        />
+      </div>
+    ),
+  },
 ].toSorted(() => {
   return Math.random() - Math.random();
 });
