@@ -6,7 +6,7 @@ export function Navbar() {
     <nav className="flex justify-center gap-6 border-b border-border bg-muted py-3 text-primary font-bold uppercase text-sm tracking-wide [&>*]:hover:text-accent [&>*]:underline [&>*]:underline-offset-2">
       <Link to={"/"}>About Me</Link>
       <Link to={"/wordle"}>Wordle</Link>
-      <Link to={"/not-found"}>Manifesto</Link>
+      <Link to={"/manifesto"}>Manifesto</Link>
       <Link to={"/not-found"}>Shopping List</Link>
       <Link to={"/not-found"}>Web Games</Link>
     </nav>

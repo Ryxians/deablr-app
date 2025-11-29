@@ -5,17 +5,15 @@ import { rootRoute } from "@/components/Layout.tsx";
 import { indexRoute } from "@/routes/AboutMe.tsx";
 import { notFoundRoute } from "@/routes/NotFound.tsx";
 import { wordleRoute } from "@/routes/Wordle.tsx";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { manifestoRoute } from "@/routes/Manifesto.tsx";
+import { myTypeRoute } from "@/routes/MyType.tsx";
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
   wordleRoute,
+  manifestoRoute,
+  myTypeRoute,
   notFoundRoute,
 ]);
 
