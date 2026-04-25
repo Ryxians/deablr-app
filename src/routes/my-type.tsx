@@ -1,32 +1,31 @@
-import { createRoute } from "@tanstack/react-router";
-import { rootRoute } from "@/components/Layout.tsx";
-import React, { useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox.tsx";
-import { Label } from "@/components/ui/label.tsx";
-import { Input } from "@/components/ui/input.tsx";
+import { createFileRoute } from "@tanstack/react-router"
+import { useState } from "react"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel.tsx";
-import { Card, CardContent } from "@/components/ui/card.tsx";
+} from "@/components/ui/carousel"
+import { Card, CardContent } from "@/components/ui/card"
 
-const cardContent: { content: React.FC }[] = [
+const cardContent: Array<{ content: React.FC }> = [
   {
     content: () => {
-      const yearBorn = new Date(2000, 5, 10);
-      const today = new Date();
+      const yearBorn = new Date(2000, 5, 10)
+      const today = new Date()
 
       const youngestAgeToDate =
-        (today.getFullYear() - yearBorn.getFullYear()) / 2 + 7;
+        (today.getFullYear() - yearBorn.getFullYear()) / 2 + 7
       return (
         <p>
           I would never ask out a women under the age of 21, but I would date a
           woman who is half my age plus 7 ({youngestAgeToDate}).
         </p>
-      );
+      )
     },
   },
   {
@@ -63,7 +62,7 @@ const cardContent: { content: React.FC }[] = [
         src={
           "https://media.themoviedb.org/t/p/w600_and_h900_face/1F0fCPNhb5W0WyFe8Tszfbx1DEp.jpg"
         }
-        alt={"Melissa Benoist"}
+        alt="Melissa Benoist"
       />
     ),
   },
@@ -73,7 +72,7 @@ const cardContent: { content: React.FC }[] = [
         src={
           "https://www.thehandbook.com/cdn-cgi/image/width=300,height=300,fit=cover,q=80,format=webp/https://files.thehandbook.com/uploads/2021/10/43142522-480626975782845-6418668413001924608-n.jpg"
         }
-        alt={"Alexandra Botez"}
+        alt="Alexandra Botez"
       />
     ),
   },
@@ -83,7 +82,7 @@ const cardContent: { content: React.FC }[] = [
         src={
           "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Mary_Elizabeth_Winstead_by_Gage_Skidmore.jpg/1280px-Mary_Elizabeth_Winstead_by_Gage_Skidmore.jpg"
         }
-        alt={"Mary Elizabeth Winstead"}
+        alt="Mary Elizabeth Winstead"
       />
     ),
   },
@@ -93,7 +92,7 @@ const cardContent: { content: React.FC }[] = [
         src={
           "https://i.pinimg.com/736x/91/39/ab/9139ab61e884ab26c4e47c5b4e4f50e5.jpg"
         }
-        alt={"Emily VanCamp"}
+        alt="Emily VanCamp"
       />
     ),
   },
@@ -103,7 +102,7 @@ const cardContent: { content: React.FC }[] = [
         src={
           "https://i.pinimg.com/236x/05/55/53/05555379b6c1650cbd0284e11603bd8b.jpg"
         }
-        alt={"Victoria Justice"}
+        alt="Victoria Justice"
       />
     ),
   },
@@ -113,7 +112,7 @@ const cardContent: { content: React.FC }[] = [
         src={
           "https://m.media-amazon.com/images/M/MV5BMzgyNDYwZWEtM2ZhYy00MjNmLThkYTMtMzBhMWFlODIwMjI2XkEyXkFqcGc@._V1_QL75_UX403_.jpg"
         }
-        alt={"Phoebe Cates"}
+        alt="Phoebe Cates"
       />
     ),
   },
@@ -123,7 +122,7 @@ const cardContent: { content: React.FC }[] = [
         src={
           "https://www.comingsoon.net/wp-content/uploads/sites/3/2019/01/JJL-header.jpg"
         }
-        alt={"Jennifer Jason Leigh"}
+        alt="Jennifer Jason Leigh"
       />
     ),
   },
@@ -142,7 +141,7 @@ const cardContent: { content: React.FC }[] = [
   },
   {
     content: () => (
-      <div className={"flex flex-col [&>*]:h-50!"}>
+      <div className="flex flex-col [&>*]:h-50!">
         <img
           src={
             "https://media1.tenor.com/m/ugZ4MdSxr9MAAAAd/rascal-does-not-dream-of-a-knapsack-kid-mai-sakurajima.gif"
@@ -156,30 +155,34 @@ const cardContent: { content: React.FC }[] = [
       </div>
     ),
   },
-].toSorted(() => {
-  return Math.random() - Math.random();
-});
+].slice().sort(() => {
+  return Math.random() - Math.random()
+})
 
-export const MyType: React.FC = () => {
+export const Route = createFileRoute("/my-type")({
+  component: MyType,
+})
+
+function MyType() {
   const [flags, setFlags] = useState({
     iWillNotJudgeJaredForHisPervertedEyes: false,
     iWantToLookAtPhotosOfWomen: false,
     iAmNotHisType: false,
     iKnowJaredsMiddleName: "",
-  });
+  })
 
   const canSeeWomen =
     flags.iWillNotJudgeJaredForHisPervertedEyes &&
     flags.iWantToLookAtPhotosOfWomen &&
     flags.iAmNotHisType &&
-    flags.iKnowJaredsMiddleName.toLowerCase() === "brian";
+    flags.iKnowJaredsMiddleName.toLowerCase() === "brian"
 
   return (
     <div>
       <section>
         <p>In order to see my type, you must fill out the following:</p>
-        <div className={"flex flex-col gap-6"}>
-          <div className={"flex items-center gap-3"}>
+        <div className="flex flex-col gap-6">
+          <div className="flex items-center gap-3">
             <Checkbox
               checked={flags.iWillNotJudgeJaredForHisPervertedEyes}
               onCheckedChange={(e) =>
@@ -193,7 +196,7 @@ export const MyType: React.FC = () => {
               I agree that I will not judge Jared for his perverted eyes.
             </Label>
           </div>
-          <div className={"flex items-center gap-3"}>
+          <div className="flex items-center gap-3">
             <Checkbox
               checked={flags.iWantToLookAtPhotosOfWomen}
               onCheckedChange={(e) =>
@@ -205,7 +208,7 @@ export const MyType: React.FC = () => {
             />
             <Label>I want to see photos of women right now.</Label>
           </div>
-          <div className={"flex items-center gap-3"}>
+          <div className="flex items-center gap-3">
             <Checkbox
               checked={flags.iAmNotHisType}
               onCheckedChange={(e) =>
@@ -221,8 +224,8 @@ export const MyType: React.FC = () => {
             </Label>
           </div>
 
-          <div className={"flex items-center gap-3"}>
-            <Label className={"text-nowrap"}>I know Jared's middle name:</Label>
+          <div className="flex items-center gap-3">
+            <Label className="text-nowrap">I know Jared&apos;s middle name:</Label>
             <Input
               value={flags.iKnowJaredsMiddleName}
               onChange={(e) =>
@@ -236,34 +239,34 @@ export const MyType: React.FC = () => {
         </div>
       </section>
       {canSeeWomen && (
-        <section className={"border-t-2 mt-2 px-4 [&_img]:h-100"}>
-          <h3 className={"text-center text-3xl"}>My Type</h3>
+        <section className="border-t-2 mt-2 px-4 [&_img]:h-100">
+          <h3 className="text-center text-3xl">My Type</h3>
           <p>
             The list is a random assortment of thoughts and photos of women.
           </p>
-          <div className={"flex justify-between"}>
-            <Card className={"w-[40%]"}>
+          <div className="flex justify-between">
+            <Card className="w-[40%]">
               <CardContent>
                 <img
                   src={
                     "https://media1.tenor.com/m/XsA88wdl0poAAAAd/tex-avery-wolf-awooga-cartoon-awooga.gif"
                   }
-                  alt={""}
+                  alt=""
                 />
               </CardContent>
             </Card>
-            <Carousel className={"w-1/2"}>
+            <Carousel className="w-1/2">
               <CarouselContent>
                 {cardContent.map((item, key) => {
                   return (
                     <CarouselItem key={key}>
-                      <Card className={"h-full items-center content-center"}>
+                      <Card className="h-full items-center content-center">
                         <CardContent>
                           <item.content />
                         </CardContent>
                       </Card>
                     </CarouselItem>
-                  );
+                  )
                 })}
               </CarouselContent>
               <CarouselPrevious />
@@ -273,11 +276,5 @@ export const MyType: React.FC = () => {
         </section>
       )}
     </div>
-  );
-};
-
-export const myTypeRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/my-type",
-  component: MyType,
-});
+  )
+}

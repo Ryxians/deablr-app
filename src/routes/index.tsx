@@ -1,8 +1,10 @@
-import * as React from "react";
-import { createRoute } from "@tanstack/react-router";
-import { rootRoute } from "@/components/Layout.tsx";
+import { createFileRoute } from "@tanstack/react-router"
 
-export const AboutMe: React.FC = () => {
+export const Route = createFileRoute("/")({
+  component: AboutMe,
+})
+
+function AboutMe() {
   return (
     <div>
       <section className="mb-6">
@@ -11,7 +13,7 @@ export const AboutMe: React.FC = () => {
         </h2>
         <p>
           Henlo, I am here! Local fool who likes to talk. Will be an extremist
-          if it's funny. Die hard Oklahoman (Okie). Red Truck. God & State.
+          if it&apos;s funny. Die hard Oklahoman (Okie). Red Truck. God & State.
           Scooby Doo is the pinnacle of animation (pre-youtube). Broken Arrow
           native.
         </p>
@@ -26,11 +28,5 @@ export const AboutMe: React.FC = () => {
         </ul>
       </section>
     </div>
-  );
-};
-
-export const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/",
-  component: AboutMe,
-});
+  )
+}

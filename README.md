@@ -1,21 +1,21 @@
-# bun-react-tailwind-shadcn-template
+# TanStack Start + shadcn/ui
 
-To install dependencies:
+This is a template for a new TanStack Start project with React, TypeScript, and shadcn/ui.
 
-```bash
-bun install
-```
+## Adding components
 
-To start a development server:
+To add components to your app, run the following command:
 
 ```bash
-bun dev
+npx shadcn@latest add button
 ```
 
-To run for production:
+This will place the ui components in the `components` directory.
 
-```bash
-bun start
+## Using components
+
+To use the components in your app, import them as follows:
+
+```tsx
+import { Button } from "@/components/ui/button";
 ```
-
-This project was created using `bun init` in bun v1.3.1. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.

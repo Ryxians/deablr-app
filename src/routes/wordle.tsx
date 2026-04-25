@@ -1,49 +1,56 @@
-import React, { useMemo, useState } from "react";
-import { createRoute } from "@tanstack/react-router";
-import { rootRoute } from "@/components/Layout.tsx";
-import { Input } from "@/components/ui/input.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/server.ts";
-import { Label } from "@/components/ui/label.tsx";
+import { useMemo, useState } from "react"
+import { createFileRoute } from "@tanstack/react-router"
+import { useQuery } from "@tanstack/react-query"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import {
   Card,
+  CardContent,
   CardHeader,
   CardTitle,
-  CardContent,
-} from "@/components/ui/card.tsx";
+} from "@/components/ui/card"
 
-export const Wordle: React.FC = () => {
+export const Route = createFileRoute("/wordle")({
+  component: Wordle,
+})
+
+function Wordle() {
   const { data } = useQuery({
     queryKey: ["wordle"],
-    queryFn: async (): Promise<string[]> => {
-      const words = await client.wordle.words.$get();
-      return words.status === 200 ? await words.json() : [];
+    queryFn: async (): Promise<Array<string>> => {
+      const response = await fetch("/words.txt")
+      const text = await response.text()
+      return text
+        .replace(/\r\n/g, "\n")
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0)
     },
     staleTime: Infinity,
-  });
+  })
 
-  const [limit, setLimit] = useState(50);
-  const [first, setFirst] = useState("");
-  const [second, setSecond] = useState("");
-  const [third, setThird] = useState("");
-  const [fourth, setFourth] = useState("");
-  const [fifth, setFifth] = useState("");
-  const [wrongLetters, setWrongLetters] = useState(new Set<string>());
-  const [hasLetters, setHasLetters] = useState(new Set<string>());
+  const [limit, setLimit] = useState(50)
+  const [first, setFirst] = useState("")
+  const [second, setSecond] = useState("")
+  const [third, setThird] = useState("")
+  const [fourth, setFourth] = useState("")
+  const [fifth, setFifth] = useState("")
+  const [wrongLetters, setWrongLetters] = useState(new Set<string>())
+  const [hasLetters, setHasLetters] = useState(new Set<string>())
 
   const wordsToRecommend = useMemo(() => {
     const filtered =
       data?.filter((word) => {
-        const f = [first, second, third, fourth, fifth];
+        const f = [first, second, third, fourth, fifth]
         const matches =
           f.every((ch, i) => !ch || ch === word[i]) &&
           Array.from(wrongLetters).every((l) => !word.includes(l)) &&
-          Array.from(hasLetters).every((l) => word.includes(l));
-        return matches;
-      }) ?? [];
+          Array.from(hasLetters).every((l) => word.includes(l))
+        return matches
+      }) ?? []
 
-    return filtered.sort(() => Math.random() - 0.5).slice(0, limit);
+    return filtered.sort(() => Math.random() - 0.5).slice(0, limit)
   }, [
     data,
     first,
@@ -54,7 +61,7 @@ export const Wordle: React.FC = () => {
     wrongLetters,
     hasLetters,
     limit,
-  ]);
+  ])
 
   return (
     <div className="container mx-auto max-w-2xl py-12">
@@ -70,22 +77,22 @@ export const Wordle: React.FC = () => {
             <Label>Correct Letters</Label>
             <div className="flex gap-2">
               {[first, second, third, fourth, fifth].map((value, i) => {
-                const setFns = [
+                const setFns: Array<(value: string) => void> = [
                   setFirst,
                   setSecond,
                   setThird,
                   setFourth,
                   setFifth,
-                ];
+                ]
                 return (
                   <Input
                     key={i}
                     className="text-center text-lg font-mono"
                     maxLength={1}
                     value={value}
-                    onChange={(e) => setFns[i]!(e.target.value.toLowerCase())}
+                    onChange={(e) => setFns[i](e.target.value.toLowerCase())}
                   />
-                );
+                )
               })}
             </div>
           </div>
@@ -170,11 +177,5 @@ export const Wordle: React.FC = () => {
         </CardContent>
       </Card>
     </div>
-  );
-};
-
-export const wordleRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/wordle",
-  component: Wordle,
-});
+  )
+}

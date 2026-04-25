@@ -1,9 +1,12 @@
-import React from "react";
-import { createRoute, Link } from "@tanstack/react-router";
-import { rootRoute } from "@/components/Layout.tsx";
-import { cn } from "@/lib/utils.ts";
+import { Link, createFileRoute } from "@tanstack/react-router"
 
-export const Manifesto: React.FC = () => {
+import { cn } from "@/lib/utils"
+
+export const Route = createFileRoute("/manifesto")({
+  component: Manifesto,
+})
+
+function Manifesto() {
   return (
     <div
       className={cn(
@@ -103,13 +106,13 @@ export const Manifesto: React.FC = () => {
         </p>
         <ul className="pl-6">
           <li>
-            A <span className={"font-bold"}>respect</span> for Christian
+            A <span className="font-bold">respect</span> for Christian
             tradition, even where there is disagreement.
           </li>
           <li>A seriousness and lack of pride during worship.</li>
           <li>
             Multigenerational, with people of all stages of life.{" "}
-            <span className={"text-[3px]"}>must have pretty women my age.</span>
+            <span className="text-[3px]">must have pretty women my age.</span>
           </li>
           <li>Reject Charismatic/Pentecostal style of Glossolalia.</li>
         </ul>
@@ -120,7 +123,7 @@ export const Manifesto: React.FC = () => {
           see cheap grape juice in pre-packaged plastic cups with cheap bread.
           What some Christians consider to be the embodiment of the crucifixion
           and what others use as a moment to gather and form community, has
-          become such a cheap mockery and imitation of what it was, I can't
+          become such a cheap mockery and imitation of what it was, I can&apos;t
           stand it.
         </p>
         <p>
@@ -128,8 +131,8 @@ export const Manifesto: React.FC = () => {
           Worship should be a time for the body of Christ to dedicate themselves
           to Christ. I find a lot of worship to really be overproduced concerts
           which prioritize fun over worship. This is made worse by how prideful
-          these songs can be. How many songs can be reduced to "look at me I am
-          worshipping?" How many songs are just a basic love song with God
+          these songs can be. How many songs can be reduced to &quot;look at me I am
+          worshipping?&quot; How many songs are just a basic love song with God
           replacing the woman?
         </p>
       </section>
@@ -171,7 +174,7 @@ export const Manifesto: React.FC = () => {
           make those who elected him happy. The issue is that the people are
           neither smart nor are they thinking of the long game. The family
           without work down the street is looking for help from whoever can give
-          it, and they aren't thinking about what that will do decades down the
+          it, and they aren&apos;t thinking about what that will do decades down the
           line.
         </p>
         <p>
@@ -180,7 +183,7 @@ export const Manifesto: React.FC = () => {
           benefits for their bases, while ignoring the rest. A great example is
           seen today in California, where the people have voted to gerrymander
           their state to get one over on Texas. According to their belief,
-          Texas's Gerrymandering is evil because it disenfranchises Democrats in
+          Texas&apos;s Gerrymandering is evil because it disenfranchises Democrats in
           Texas. They then turn around and vote to disenfranchise the
           Republicans of California. People are selfish.
         </p>
@@ -191,8 +194,8 @@ export const Manifesto: React.FC = () => {
         </p>
         <p>
           I tend more towards being a small r republican, though I do often
-          flirt with the ideals of monarchy. But Jared, isn't democracy and
-          republicanism the same? Isn't a republic just a representative
+          flirt with the ideals of monarchy. But Jared, isn&apos;t democracy and
+          republicanism the same? Isn&apos;t a republic just a representative
           democracy? I do not think so. I think one could call the systems that
           elect the United States House of Representatives democratic. I do not
           believe you could call the United States as a whole democratic.
@@ -202,10 +205,10 @@ export const Manifesto: React.FC = () => {
           constitution which are democratic, the goal of the constitution is not
           democracy. And that is where I think the difference lies. Democracy is
           greek, and comes from the greek word{" "}
-          <span className={"italic"}>dēmokratia</span> which means "The People
-          Rule." Republic comes from the word{" "}
-          <span className={"italic"}>respublica</span> which means "Public
-          Concern" or "Concern of the People." I think these underline very
+          <span className="italic">dēmokratia</span> which means &quot;The People
+          Rule.&quot; Republic comes from the word{" "}
+          <span className="italic">respublica</span> which means &quot;Public
+          Concern&quot; or &quot;Concern of the People.&quot; I think these underline very
           different goals.
         </p>
         <p>
@@ -237,10 +240,10 @@ export const Manifesto: React.FC = () => {
           I shall spell out what I want and look for, at least abstractly, and
           answer why I think I am single. First lets get the simple part out of
           the way, am I interested in anyone? No one specific, though{" "}
-          <Link to={"/my-type"}>I do have a type.</Link> Why am I not interested
+          <Link to="/my-type">I do have a type.</Link> Why am I not interested
           in anyone? Four reasons:
         </p>
-        <ol className={"pl-6"}>
+        <ol className="pl-6">
           <li>There are no single women in my life to be interested in.</li>
           <li>
             I do not like who I am as a person, and I assume every woman I meet
@@ -268,10 +271,5 @@ export const Manifesto: React.FC = () => {
         <p>What do I want from a marriage? Kids.</p>
       </section>
     </div>
-  );
-};
-export const manifestoRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/manifesto",
-  component: Manifesto,
-});
+  )
+}
