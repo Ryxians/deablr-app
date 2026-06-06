@@ -3,8 +3,8 @@ import { cn } from "@/lib/utils"
 
 const navItems = [
   { to: "/", label: "About Me" },
-  { to: "/wordle", label: "Wordle" },
-  { to: "/manifesto", label: "Manifesto" },
+  // { to: "/wordle", label: "Wordle" },
+  // { to: "/manifesto", label: "Manifesto" },
   { to: "/shopping-list", label: "Shopping List" },
   { to: "/web-games", label: "Web Games" },
 ]
