@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WordleRouteImport } from './routes/wordle'
 import { Route as WebGamesRouteImport } from './routes/web-games'
 import { Route as ShoppingListRouteImport } from './routes/shopping-list'
+import { Route as RealTalkRouteImport } from './routes/real-talk'
 import { Route as NotFoundRouteImport } from './routes/not-found'
 import { Route as MyTypeRouteImport } from './routes/my-type'
 import { Route as ManifestoRouteImport } from './routes/manifesto'
@@ -30,6 +31,11 @@ const WebGamesRoute = WebGamesRouteImport.update({
 const ShoppingListRoute = ShoppingListRouteImport.update({
   id: '/shopping-list',
   path: '/shopping-list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RealTalkRoute = RealTalkRouteImport.update({
+  id: '/real-talk',
+  path: '/real-talk',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NotFoundRoute = NotFoundRouteImport.update({
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/manifesto': typeof ManifestoRoute
   '/my-type': typeof MyTypeRoute
   '/not-found': typeof NotFoundRoute
+  '/real-talk': typeof RealTalkRoute
   '/shopping-list': typeof ShoppingListRoute
   '/web-games': typeof WebGamesRoute
   '/wordle': typeof WordleRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/manifesto': typeof ManifestoRoute
   '/my-type': typeof MyTypeRoute
   '/not-found': typeof NotFoundRoute
+  '/real-talk': typeof RealTalkRoute
   '/shopping-list': typeof ShoppingListRoute
   '/web-games': typeof WebGamesRoute
   '/wordle': typeof WordleRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/manifesto': typeof ManifestoRoute
   '/my-type': typeof MyTypeRoute
   '/not-found': typeof NotFoundRoute
+  '/real-talk': typeof RealTalkRoute
   '/shopping-list': typeof ShoppingListRoute
   '/web-games': typeof WebGamesRoute
   '/wordle': typeof WordleRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/manifesto'
     | '/my-type'
     | '/not-found'
+    | '/real-talk'
     | '/shopping-list'
     | '/web-games'
     | '/wordle'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/manifesto'
     | '/my-type'
     | '/not-found'
+    | '/real-talk'
     | '/shopping-list'
     | '/web-games'
     | '/wordle'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/manifesto'
     | '/my-type'
     | '/not-found'
+    | '/real-talk'
     | '/shopping-list'
     | '/web-games'
     | '/wordle'
@@ -116,6 +128,7 @@ export interface RootRouteChildren {
   ManifestoRoute: typeof ManifestoRoute
   MyTypeRoute: typeof MyTypeRoute
   NotFoundRoute: typeof NotFoundRoute
+  RealTalkRoute: typeof RealTalkRoute
   ShoppingListRoute: typeof ShoppingListRoute
   WebGamesRoute: typeof WebGamesRoute
   WordleRoute: typeof WordleRoute
@@ -142,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/shopping-list'
       fullPath: '/shopping-list'
       preLoaderRoute: typeof ShoppingListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/real-talk': {
+      id: '/real-talk'
+      path: '/real-talk'
+      fullPath: '/real-talk'
+      preLoaderRoute: typeof RealTalkRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/not-found': {
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   ManifestoRoute: ManifestoRoute,
   MyTypeRoute: MyTypeRoute,
   NotFoundRoute: NotFoundRoute,
+  RealTalkRoute: RealTalkRoute,
   ShoppingListRoute: ShoppingListRoute,
   WebGamesRoute: WebGamesRoute,
   WordleRoute: WordleRoute,
