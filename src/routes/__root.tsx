@@ -55,11 +55,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <QueryClientProvider client={queryClient}>
-          <div className="min-h-screen text-foreground font-mono p-6">
-            <div className="max-w-5xl min-w-4xl mx-auto border border-border shadow-sm bg-background">
+          <div className="min-h-screen text-foreground font-mono p-4 md:p-6">
+            <div className="max-w-5xl mx-auto border border-border shadow-sm bg-background overflow-x-hidden">
               <Header />
               <Navbar />
-              <main className="p-8 leading-relaxed">
+              <main className="p-4 md:p-8 leading-relaxed">
                 {children}
               </main>
             </div>

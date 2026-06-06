@@ -281,12 +281,12 @@ function RealTalk() {
   // Setup screen
   if (!gameState) {
     return (
-      <div className="max-w-2xl mx-auto space-y-8">
+      <div className="max-w-2xl mx-auto space-y-6 md:space-y-8">
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-2">
-            <Sparkles className="size-8 text-primary" />
+          <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-primary/10 mb-2">
+            <Sparkles className="size-6 md:size-8 text-primary" />
           </div>
-          <h1 className="text-4xl font-bold">Real Talk</h1>
+          <h1 className="text-3xl md:text-4xl font-bold">Real Talk</h1>
           <p className="text-muted-foreground max-w-md mx-auto">
             A social question game where players take turns drawing random
             questions from a deck and answering them honestly.
@@ -337,7 +337,7 @@ function RealTalk() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Input
                 placeholder="Player name..."
                 value={newPlayerName}
@@ -347,7 +347,7 @@ function RealTalk() {
                 }}
                 className="h-11"
               />
-              <Button onClick={addPlayer} disabled={!newPlayerName.trim()} className="h-11 px-6">
+              <Button onClick={addPlayer} disabled={!newPlayerName.trim()} className="h-11 px-6 w-full sm:w-auto">
                 Add
               </Button>
             </div>
@@ -414,12 +414,12 @@ function RealTalk() {
   // Game over screen
   if (gameState.gameOver) {
     return (
-      <div className="max-w-2xl mx-auto space-y-8">
+      <div className="max-w-2xl mx-auto space-y-6 md:space-y-8">
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-2">
-            <Sparkles className="size-8 text-primary" />
+          <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-primary/10 mb-2">
+            <Sparkles className="size-6 md:size-8 text-primary" />
           </div>
-          <h1 className="text-4xl font-bold">Game Over</h1>
+          <h1 className="text-3xl md:text-4xl font-bold">Game Over</h1>
           <p className="text-muted-foreground">
             All {questions.length} questions have been drawn!
           </p>
@@ -434,7 +434,7 @@ function RealTalk() {
               <p className="text-muted-foreground">questions drawn</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2 text-center">
                 <Label className="text-xs text-muted-foreground uppercase tracking-wider">Players</Label>
                 <div className="flex flex-wrap justify-center gap-2">
@@ -471,9 +471,9 @@ function RealTalk() {
 
   // Active game screen
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
       {/* Game header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Sparkles className="size-6 text-primary" />
@@ -531,7 +531,7 @@ function RealTalk() {
           <CardTitle className="text-center text-base text-muted-foreground font-normal">
             {currentPlayer ? (
               <span>
-                It&apos;s <span className="text-primary font-bold text-lg">{currentPlayer}</span>&apos;s turn
+                It&apos;s <span className="text-primary font-bold text-base md:text-lg">{currentPlayer}</span>&apos;s turn
               </span>
             ) : (
               "Waiting..."
@@ -541,11 +541,11 @@ function RealTalk() {
       </Card>
 
       {/* Question display */}
-      <Card className="border-2 border-primary/20 shadow-lg shadow-primary/5">
-        <CardContent className="py-14 px-8">
-          <div className="text-center space-y-6">
+      <Card className="border-2 border-primary/20 shadow-lg shadow-primary/5 min-h-[300px] md:min-h-[380px] flex flex-col">
+        <CardContent className="py-8 px-4 md:py-14 md:px-8 flex-1 flex items-center justify-center">
+          <div className="text-center space-y-4 md:space-y-6 w-full">
             <div key={questionKey} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="text-sm text-muted-foreground font-mono mb-4">
+              <div className="text-sm text-muted-foreground font-mono mb-2 md:mb-4">
                 Question #{gameState.currentQuestion?.number}
               </div>
               <p className="text-2xl md:text-3xl font-medium leading-relaxed">

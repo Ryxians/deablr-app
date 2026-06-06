@@ -14,7 +14,7 @@ export function Navbar() {
   const currentPath = location.pathname
 
   return (
-    <nav className="flex justify-center gap-1 border-b border-border bg-muted/50 px-4 py-3">
+    <nav className="flex justify-start md:justify-center gap-0.5 md:gap-1 border-b border-border bg-muted/50 px-2 md:px-4 py-2 md:py-3 overflow-x-auto scrollbar-none">
       {navItems.map((item) => {
         const isActive = currentPath === item.to
         return (
@@ -22,7 +22,7 @@ export function Navbar() {
             key={item.to}
             to={item.to}
             className={cn(
-              "relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-200 rounded-md",
+              "relative px-2 md:px-4 py-1.5 md:py-2 text-[10px] md:text-sm font-medium uppercase md:tracking-wide transition-all duration-200 rounded-md whitespace-nowrap",
               isActive
                 ? "text-primary bg-primary/10"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted",
@@ -30,7 +30,7 @@ export function Navbar() {
           >
             {item.label}
             {isActive && (
-              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-primary rounded-full" />
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 md:w-8 h-0.5 bg-primary rounded-full" />
             )}
           </Link>
         )
