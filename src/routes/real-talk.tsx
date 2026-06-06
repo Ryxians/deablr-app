@@ -12,6 +12,8 @@ import {
   Trash2,
   Users,
   X,
+  Zap,
+  ZapOff,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,6 +36,20 @@ interface GameState {
 }
 
 const STORAGE_KEY = "real-talk-game"
+const ANIMATIONS_KEY = "real-talk-animations"
+
+function loadAnimationsEnabled(): boolean {
+  try {
+    const raw = localStorage.getItem(ANIMATIONS_KEY)
+    return raw !== "false"
+  } catch {
+    return true
+  }
+}
+
+function saveAnimationsEnabled(value: boolean) {
+  localStorage.setItem(ANIMATIONS_KEY, value ? "true" : "false")
+}
 
 function shuffleArray<T>(array: Array<T>): Array<T> {
   const shuffled = [...array]
@@ -84,6 +100,7 @@ function RealTalk() {
   const [loadError, setLoadError] = useState<string | null>(null)
   const [questionKey, setQuestionKey] = useState(0)
   const [savedGameExists, setSavedGameExists] = useState(() => hasSavedGame())
+  const [animationsEnabled, setAnimationsEnabled] = useState(() => loadAnimationsEnabled())
 
   // Load questions on mount
   const loadQuestions = useCallback(async () => {
@@ -246,6 +263,14 @@ function RealTalk() {
     setSavedGameExists(false)
   }, [updateGameState])
 
+  const toggleAnimations = useCallback(() => {
+    setAnimationsEnabled((prev) => {
+      const next = !prev
+      saveAnimationsEnabled(next)
+      return next
+    })
+  }, [])
+
   const handleClearSaved = useCallback(() => {
     updateGameState(null)
     setSavedGameExists(false)
@@ -271,7 +296,7 @@ function RealTalk() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-pulse text-muted-foreground">
+        <div className={`text-muted-foreground ${animationsEnabled ? "animate-pulse" : ""}`}>
           Loading questions...
         </div>
       </div>
@@ -291,6 +316,20 @@ function RealTalk() {
             A social question game where players take turns drawing random
             questions from a deck and answering them honestly.
           </p>
+          <Button
+            onClick={toggleAnimations}
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground"
+            title={animationsEnabled ? "Disable animations" : "Enable animations"}
+          >
+            {animationsEnabled ? (
+              <ZapOff className="size-4 mr-1.5" />
+            ) : (
+              <Zap className="size-4 mr-1.5" />
+            )}
+            {animationsEnabled ? "Animations on" : "Animations off"}
+          </Button>
         </div>
 
         {savedGameExists && (
@@ -491,15 +530,30 @@ function RealTalk() {
             </span>
           </div>
         </div>
-        <Button
-          onClick={handleReset}
-          variant="ghost"
-          size="sm"
-          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-        >
-          <Trash2 className="size-4 mr-1.5" />
-          Reset
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={toggleAnimations}
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground"
+            title={animationsEnabled ? "Disable animations" : "Enable animations"}
+          >
+            {animationsEnabled ? (
+              <ZapOff className="size-4" />
+            ) : (
+              <Zap className="size-4" />
+            )}
+          </Button>
+          <Button
+            onClick={handleReset}
+            variant="ghost"
+            size="sm"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+          >
+            <Trash2 className="size-4 mr-1.5" />
+            Reset
+          </Button>
+        </div>
       </div>
 
       {/* Player indicator */}
@@ -508,9 +562,11 @@ function RealTalk() {
           const isCurrent =
             gameState.shuffledOrder[gameState.currentPlayerIndex] === index
           return (
-            <div
+              <div
               key={player}
-              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
+                animationsEnabled ? "transition-all duration-300" : ""
+              } ${
                 isCurrent
                   ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
                   : "bg-muted text-muted-foreground"
@@ -518,7 +574,7 @@ function RealTalk() {
             >
               {player}
               {isCurrent && (
-                <span className="ml-1.5 inline-block animate-pulse">●</span>
+                <span className={`ml-1.5 inline-block ${animationsEnabled ? "animate-pulse" : ""}`}>●</span>
               )}
             </div>
           )
@@ -544,7 +600,7 @@ function RealTalk() {
       <Card className="border-2 border-primary/20 shadow-lg shadow-primary/5 min-h-[300px] md:min-h-[380px] flex flex-col">
         <CardContent className="py-8 px-4 md:py-14 md:px-8 flex-1 flex items-center justify-center">
           <div className="text-center space-y-4 md:space-y-6 w-full">
-            <div key={questionKey} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div key={questionKey} className={animationsEnabled ? "animate-in fade-in slide-in-from-bottom-4 duration-500" : ""}>
               <div className="text-sm text-muted-foreground font-mono mb-2 md:mb-4">
                 Question #{gameState.currentQuestion?.number}
               </div>
@@ -587,7 +643,7 @@ function RealTalk() {
         </div>
         <div className="h-2 rounded-full bg-muted overflow-hidden">
           <div
-            className="h-full rounded-full bg-primary transition-all duration-500"
+            className={`h-full rounded-full bg-primary ${animationsEnabled ? "transition-all duration-500" : ""}`}
             style={{
               width: `${(gameState.drawnQuestions.length / questions.length) * 100}%`,
             }}
