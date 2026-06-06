@@ -77,13 +77,13 @@ export const Route = createFileRoute("/real-talk")({
 
 function RealTalk() {
   const [questions, setQuestions] = useState<Array<Question>>([])
-  const [gameState, setGameState] = useState<GameState | null>(null)
+  const [gameState, setGameState] = useState<GameState | null>(() => loadGameState())
   const [newPlayerName, setNewPlayerName] = useState("")
   const [tempPlayers, setTempPlayers] = useState<Array<string>>([])
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [questionKey, setQuestionKey] = useState(0)
-  const [savedGameExists, setSavedGameExists] = useState(false)
+  const [savedGameExists, setSavedGameExists] = useState(() => hasSavedGame())
 
   // Load questions on mount
   const loadQuestions = useCallback(async () => {
@@ -125,21 +125,25 @@ function RealTalk() {
     loadQuestions()
   }, [loadQuestions])
 
-  // Load saved game state
-  useEffect(() => {
-    const saved = loadGameState()
-    if (saved) {
-      setGameState(saved)
-    }
-    setSavedGameExists(hasSavedGame())
-  }, [])
-
-  // Persist game state
-  useEffect(() => {
-    if (gameState) {
-      saveGameState(gameState)
-    }
-  }, [gameState])
+  const updateGameState = useCallback(
+    (
+      updater: GameState | null | ((prev: GameState | null) => GameState | null),
+    ) => {
+      setGameState((prev) => {
+        const next =
+          typeof updater === "function"
+            ? updater(prev)
+            : updater
+        if (next) {
+          saveGameState(next)
+        } else {
+          clearGameState()
+        }
+        return next
+      })
+    },
+    [],
+  )
 
   const drawQuestion = useCallback(
     (state: GameState): Question | null => {
@@ -172,7 +176,7 @@ function RealTalk() {
       initialState.currentQuestion = firstQuestion
       initialState.drawnQuestions = [firstQuestion.number]
     }
-    setGameState(initialState)
+    updateGameState(initialState)
     setTempPlayers([])
     setQuestionKey((k) => k + 1)
   }, [tempPlayers, questions, drawQuestion])
@@ -181,10 +185,10 @@ function RealTalk() {
     if (!gameState || gameState.gameOver) return
     const question = drawQuestion(gameState)
     if (!question) {
-      setGameState((prev) => (prev ? { ...prev, gameOver: true } : null))
+      updateGameState((prev) => (prev ? { ...prev, gameOver: true } : null))
       return
     }
-    setGameState((prev) =>
+    updateGameState((prev) =>
       prev
         ? {
             ...prev,
@@ -199,53 +203,53 @@ function RealTalk() {
   const handleNext = useCallback(() => {
     if (!gameState || gameState.gameOver) return
 
-    setGameState((prev) => {
-      if (!prev) return null
-      let nextPlayerIndex = prev.currentPlayerIndex + 1
-      let nextRound = prev.roundNumber
-      let nextShuffledOrder = prev.shuffledOrder
+      updateGameState((prev) => {
+        if (!prev) return null
+        let nextPlayerIndex = prev.currentPlayerIndex + 1
+        let nextRound = prev.roundNumber
+        let nextShuffledOrder = prev.shuffledOrder
 
-      if (nextPlayerIndex >= prev.shuffledOrder.length) {
-        nextPlayerIndex = 0
-        nextRound = prev.roundNumber + 1
-        nextShuffledOrder = shuffleArray(
-          Array.from({ length: prev.players.length }, (_, i) => i),
-        )
-      }
+        if (nextPlayerIndex >= prev.shuffledOrder.length) {
+          nextPlayerIndex = 0
+          nextRound = prev.roundNumber + 1
+          nextShuffledOrder = shuffleArray(
+            Array.from({ length: prev.players.length }, (_, i) => i),
+          )
+        }
 
-      const nextState = {
-        ...prev,
-        currentPlayerIndex: nextPlayerIndex,
-        shuffledOrder: nextShuffledOrder,
-        roundNumber: nextRound,
-      }
+        const nextState = {
+          ...prev,
+          currentPlayerIndex: nextPlayerIndex,
+          shuffledOrder: nextShuffledOrder,
+          roundNumber: nextRound,
+        }
 
-      const question = drawQuestion(nextState)
-      if (!question) {
-        return { ...nextState, gameOver: true }
-      }
+        const question = drawQuestion(nextState)
+        if (!question) {
+          return { ...nextState, gameOver: true }
+        }
 
-      return {
-        ...nextState,
-        currentQuestion: question,
-        drawnQuestions: [...nextState.drawnQuestions, question.number],
-      }
-    })
+        return {
+          ...nextState,
+          currentQuestion: question,
+          drawnQuestions: [...nextState.drawnQuestions, question.number],
+        }
+      })
     setQuestionKey((k) => k + 1)
   }, [gameState, drawQuestion])
 
   const handleReset = useCallback(() => {
     clearGameState()
-    setGameState(null)
+    updateGameState(null)
     setTempPlayers([])
     setNewPlayerName("")
     setSavedGameExists(false)
-  }, [])
+  }, [updateGameState])
 
   const handleClearSaved = useCallback(() => {
-    clearGameState()
+    updateGameState(null)
     setSavedGameExists(false)
-  }, [])
+  }, [updateGameState])
 
   const addPlayer = useCallback(() => {
     const trimmed = newPlayerName.trim()
@@ -299,11 +303,11 @@ function RealTalk() {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button
+                  <Button
                   onClick={() => {
                     const saved = loadGameState()
                     if (saved) {
-                      setGameState(saved)
+                      updateGameState(saved)
                     }
                   }}
                   variant="outline"
