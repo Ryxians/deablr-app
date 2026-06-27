@@ -16,6 +16,7 @@ import { Route as RealTalkRouteImport } from './routes/real-talk'
 import { Route as NotFoundRouteImport } from './routes/not-found'
 import { Route as MyTypeRouteImport } from './routes/my-type'
 import { Route as ManifestoRouteImport } from './routes/manifesto'
+import { Route as AboutMeRouteImport } from './routes/about-me'
 import { Route as IndexRouteImport } from './routes/index'
 
 const WordleRoute = WordleRouteImport.update({
@@ -53,6 +54,11 @@ const ManifestoRoute = ManifestoRouteImport.update({
   path: '/manifesto',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutMeRoute = AboutMeRouteImport.update({
+  id: '/about-me',
+  path: '/about-me',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -61,6 +67,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about-me': typeof AboutMeRoute
   '/manifesto': typeof ManifestoRoute
   '/my-type': typeof MyTypeRoute
   '/not-found': typeof NotFoundRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about-me': typeof AboutMeRoute
   '/manifesto': typeof ManifestoRoute
   '/my-type': typeof MyTypeRoute
   '/not-found': typeof NotFoundRoute
@@ -82,6 +90,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about-me': typeof AboutMeRoute
   '/manifesto': typeof ManifestoRoute
   '/my-type': typeof MyTypeRoute
   '/not-found': typeof NotFoundRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about-me'
     | '/manifesto'
     | '/my-type'
     | '/not-found'
@@ -104,6 +114,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about-me'
     | '/manifesto'
     | '/my-type'
     | '/not-found'
@@ -114,6 +125,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about-me'
     | '/manifesto'
     | '/my-type'
     | '/not-found'
@@ -125,6 +137,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutMeRoute: typeof AboutMeRoute
   ManifestoRoute: typeof ManifestoRoute
   MyTypeRoute: typeof MyTypeRoute
   NotFoundRoute: typeof NotFoundRoute
@@ -185,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManifestoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about-me': {
+      id: '/about-me'
+      path: '/about-me'
+      fullPath: '/about-me'
+      preLoaderRoute: typeof AboutMeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -197,6 +217,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutMeRoute: AboutMeRoute,
   ManifestoRoute: ManifestoRoute,
   MyTypeRoute: MyTypeRoute,
   NotFoundRoute: NotFoundRoute,

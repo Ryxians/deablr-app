@@ -1,4 +1,3 @@
-
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
@@ -34,7 +33,7 @@ export const Route = createRootRoute({
   notFoundComponent: () => (
     <main className="p-8 leading-relaxed">
       <section className="mb-6">
-        <h2 className="font-bold text-xl border-b border-border mb-2">
+        <h2 className="mb-2 border-b border-border text-xl font-bold">
           Not Found
         </h2>
         <p>Sowwy, this is not a valid page.</p>
@@ -55,13 +54,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <QueryClientProvider client={queryClient}>
-          <div className="min-h-screen text-foreground font-mono p-4 md:p-6">
-            <div className="max-w-5xl mx-auto border border-border shadow-sm bg-background overflow-x-hidden">
+          <div className="min-h-screen p-4 font-mono text-foreground md:p-6">
+            <div className="mx-auto w-full overflow-x-hidden border border-border bg-background shadow-sm md:w-3xl lg:w-4xl xl:w-5xl">
               <Header />
               <Navbar />
-              <main className="p-4 md:p-8 leading-relaxed">
-                {children}
-              </main>
+              <main className="p-4 leading-relaxed md:p-8">{children}</main>
             </div>
           </div>
         </QueryClientProvider>

@@ -9,7 +9,7 @@ function AboutMe() {
     <div>
       <section className="mb-6">
         <h2 className="font-bold text-xl border-b border-border mb-2">
-          About Me
+          Deablr Home
         </h2>
         <p>
           Henlo, I am here! Local fool who likes to talk. Will be an extremist
