@@ -2,7 +2,7 @@ import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import appCss from "../styles.css?url"
+import "../styles.css"
 
 import { Header } from "@/components/Header"
 import { Navbar } from "@/components/Navbar"
@@ -21,12 +21,6 @@ export const Route = createRootRoute({
       },
       {
         title: "My Digital Abode",
-      },
-    ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
       },
     ],
   }),

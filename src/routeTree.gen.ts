@@ -10,23 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WordleRouteImport } from './routes/wordle'
-import { Route as WebGamesRouteImport } from './routes/web-games'
 import { Route as ShoppingListRouteImport } from './routes/shopping-list'
 import { Route as RealTalkRouteImport } from './routes/real-talk'
+import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as NotFoundRouteImport } from './routes/not-found'
 import { Route as MyTypeRouteImport } from './routes/my-type'
 import { Route as ManifestoRouteImport } from './routes/manifesto'
+import { Route as EqRouteImport } from './routes/eq'
 import { Route as AboutMeRouteImport } from './routes/about-me'
 import { Route as IndexRouteImport } from './routes/index'
 
 const WordleRoute = WordleRouteImport.update({
   id: '/wordle',
   path: '/wordle',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WebGamesRoute = WebGamesRouteImport.update({
-  id: '/web-games',
-  path: '/web-games',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShoppingListRoute = ShoppingListRouteImport.update({
@@ -37,6 +33,11 @@ const ShoppingListRoute = ShoppingListRouteImport.update({
 const RealTalkRoute = RealTalkRouteImport.update({
   id: '/real-talk',
   path: '/real-talk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NotFoundRoute = NotFoundRouteImport.update({
@@ -54,6 +55,11 @@ const ManifestoRoute = ManifestoRouteImport.update({
   path: '/manifesto',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EqRoute = EqRouteImport.update({
+  id: '/eq',
+  path: '/eq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutMeRoute = AboutMeRouteImport.update({
   id: '/about-me',
   path: '/about-me',
@@ -68,35 +74,38 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about-me': typeof AboutMeRoute
+  '/eq': typeof EqRoute
   '/manifesto': typeof ManifestoRoute
   '/my-type': typeof MyTypeRoute
   '/not-found': typeof NotFoundRoute
+  '/projects': typeof ProjectsRoute
   '/real-talk': typeof RealTalkRoute
   '/shopping-list': typeof ShoppingListRoute
-  '/web-games': typeof WebGamesRoute
   '/wordle': typeof WordleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about-me': typeof AboutMeRoute
+  '/eq': typeof EqRoute
   '/manifesto': typeof ManifestoRoute
   '/my-type': typeof MyTypeRoute
   '/not-found': typeof NotFoundRoute
+  '/projects': typeof ProjectsRoute
   '/real-talk': typeof RealTalkRoute
   '/shopping-list': typeof ShoppingListRoute
-  '/web-games': typeof WebGamesRoute
   '/wordle': typeof WordleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about-me': typeof AboutMeRoute
+  '/eq': typeof EqRoute
   '/manifesto': typeof ManifestoRoute
   '/my-type': typeof MyTypeRoute
   '/not-found': typeof NotFoundRoute
+  '/projects': typeof ProjectsRoute
   '/real-talk': typeof RealTalkRoute
   '/shopping-list': typeof ShoppingListRoute
-  '/web-games': typeof WebGamesRoute
   '/wordle': typeof WordleRoute
 }
 export interface FileRouteTypes {
@@ -104,46 +113,50 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about-me'
+    | '/eq'
     | '/manifesto'
     | '/my-type'
     | '/not-found'
+    | '/projects'
     | '/real-talk'
     | '/shopping-list'
-    | '/web-games'
     | '/wordle'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about-me'
+    | '/eq'
     | '/manifesto'
     | '/my-type'
     | '/not-found'
+    | '/projects'
     | '/real-talk'
     | '/shopping-list'
-    | '/web-games'
     | '/wordle'
   id:
     | '__root__'
     | '/'
     | '/about-me'
+    | '/eq'
     | '/manifesto'
     | '/my-type'
     | '/not-found'
+    | '/projects'
     | '/real-talk'
     | '/shopping-list'
-    | '/web-games'
     | '/wordle'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutMeRoute: typeof AboutMeRoute
+  EqRoute: typeof EqRoute
   ManifestoRoute: typeof ManifestoRoute
   MyTypeRoute: typeof MyTypeRoute
   NotFoundRoute: typeof NotFoundRoute
+  ProjectsRoute: typeof ProjectsRoute
   RealTalkRoute: typeof RealTalkRoute
   ShoppingListRoute: typeof ShoppingListRoute
-  WebGamesRoute: typeof WebGamesRoute
   WordleRoute: typeof WordleRoute
 }
 
@@ -154,13 +167,6 @@ declare module '@tanstack/react-router' {
       path: '/wordle'
       fullPath: '/wordle'
       preLoaderRoute: typeof WordleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/web-games': {
-      id: '/web-games'
-      path: '/web-games'
-      fullPath: '/web-games'
-      preLoaderRoute: typeof WebGamesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shopping-list': {
@@ -175,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/real-talk'
       fullPath: '/real-talk'
       preLoaderRoute: typeof RealTalkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects': {
+      id: '/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/not-found': {
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManifestoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/eq': {
+      id: '/eq'
+      path: '/eq'
+      fullPath: '/eq'
+      preLoaderRoute: typeof EqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about-me': {
       id: '/about-me'
       path: '/about-me'
@@ -218,12 +238,13 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutMeRoute: AboutMeRoute,
+  EqRoute: EqRoute,
   ManifestoRoute: ManifestoRoute,
   MyTypeRoute: MyTypeRoute,
   NotFoundRoute: NotFoundRoute,
+  ProjectsRoute: ProjectsRoute,
   RealTalkRoute: RealTalkRoute,
   ShoppingListRoute: ShoppingListRoute,
-  WebGamesRoute: WebGamesRoute,
   WordleRoute: WordleRoute,
 }
 export const routeTree = rootRouteImport
