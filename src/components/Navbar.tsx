@@ -6,7 +6,7 @@ const navItems = [
   // { to: "/wordle", label: "Wordle" },
   // { to: "/manifesto", label: "Manifesto" },
   { to: "/shopping-list", label: "Shopping List" },
-  { to: "/web-games", label: "Web Games" },
+  { to: "/projects", label: "Projects" },
 ]
 
 export function Navbar() {
