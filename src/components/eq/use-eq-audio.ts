@@ -58,15 +58,20 @@ export function useEQAudio(
   }, [videoElement])
 
   useEffect(() => {
+    const ctx = audioContextRef.current
+    const now = ctx?.currentTime ?? 0
     filtersRef.current.forEach((filter, index) => {
       const targetGain = compare ? 0 : (bands[index]?.gain ?? 0)
-      filter.gain.value = targetGain
+      filter.gain.setTargetAtTime(targetGain, now, 0.01)
     })
   }, [bands, compare])
 
   useEffect(() => {
-    if (gainNodeRef.current) {
-      gainNodeRef.current.gain.value = muted ? 0 : volume
+    const gainNode = gainNodeRef.current
+    const ctx = audioContextRef.current
+    if (gainNode && ctx) {
+      const targetGain = muted ? 0 : volume
+      gainNode.gain.setTargetAtTime(targetGain, ctx.currentTime, 0.01)
     }
   }, [volume, muted])
 

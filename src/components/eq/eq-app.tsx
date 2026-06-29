@@ -54,6 +54,7 @@ async function tryShareFile(file: File): Promise<ShareResult> {
 
 export function EQApp() {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const videoUrlRef = useRef<string | null>(null)
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [videoUrl, setVideoUrl] = useState<string | null>(null)
   const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(null)
@@ -75,12 +76,20 @@ export function EQApp() {
 
   const { loaded, loading, progress, exporting, error, processVideo } = useFFmpeg()
 
+  const updateVideoUrl = useCallback((file: File | null) => {
+    if (videoUrlRef.current) {
+      URL.revokeObjectURL(videoUrlRef.current)
+    }
+    videoUrlRef.current = file ? URL.createObjectURL(file) : null
+    setVideoUrl(videoUrlRef.current)
+  }, [])
+
   useEffect(() => {
     return () => {
-      setVideoUrl((prev) => {
-        if (prev) URL.revokeObjectURL(prev)
-        return null
-      })
+      if (videoUrlRef.current) {
+        URL.revokeObjectURL(videoUrlRef.current)
+        videoUrlRef.current = null
+      }
     }
   }, [])
 
@@ -91,12 +100,9 @@ export function EQApp() {
       setVideoFile(file)
       setExportedFile(null)
       setShareDialogOpen(false)
-      setVideoUrl((prev) => {
-        if (prev) URL.revokeObjectURL(prev)
-        return URL.createObjectURL(file)
-      })
+      updateVideoUrl(file)
     },
-    [],
+    [updateVideoUrl],
   )
 
   const handleExport = useCallback(async () => {
@@ -134,8 +140,8 @@ export function EQApp() {
     navigator
       .share({ files: [exportedFile] })
       .then(() => setShareDialogOpen(false))
-      .catch((error) => {
-        if (error instanceof DOMException && error.name === "AbortError") {
+      .catch((err) => {
+        if (err instanceof DOMException && err.name === "AbortError") {
           setShareDialogOpen(false)
           return
         }
@@ -275,7 +281,7 @@ export function EQApp() {
                   setCompare(false)
                 }}
               >
-                compare
+                Compare
               </Button>
             </div>
             <div className="text-muted-foreground text-xs">

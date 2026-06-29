@@ -93,10 +93,9 @@ export function useFFmpeg() {
     loadPromiseRef.current = (async () => {
       try {
         const ffmpeg = getFFmpeg()
-        const [{ default: coreURL }, { default: wasmURL }] = await Promise.all([
-          import("../../../node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.js?url"),
-          import("../../../node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.wasm?url"),
-        ])
+        const base = import.meta.env.BASE_URL.replace(/\/$/, "")
+        const coreURL = `${base}/ffmpeg/ffmpeg-core.js`
+        const wasmURL = `${base}/ffmpeg/ffmpeg-core.wasm`
         const controller = new AbortController()
         const timeoutId = setTimeout(
           () => controller.abort(new DOMException("Loading ffmpeg.wasm timed out", "TimeoutError")),
@@ -167,8 +166,7 @@ export function useFFmpeg() {
         const args = [
           "-i",
           inputName,
-          "-af",
-          audioFilter,
+          ...(audioFilter ? ["-af", audioFilter] : []),
           "-c:v",
           "copy",
           "-map_metadata",
@@ -193,6 +191,14 @@ export function useFFmpeg() {
         )
 
         const data = await ffmpeg.readFile(outputName)
+
+        try {
+          await ffmpeg.deleteFile(inputName)
+          await ffmpeg.deleteFile(outputName)
+        } catch {
+          // Ignore cleanup errors so they don't mask the successful export.
+        }
+
         const blob = new Blob([data as BlobPart], {
           type: getVideoMimeType(outputName),
         })

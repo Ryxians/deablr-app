@@ -21,7 +21,7 @@ export function EQControls({ bands, onChange, onReset }: EQControlsProps) {
         <h3 className="font-semibold text-sm">Custom EQ</h3>
         <div className="flex gap-2">
           <Button type="button" variant="outline" size="sm" onClick={onReset}>
-            reset
+            Reset
           </Button>
         </div>
       </div>

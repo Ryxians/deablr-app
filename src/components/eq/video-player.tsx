@@ -84,6 +84,7 @@ export function VideoPlayer({
       {!isPlaying && (
         <button
           type="button"
+          aria-label="Play"
           onClick={togglePlay}
           className="absolute inset-0 z-20 flex items-center justify-center bg-black/30 transition-colors hover:bg-black/40"
         >
@@ -107,7 +108,11 @@ export function VideoPlayer({
 
       <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/80 to-transparent p-3">
         <div className="flex items-center gap-3 text-xs text-white">
-          <button type="button" onClick={togglePlay}>
+          <button
+            type="button"
+            aria-label={isPlaying ? "Pause" : "Play"}
+            onClick={togglePlay}
+          >
             {isPlaying ? (
               <Pause className="size-5 fill-current" />
             ) : (
