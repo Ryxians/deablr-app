@@ -5,11 +5,9 @@ import { drizzle } from "drizzle-orm/bun-sqlite"
 import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 import * as schema from "./schema"
 
-const dbPath =
-  process.env.DB_PATH ??
-  (process.env.NODE_ENV === "production"
-    ? "/app/data/deablr.db"
-    : "data/deablr.db")
+// Relative by design: resolves to the project root in dev and to
+// /app/data/deablr.db in the Docker runner (WORKDIR /app, volume at /app/data).
+const dbPath = process.env.DB_PATH ?? "data/deablr.db"
 
 if (dbPath !== ":memory:") {
   mkdirSync(dirname(dbPath), { recursive: true })

@@ -14,10 +14,11 @@ const isProd = process.env.NODE_ENV === "production"
 export const auth = betterAuth({
   appName: "Deablr",
   basePath: "/api/auth",
-  // Defaults keep `bun dev` warning-free; production sets both via env.
-  baseURL:
-    process.env.BETTER_AUTH_URL ??
-    (isProd ? undefined : "http://localhost:3000"),
+  // No baseURL: better-auth reads BETTER_AUTH_URL from the env on its own,
+  // and otherwise derives the origin from each incoming request — always
+  // correct for this same-origin app (the client uses window.location).
+  // Dev fallback only; production must set BETTER_AUTH_SECRET (better-auth
+  // refuses to boot with the default secret there).
   secret:
     process.env.BETTER_AUTH_SECRET ??
     (isProd ? undefined : "deablr-dev-only-secret-7f3a9c1e52d84b06"),
