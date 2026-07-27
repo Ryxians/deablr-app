@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WordleRouteImport } from './routes/wordle'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ShoppingListRouteImport } from './routes/shopping-list'
 import { Route as RealTalkRouteImport } from './routes/real-talk'
 import { Route as ProjectsRouteImport } from './routes/projects'
@@ -17,12 +18,20 @@ import { Route as NotFoundRouteImport } from './routes/not-found'
 import { Route as MyTypeRouteImport } from './routes/my-type'
 import { Route as ManifestoRouteImport } from './routes/manifesto'
 import { Route as EqRouteImport } from './routes/eq'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutMeRouteImport } from './routes/about-me'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const WordleRoute = WordleRouteImport.update({
   id: '/wordle',
   path: '/wordle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShoppingListRoute = ShoppingListRouteImport.update({
@@ -60,6 +69,11 @@ const EqRoute = EqRouteImport.update({
   path: '/eq',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutMeRoute = AboutMeRouteImport.update({
   id: '/about-me',
   path: '/about-me',
@@ -70,10 +84,21 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about-me': typeof AboutMeRoute
+  '/admin': typeof AdminRoute
   '/eq': typeof EqRoute
   '/manifesto': typeof ManifestoRoute
   '/my-type': typeof MyTypeRoute
@@ -81,11 +106,15 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRoute
   '/real-talk': typeof RealTalkRoute
   '/shopping-list': typeof ShoppingListRoute
+  '/signup': typeof SignupRoute
   '/wordle': typeof WordleRoute
+  '/invite/$token': typeof InviteTokenRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about-me': typeof AboutMeRoute
+  '/admin': typeof AdminRoute
   '/eq': typeof EqRoute
   '/manifesto': typeof ManifestoRoute
   '/my-type': typeof MyTypeRoute
@@ -93,12 +122,16 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRoute
   '/real-talk': typeof RealTalkRoute
   '/shopping-list': typeof ShoppingListRoute
+  '/signup': typeof SignupRoute
   '/wordle': typeof WordleRoute
+  '/invite/$token': typeof InviteTokenRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about-me': typeof AboutMeRoute
+  '/admin': typeof AdminRoute
   '/eq': typeof EqRoute
   '/manifesto': typeof ManifestoRoute
   '/my-type': typeof MyTypeRoute
@@ -106,13 +139,17 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRoute
   '/real-talk': typeof RealTalkRoute
   '/shopping-list': typeof ShoppingListRoute
+  '/signup': typeof SignupRoute
   '/wordle': typeof WordleRoute
+  '/invite/$token': typeof InviteTokenRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about-me'
+    | '/admin'
     | '/eq'
     | '/manifesto'
     | '/my-type'
@@ -120,11 +157,15 @@ export interface FileRouteTypes {
     | '/projects'
     | '/real-talk'
     | '/shopping-list'
+    | '/signup'
     | '/wordle'
+    | '/invite/$token'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about-me'
+    | '/admin'
     | '/eq'
     | '/manifesto'
     | '/my-type'
@@ -132,11 +173,15 @@ export interface FileRouteTypes {
     | '/projects'
     | '/real-talk'
     | '/shopping-list'
+    | '/signup'
     | '/wordle'
+    | '/invite/$token'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/'
     | '/about-me'
+    | '/admin'
     | '/eq'
     | '/manifesto'
     | '/my-type'
@@ -144,12 +189,16 @@ export interface FileRouteTypes {
     | '/projects'
     | '/real-talk'
     | '/shopping-list'
+    | '/signup'
     | '/wordle'
+    | '/invite/$token'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutMeRoute: typeof AboutMeRoute
+  AdminRoute: typeof AdminRoute
   EqRoute: typeof EqRoute
   ManifestoRoute: typeof ManifestoRoute
   MyTypeRoute: typeof MyTypeRoute
@@ -157,7 +206,10 @@ export interface RootRouteChildren {
   ProjectsRoute: typeof ProjectsRoute
   RealTalkRoute: typeof RealTalkRoute
   ShoppingListRoute: typeof ShoppingListRoute
+  SignupRoute: typeof SignupRoute
   WordleRoute: typeof WordleRoute
+  InviteTokenRoute: typeof InviteTokenRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -167,6 +219,13 @@ declare module '@tanstack/react-router' {
       path: '/wordle'
       fullPath: '/wordle'
       preLoaderRoute: typeof WordleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shopping-list': {
@@ -218,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EqRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about-me': {
       id: '/about-me'
       path: '/about-me'
@@ -232,12 +298,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutMeRoute: AboutMeRoute,
+  AdminRoute: AdminRoute,
   EqRoute: EqRoute,
   ManifestoRoute: ManifestoRoute,
   MyTypeRoute: MyTypeRoute,
@@ -245,7 +326,10 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsRoute: ProjectsRoute,
   RealTalkRoute: RealTalkRoute,
   ShoppingListRoute: ShoppingListRoute,
+  SignupRoute: SignupRoute,
   WordleRoute: WordleRoute,
+  InviteTokenRoute: InviteTokenRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

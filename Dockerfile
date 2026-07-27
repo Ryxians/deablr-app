@@ -18,6 +18,8 @@ ENV PORT=3000
 
 COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/package.json ./package.json
+# Migration SQL files are read from disk at server boot (see server/plugins/migrate.ts)
+COPY --from=builder /app/drizzle ./drizzle
 
 EXPOSE 3000
 
