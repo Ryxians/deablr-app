@@ -1,11 +1,12 @@
 services:
   app:
     build: .
-    ports:
-      - "3000:3000"
+    # No published ports and no networks: Dokploy routes to this container
+    # through Traefik — add the domain in Dokploy's Domains tab and it
+    # injects the Traefik labels and network attachment at deploy time.
     environment:
-      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
-      - BETTER_AUTH_URL=${BETTER_AUTH_URL:-http://localhost:3000}
+      - BETTER_AUTH_SECRET
+      - BETTER_AUTH_URL
     volumes:
       - deablr-data:/app/data
     restart: unless-stopped
