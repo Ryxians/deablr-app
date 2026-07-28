@@ -20,6 +20,10 @@ COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/package.json ./package.json
 # Migration SQL files are read from disk at server boot (see server/plugins/migrate.ts)
 COPY --from=builder /app/drizzle ./drizzle
+# sharp's JS is bundled into .output, but its native binaries are not traced.
+# Without them, sharp's import-time native load fails inside a circular SSR
+# chunk and surfaces as "Cannot access '<fn>_handler' before initialization".
+COPY --from=builder /app/node_modules/@img ./.output/server/node_modules/@img
 
 EXPOSE 3000
 
