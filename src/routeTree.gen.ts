@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WordleRouteImport } from './routes/wordle'
 import { Route as SignupRouteImport } from './routes/signup'
-import { Route as ShoppingListRouteImport } from './routes/shopping-list'
 import { Route as RealTalkRouteImport } from './routes/real-talk'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as NotFoundRouteImport } from './routes/not-found'
@@ -21,8 +20,13 @@ import { Route as EqRouteImport } from './routes/eq'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutMeRouteImport } from './routes/about-me'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RankingsIndexRouteImport } from './routes/rankings/index'
+import { Route as RankingsNewRouteImport } from './routes/rankings/new'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
+import { Route as RankingsReviewIdIndexRouteImport } from './routes/rankings/$reviewId/index'
+import { Route as RankingsReviewIdEditRouteImport } from './routes/rankings/$reviewId/edit'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiArtSplatRouteImport } from './routes/api/art/$'
 
 const WordleRoute = WordleRouteImport.update({
   id: '/wordle',
@@ -32,11 +36,6 @@ const WordleRoute = WordleRouteImport.update({
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ShoppingListRoute = ShoppingListRouteImport.update({
-  id: '/shopping-list',
-  path: '/shopping-list',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RealTalkRoute = RealTalkRouteImport.update({
@@ -84,14 +83,39 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RankingsIndexRoute = RankingsIndexRouteImport.update({
+  id: '/rankings/',
+  path: '/rankings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RankingsNewRoute = RankingsNewRouteImport.update({
+  id: '/rankings/new',
+  path: '/rankings/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InviteTokenRoute = InviteTokenRouteImport.update({
   id: '/invite/$token',
   path: '/invite/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RankingsReviewIdIndexRoute = RankingsReviewIdIndexRouteImport.update({
+  id: '/rankings/$reviewId/',
+  path: '/rankings/$reviewId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RankingsReviewIdEditRoute = RankingsReviewIdEditRouteImport.update({
+  id: '/rankings/$reviewId/edit',
+  path: '/rankings/$reviewId/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiArtSplatRoute = ApiArtSplatRouteImport.update({
+  id: '/api/art/$',
+  path: '/api/art/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -105,11 +129,15 @@ export interface FileRoutesByFullPath {
   '/not-found': typeof NotFoundRoute
   '/projects': typeof ProjectsRoute
   '/real-talk': typeof RealTalkRoute
-  '/shopping-list': typeof ShoppingListRoute
   '/signup': typeof SignupRoute
   '/wordle': typeof WordleRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/rankings/new': typeof RankingsNewRoute
+  '/rankings/': typeof RankingsIndexRoute
+  '/api/art/$': typeof ApiArtSplatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/rankings/$reviewId/edit': typeof RankingsReviewIdEditRoute
+  '/rankings/$reviewId/': typeof RankingsReviewIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -121,11 +149,15 @@ export interface FileRoutesByTo {
   '/not-found': typeof NotFoundRoute
   '/projects': typeof ProjectsRoute
   '/real-talk': typeof RealTalkRoute
-  '/shopping-list': typeof ShoppingListRoute
   '/signup': typeof SignupRoute
   '/wordle': typeof WordleRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/rankings/new': typeof RankingsNewRoute
+  '/rankings': typeof RankingsIndexRoute
+  '/api/art/$': typeof ApiArtSplatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/rankings/$reviewId/edit': typeof RankingsReviewIdEditRoute
+  '/rankings/$reviewId': typeof RankingsReviewIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -138,11 +170,15 @@ export interface FileRoutesById {
   '/not-found': typeof NotFoundRoute
   '/projects': typeof ProjectsRoute
   '/real-talk': typeof RealTalkRoute
-  '/shopping-list': typeof ShoppingListRoute
   '/signup': typeof SignupRoute
   '/wordle': typeof WordleRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/rankings/new': typeof RankingsNewRoute
+  '/rankings/': typeof RankingsIndexRoute
+  '/api/art/$': typeof ApiArtSplatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/rankings/$reviewId/edit': typeof RankingsReviewIdEditRoute
+  '/rankings/$reviewId/': typeof RankingsReviewIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -156,11 +192,15 @@ export interface FileRouteTypes {
     | '/not-found'
     | '/projects'
     | '/real-talk'
-    | '/shopping-list'
     | '/signup'
     | '/wordle'
     | '/invite/$token'
+    | '/rankings/new'
+    | '/rankings/'
+    | '/api/art/$'
     | '/api/auth/$'
+    | '/rankings/$reviewId/edit'
+    | '/rankings/$reviewId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -172,11 +212,15 @@ export interface FileRouteTypes {
     | '/not-found'
     | '/projects'
     | '/real-talk'
-    | '/shopping-list'
     | '/signup'
     | '/wordle'
     | '/invite/$token'
+    | '/rankings/new'
+    | '/rankings'
+    | '/api/art/$'
     | '/api/auth/$'
+    | '/rankings/$reviewId/edit'
+    | '/rankings/$reviewId'
   id:
     | '__root__'
     | '/'
@@ -188,11 +232,15 @@ export interface FileRouteTypes {
     | '/not-found'
     | '/projects'
     | '/real-talk'
-    | '/shopping-list'
     | '/signup'
     | '/wordle'
     | '/invite/$token'
+    | '/rankings/new'
+    | '/rankings/'
+    | '/api/art/$'
     | '/api/auth/$'
+    | '/rankings/$reviewId/edit'
+    | '/rankings/$reviewId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -205,11 +253,15 @@ export interface RootRouteChildren {
   NotFoundRoute: typeof NotFoundRoute
   ProjectsRoute: typeof ProjectsRoute
   RealTalkRoute: typeof RealTalkRoute
-  ShoppingListRoute: typeof ShoppingListRoute
   SignupRoute: typeof SignupRoute
   WordleRoute: typeof WordleRoute
   InviteTokenRoute: typeof InviteTokenRoute
+  RankingsNewRoute: typeof RankingsNewRoute
+  RankingsIndexRoute: typeof RankingsIndexRoute
+  ApiArtSplatRoute: typeof ApiArtSplatRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  RankingsReviewIdEditRoute: typeof RankingsReviewIdEditRoute
+  RankingsReviewIdIndexRoute: typeof RankingsReviewIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -226,13 +278,6 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/shopping-list': {
-      id: '/shopping-list'
-      path: '/shopping-list'
-      fullPath: '/shopping-list'
-      preLoaderRoute: typeof ShoppingListRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/real-talk': {
@@ -298,6 +343,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rankings/': {
+      id: '/rankings/'
+      path: '/rankings'
+      fullPath: '/rankings/'
+      preLoaderRoute: typeof RankingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rankings/new': {
+      id: '/rankings/new'
+      path: '/rankings/new'
+      fullPath: '/rankings/new'
+      preLoaderRoute: typeof RankingsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/invite/$token': {
       id: '/invite/$token'
       path: '/invite/$token'
@@ -305,11 +364,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InviteTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rankings/$reviewId/': {
+      id: '/rankings/$reviewId/'
+      path: '/rankings/$reviewId'
+      fullPath: '/rankings/$reviewId/'
+      preLoaderRoute: typeof RankingsReviewIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rankings/$reviewId/edit': {
+      id: '/rankings/$reviewId/edit'
+      path: '/rankings/$reviewId/edit'
+      fullPath: '/rankings/$reviewId/edit'
+      preLoaderRoute: typeof RankingsReviewIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/art/$': {
+      id: '/api/art/$'
+      path: '/api/art/$'
+      fullPath: '/api/art/$'
+      preLoaderRoute: typeof ApiArtSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -325,11 +405,15 @@ const rootRouteChildren: RootRouteChildren = {
   NotFoundRoute: NotFoundRoute,
   ProjectsRoute: ProjectsRoute,
   RealTalkRoute: RealTalkRoute,
-  ShoppingListRoute: ShoppingListRoute,
   SignupRoute: SignupRoute,
   WordleRoute: WordleRoute,
   InviteTokenRoute: InviteTokenRoute,
+  RankingsNewRoute: RankingsNewRoute,
+  RankingsIndexRoute: RankingsIndexRoute,
+  ApiArtSplatRoute: ApiArtSplatRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  RankingsReviewIdEditRoute: RankingsReviewIdEditRoute,
+  RankingsReviewIdIndexRoute: RankingsReviewIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
