@@ -11,6 +11,7 @@ import {
 const statement = {
   ...defaultStatements,
   content: ["submit", "moderate"],
+  review: ["manage"],
 } as const
 
 export const ac = createAccessControl(statement)
@@ -18,6 +19,7 @@ export const ac = createAccessControl(statement)
 export const admin = ac.newRole({
   ...adminAc.statements,
   content: ["submit", "moderate"],
+  review: ["manage"],
 })
 
 export const denizen = ac.newRole({
