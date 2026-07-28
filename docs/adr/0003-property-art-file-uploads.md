@@ -7,3 +7,4 @@ This is the app's first file-upload handling. Alternatives considered: hotlinkin
 ## Consequences
 
 - Uploads are center-cropped/resized to a canonical 2:3 poster at upload time, so the server needs an image-processing step and only the processed poster is kept.
+- sharp's JS is bundled into `.output` by nitro, but its native binaries (`node_modules/@img`) are not traced — the Dockerfile copies them into the runner explicitly. Without them the server boots but any route touching the rankings chunk 500s (sharp's import-time native load fails inside a circular SSR chunk pair, surfacing as a misleading "Cannot access … before initialization" TDZ error). The same trap applies to any future native dependency.
