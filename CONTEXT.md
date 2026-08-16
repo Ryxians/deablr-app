@@ -54,6 +54,9 @@ The chip displayed on any Review whose defined Scores are all 9 or higher.
 **Certified Poop**:
 The catch-all Score Band holding every Review with a negative Score.
 
+**Incomplete**:
+A flag on a Property marking that the Admin has not finished it (still watching, reading, playing). Visitors can filter the Rankings on it.
+
 ### Real Talk
 
 A social question game where players take turns drawing random questions from a numbered deck and answering them honestly.
@@ -129,7 +132,10 @@ A complete cycle where every Player has taken one Turn. After each Round, the Pl
 - **Metrics:** Scores are per-Metric (Fun, Art); new Metrics are added programmatically. Each Metric enforces its own Score uniqueness; the Average is derived and unconstrained. A Review may leave any Metric undefined, but not all.
 - **Score collisions:** A submitted Score that already exists on its Metric is rejected; the Admin adjusts (e.g. 8.5 → 8.51). The above/below preview exists to help pick a free Score.
 - **Authorship:** Only an Admin can create, edit, or delete Reviews. Denizens and anonymous visitors see the read-only Rankings.
-- **Neighbour preview:** While entering a Score, the form shows the 3 Reviews above and 3 below that slot on the Score's Metric; each neighbour's Score can be quick-edited inline to free a taken slot.
-- **Tags:** Tags are free-entered but normalized to lowercase on save; visitors filter by selecting multiple Tags (AND semantics).
+- **Neighbour preview:** While entering a Score, the form shows the 3 Reviews above and 3 below that slot on the Score's Metric, and any Review holding exactly that Score so a collision is visible; each neighbour's Score can be quick-edited inline to free a taken slot.
+- **Tags:** Tags are free-entered but normalized to lowercase on save; visitors filter by selecting multiple Tags (AND semantics). Existing Tags are selectable in a combobox; new Tags can be created inline.
 - **Bands survive filtering:** Filtering narrows which Reviews appear, but the Score Band grouping always applies.
 - **Unrated Reviews hide:** When ordering by a Metric (not Average), Reviews with no Score on that Metric are hidden from the board.
+- **Incomplete:** A toggle on the review form marks a Property as Incomplete; the Rankings board can filter on completion state and shows an Incomplete chip on affected cards.
+- **Review text:** Review text supports Markdown (including GFM) and `<spoiler>…</spoiler>` tags; spoilers render as hidden regions revealed on click/keyboard activation.
+- **PDF export:** Visitors can export the currently filtered Rankings to a single-page PDF with all Property artwork scaled into one grid.

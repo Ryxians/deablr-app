@@ -14,10 +14,12 @@ function NeighborRow({
   item,
   metric,
   onChanged,
+  highlight = false,
 }: {
   item: RankedReview
   metric: MetricKey
   onChanged: () => void
+  highlight?: boolean
 }) {
   const [editing, setEditing] = useState(false)
   const [value, setValue] = useState("")
@@ -41,7 +43,13 @@ function NeighborRow({
   }
 
   return (
-    <li className="border border-border p-1.5 text-xs">
+    <li
+      className={
+        highlight
+          ? "border border-red-400 bg-red-50 p-1.5 text-xs dark:bg-red-950/30"
+          : "border border-border p-1.5 text-xs"
+      }
+    >
       <div className="flex items-center gap-2">
         <img
           src={item.artUrl}
@@ -132,14 +140,30 @@ export function ScoreNeighborPreview({
   }
 
   const above = neighbors.data?.above ?? []
+  const at = neighbors.data?.at ?? []
   const below = neighbors.data?.below ?? []
+  const taken = at.length > 0
 
   return (
-    <div className="rounded-md border border-dashed border-border p-2">
-      <p className="mb-1.5 text-xs text-muted-foreground">
-        Would slot between:
+    <div
+      className={
+        taken
+          ? "rounded-md border border-red-400 p-2"
+          : "rounded-md border border-dashed border-border p-2"
+      }
+    >
+      <p
+        className={
+          taken
+            ? "mb-1.5 text-xs font-medium text-red-600"
+            : "mb-1.5 text-xs text-muted-foreground"
+        }
+      >
+        {taken
+          ? "Score already taken — quick-edit the holder below to free it:"
+          : "Would slot between:"}
       </p>
-      {above.length === 0 && below.length === 0 ? (
+      {above.length === 0 && at.length === 0 && below.length === 0 ? (
         <p className="text-xs text-muted-foreground">
           No neighbours on this Metric.
         </p>
@@ -153,9 +177,21 @@ export function ScoreNeighborPreview({
               onChanged={refresh}
             />
           ))}
-          <li className="py-0.5 text-center text-xs font-bold text-primary">
-            ⟵ {formatScore(parseScore(debounced)!)}
-          </li>
+          {taken ? (
+            at.map((item) => (
+              <NeighborRow
+                key={item.reviewId}
+                item={item}
+                metric={metric}
+                onChanged={refresh}
+                highlight
+              />
+            ))
+          ) : (
+            <li className="py-0.5 text-center text-xs font-bold text-primary">
+              ⟵ {formatScore(parseScore(debounced)!)}
+            </li>
+          )}
           {below.map((item) => (
             <NeighborRow
               key={item.reviewId}

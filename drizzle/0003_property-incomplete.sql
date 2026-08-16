@@ -1,0 +1,1 @@
+ALTER TABLE `property` ADD `incomplete` integer DEFAULT false NOT NULL;

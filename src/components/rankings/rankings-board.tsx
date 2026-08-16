@@ -2,6 +2,7 @@ import { useMemo, useState } from "react"
 import { ScoreBandCarousel } from "./score-band-carousel"
 import type { MetricKey, PropertyType } from "@/lib/rankings"
 import type { RankedReview } from "@/server/rankings"
+import { TagCombobox } from "@/components/tag-combobox"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
@@ -20,10 +21,13 @@ import {
   bandForScore,
   typeLabel,
 } from "@/lib/rankings"
+import { exportRankingsPdf } from "@/lib/export-pdf"
 
 type Direction = "desc" | "asc"
 /** The axis the board orders and bands by: the Average or one Metric. */
 type Axis = "average" | MetricKey
+/** Completion filter: all Reviews, or only complete/incomplete Properties. */
+type Completion = "all" | "complete" | "incomplete"
 
 function axisScore(item: RankedReview, axis: Axis): number | null {
   if (axis === "average") return averageScore(item.scores)
@@ -40,6 +44,9 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
   const [direction, setDirection] = useState<Direction>("desc")
   const [selectedTypes, setSelectedTypes] = useState<Array<PropertyType>>([])
   const [selectedTags, setSelectedTags] = useState<Array<string>>([])
+  const [completion, setCompletion] = useState<Completion>("all")
+  const [exporting, setExporting] = useState(false)
+  const [exportError, setExportError] = useState<string | null>(null)
 
   const allTags = useMemo(
     () => [...new Set(reviews.flatMap((r) => r.tags))].sort(),
@@ -51,7 +58,8 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
       (r) =>
         (selectedTypes.length === 0 ||
           r.types.some((t) => selectedTypes.includes(t as PropertyType))) &&
-        selectedTags.every((tag) => r.tags.includes(tag)),
+        selectedTags.every((tag) => r.tags.includes(tag)) &&
+        (completion === "all" || (completion === "incomplete") === r.incomplete),
     )
     const byBand = new Map<string, Array<RankedReview>>()
     for (const item of filtered) {
@@ -71,9 +79,10 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
       })
       return { band: key, items }
     })
-  }, [reviews, axis, direction, selectedTypes, selectedTags])
+  }, [reviews, axis, direction, selectedTypes, selectedTags, completion])
 
-  const hasFilters = selectedTypes.length > 0 || selectedTags.length > 0
+  const hasFilters =
+    selectedTypes.length > 0 || selectedTags.length > 0 || completion !== "all"
 
   function toggleType(type: PropertyType, checked: boolean) {
     setSelectedTypes((prev) =>
@@ -81,10 +90,19 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
     )
   }
 
-  function toggleTag(tag: string, checked: boolean) {
-    setSelectedTags((prev) =>
-      checked ? [...prev, tag] : prev.filter((t) => t !== tag),
-    )
+  /** Exports exactly what the board currently shows, in display order. */
+  async function onExportPdf() {
+    setExporting(true)
+    setExportError(null)
+    try {
+      await exportRankingsPdf(bands.flatMap((b) => b.items))
+    } catch (err) {
+      setExportError(
+        err instanceof Error ? err.message : "Could not export PDF",
+      )
+    } finally {
+      setExporting(false)
+    }
   }
 
   return (
@@ -122,6 +140,22 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
               </SelectContent>
             </Select>
           </div>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="rankings-completion">Completion</Label>
+            <Select
+              value={completion}
+              onValueChange={(v) => setCompletion(v as Completion)}
+            >
+              <SelectTrigger id="rankings-completion" className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="complete">Complete</SelectItem>
+                <SelectItem value="incomplete">Incomplete</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           {hasFilters && (
             <Button
               variant="outline"
@@ -129,12 +163,24 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
               onClick={() => {
                 setSelectedTypes([])
                 setSelectedTags([])
+                setCompletion("all")
               }}
             >
               Clear filters
             </Button>
           )}
+          <div className="flex items-center gap-2 sm:ml-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={exporting || reviews.length === 0}
+              onClick={() => void onExportPdf()}
+            >
+              {exporting ? "Exporting…" : "Export PDF"}
+            </Button>
+          </div>
         </div>
+        {exportError && <p className="text-sm text-red-600">{exportError}</p>}
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <span className="text-sm text-muted-foreground">Type</span>
@@ -156,23 +202,18 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
         </div>
 
         {allTags.length > 0 && (
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span className="text-sm text-muted-foreground">Tags</span>
-            {allTags.map((tag) => (
-              <div key={tag} className="flex items-center gap-1.5">
-                <Checkbox
-                  id={`filter-tag-${tag}`}
-                  checked={selectedTags.includes(tag)}
-                  onCheckedChange={(checked) => toggleTag(tag, !!checked)}
-                />
-                <Label
-                  htmlFor={`filter-tag-${tag}`}
-                  className="text-sm font-normal"
-                >
-                  {tag}
-                </Label>
-              </div>
-            ))}
+          <div className="flex items-center gap-2">
+            <Label htmlFor="filter-tags" className="shrink-0">
+              Tags
+            </Label>
+            <TagCombobox
+              id="filter-tags"
+              options={allTags}
+              selected={selectedTags}
+              onChange={setSelectedTags}
+              placeholder="Filter by tags…"
+              className="max-w-xs"
+            />
           </div>
         )}
       </div>
