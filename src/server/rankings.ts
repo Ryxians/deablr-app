@@ -29,6 +29,7 @@ export interface RankedReview {
   types: Array<string>
   tags: Array<string>
   artUrl: string
+  incomplete: boolean
   /** Defined Scores by Metric, in integer milliunits. */
   scores: ScoreMap
   text: string
@@ -41,6 +42,7 @@ interface ReviewRow {
   types: Array<string>
   tags: Array<string>
   artPath: string
+  incomplete: boolean
   text: string
 }
 
@@ -51,6 +53,7 @@ const reviewSelection = {
   types: property.types,
   tags: property.tags,
   artPath: property.artPath,
+  incomplete: property.incomplete,
   text: review.text,
 }
 
@@ -91,8 +94,7 @@ export const listRankings = createServerFn({ method: "GET" }).handler(
 /** Public: a single Review with its Property and Scores. */
 export const getReview = createServerFn({ method: "GET" })
   .inputValidator(z.object({ reviewId: z.string() }))
-  .handler(async ({ data }): Promise<RankedReview | null> => {
-    const rows = await db
+  .handler(async ({ data }): Promise<RankedReview | null> => {    const rows = await db
       .select(reviewSelection)
       .from(review)
       .innerJoin(property, eq(review.propertyId, property.id))
@@ -104,14 +106,26 @@ export const getReview = createServerFn({ method: "GET" })
     return toRanked(row, scores.get(row.reviewId) ?? {})
   })
 
+/** Public: every Tag in use, sorted. Powers tag pickers in the UI. */
+export const listTags = createServerFn({ method: "GET" }).handler(
+  async (): Promise<Array<string>> => {
+    const rows = await db
+      .select({ tags: property.tags })
+      .from(property)
+    return [...new Set(rows.flatMap((r) => r.tags))].sort()
+  },
+)
+
 const metricSchema = z.enum(
   METRICS.map((m) => m.key) as [MetricKey, ...Array<MetricKey>],
 )
 
 /**
- * Admin: the 3 Reviews immediately above and 3 immediately below a Score on
- * its Metric's axis, in display order. Used by the review form's neighbour
- * preview.
+ * Admin: the Reviews holding exactly this Score on the Metric (at most one,
+ * since Scores are unique per Metric) plus the 3 Reviews immediately above
+ * and 3 immediately below it on that Metric's axis, in display order. Used
+ * by the review form's neighbour preview — the exact holder is included so a
+ * colliding Score shows the Review it collides with.
  */
 export const getScoreNeighbors = createServerFn({ method: "GET" })
   .inputValidator(
@@ -124,10 +138,14 @@ export const getScoreNeighbors = createServerFn({ method: "GET" })
   .handler(
     async ({
       data,
-    }): Promise<{ above: Array<RankedReview>; below: Array<RankedReview> }> => {
+    }): Promise<{
+      above: Array<RankedReview>
+      at: Array<RankedReview>
+      below: Array<RankedReview>
+    }> => {
       await requireAdmin()
       const score = parseScore(data.score)
-      if (score === null) return { above: [], below: [] }
+      if (score === null) return { above: [], at: [], below: [] }
       const exclude = data.excludeReviewId
         ? ne(review.id, data.excludeReviewId)
         : undefined
@@ -149,6 +167,14 @@ export const getScoreNeighbors = createServerFn({ method: "GET" })
         )
         .orderBy(asc(reviewScore.score))
         .limit(3)
+      const atRows = await baseQuery()
+        .where(
+          and(
+            eq(reviewScore.metric, data.metric),
+            eq(reviewScore.score, score),
+            exclude,
+          ),
+        )
       const belowRows = await baseQuery()
         .where(
           and(
@@ -160,12 +186,13 @@ export const getScoreNeighbors = createServerFn({ method: "GET" })
         .orderBy(desc(reviewScore.score))
         .limit(3)
       const scores = await fetchScores(
-        [...aboveRows, ...belowRows].map((r) => r.reviewId),
+        [...aboveRows, ...atRows, ...belowRows].map((r) => r.reviewId),
       )
       const toNeighbor = (row: (typeof aboveRows)[number]) =>
         toRanked(row, scores.get(row.reviewId) ?? {})
       return {
         above: aboveRows.reverse().map(toNeighbor),
+        at: atRows.map(toNeighbor),
         below: belowRows.map(toNeighbor),
       }
     },
@@ -187,6 +214,7 @@ interface ReviewFormData {
   title: string
   types: Array<PropertyType>
   tags: Array<string>
+  incomplete: boolean
   scores: ScoreMap
   text: string
 }
@@ -238,6 +266,7 @@ function parseReviewForm(fd: FormData): ReviewFormData {
     title,
     types: types as Array<PropertyType>,
     tags: normalizeTags(String(fd.get("tags") ?? "")),
+    incomplete: String(fd.get("incomplete") ?? "false") === "true",
     scores,
     text,
   }
@@ -348,6 +377,7 @@ export const createReview = createServerFn({ method: "POST" })
         title: fields.title,
         types: fields.types,
         tags: fields.tags,
+        incomplete: fields.incomplete,
         artPath,
       })
       await db.insert(review).values({ id: reviewId, propertyId, text: fields.text })
@@ -394,6 +424,7 @@ export const updateReview = createServerFn({ method: "POST" })
           title: fields.title,
           types: fields.types,
           tags: fields.tags,
+          incomplete: fields.incomplete,
           artPath,
           updatedAt: new Date(),
         })

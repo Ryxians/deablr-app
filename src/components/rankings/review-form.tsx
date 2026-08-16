@@ -1,8 +1,10 @@
 import { useNavigate } from "@tanstack/react-router"
+import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 import { ScoreNeighborPreview } from "./score-neighbor-preview"
 import type { MetricKey, PropertyType } from "@/lib/rankings"
 import type { RankedReview } from "@/server/rankings"
+import { TagCombobox } from "@/components/tag-combobox"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
@@ -14,7 +16,7 @@ import {
   formatScore,
   typeLabel,
 } from "@/lib/rankings"
-import { createReview, updateReview } from "@/server/rankings"
+import { createReview, listTags, updateReview } from "@/server/rankings"
 
 /**
  * The Admin review form, used for both creating and editing a Review. Each
@@ -27,7 +29,8 @@ export function ReviewForm({ initial }: { initial?: RankedReview }) {
   const [types, setTypes] = useState<Array<PropertyType>>(
     (initial?.types ?? []) as Array<PropertyType>,
   )
-  const [tags, setTags] = useState(initial?.tags.join(", ") ?? "")
+  const [tags, setTags] = useState<Array<string>>(initial?.tags ?? [])
+  const [incomplete, setIncomplete] = useState(initial?.incomplete ?? false)
   const [scores, setScores] = useState<Record<MetricKey, string>>(() =>
     Object.fromEntries(
       METRICS.map((m) => {
@@ -43,6 +46,11 @@ export function ReviewForm({ initial }: { initial?: RankedReview }) {
   )
   const [error, setError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
+
+  const existingTags = useQuery({
+    queryKey: ["allTags"],
+    queryFn: () => listTags(),
+  })
 
   useEffect(() => {
     if (!artFile) return
@@ -75,7 +83,8 @@ export function ReviewForm({ initial }: { initial?: RankedReview }) {
     const fd = new FormData()
     fd.set("title", title)
     fd.set("types", JSON.stringify(types))
-    fd.set("tags", tags)
+    fd.set("tags", tags.join(","))
+    fd.set("incomplete", String(incomplete))
     fd.set("scores", JSON.stringify(scores))
     fd.set("text", text)
     if (artFile) fd.set("art", artFile)
@@ -135,15 +144,29 @@ export function ReviewForm({ initial }: { initial?: RankedReview }) {
 
       <div className="space-y-1">
         <Label htmlFor="review-tags">Property Tags</Label>
-        <Input
+        <TagCombobox
           id="review-tags"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-          placeholder="fantasy, animated, romance"
+          options={existingTags.data ?? []}
+          selected={tags}
+          onChange={setTags}
+          creatable
+          placeholder="Pick or define tags…"
         />
         <p className="text-xs text-muted-foreground">
-          Comma-separated; normalized to lowercase.
+          Select existing tags or type to define new ones; normalized to
+          lowercase.
         </p>
+      </div>
+
+      <div className="flex items-center gap-1.5">
+        <Checkbox
+          id="review-incomplete"
+          checked={incomplete}
+          onCheckedChange={(checked) => setIncomplete(!!checked)}
+        />
+        <Label htmlFor="review-incomplete" className="text-sm font-normal">
+          Incomplete — still watching/reading/playing
+        </Label>
       </div>
 
       <div className="space-y-1">
@@ -211,6 +234,9 @@ export function ReviewForm({ initial }: { initial?: RankedReview }) {
           className="min-h-40"
           required
         />
+        <p className="text-xs text-muted-foreground">
+          Supports Markdown; wrap hidden content in &lt;spoiler&gt;…&lt;/spoiler&gt;.
+        </p>
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}

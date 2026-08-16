@@ -6,7 +6,8 @@ import {
 } from "@tanstack/react-router"
 import { useState } from "react"
 import type { PropertyType } from "@/lib/rankings"
-import { PeakChip } from "@/components/rankings/review-card"
+import { IncompleteChip, PeakChip } from "@/components/rankings/review-card"
+import { ReviewText } from "@/components/rankings/review-text"
 import { Button } from "@/components/ui/button"
 import {
   METRICS,
@@ -57,6 +58,7 @@ function ReviewDetailPage() {
             className="aspect-[2/3] size-full object-cover"
           />
           {isPeak(review.scores) && <PeakChip />}
+          {review.incomplete && <IncompleteChip />}
         </div>
         <div className="min-w-0">
           <h1 className="text-2xl font-bold">{review.title}</h1>
@@ -121,7 +123,7 @@ function ReviewDetailPage() {
           {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>
       </div>
-      <p className="mt-6 max-w-prose whitespace-pre-wrap">{review.text}</p>
+      <ReviewText text={review.text} />
     </div>
   )
 }

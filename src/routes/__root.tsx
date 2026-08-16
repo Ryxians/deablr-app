@@ -37,8 +37,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <QueryClientProvider client={queryClient}>
-          <div className="min-h-screen p-4 font-mono text-foreground md:p-6">
-            <div className="mx-auto w-full overflow-x-hidden border border-border bg-background shadow-sm md:w-3xl lg:w-4xl xl:w-5xl">
+          <div className="min-h-screen w-full min-w-0 p-4 font-mono text-foreground md:p-6">
+            <div className="mx-auto w-full min-w-0 overflow-x-hidden border border-border bg-background shadow-sm md:w-3xl lg:w-4xl xl:w-5xl">
               <Header />
               <Navbar />
               <main className="p-4 leading-relaxed md:p-8">{children}</main>

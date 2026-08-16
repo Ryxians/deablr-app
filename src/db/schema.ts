@@ -102,6 +102,8 @@ export const verification = sqliteTable("verification", {
  * `types` holds one or more Property Types (franchise, show, movie, game,
  * book, documentary, video); `tags` holds normalized lowercase labels.
  * `artPath` points at the processed 2:3 poster on disk (data/art/).
+ * `incomplete` marks a Property the Admin has not finished (still watching,
+ * reading, playing); the Rankings board can filter on it.
  */
 export const property = sqliteTable("property", {
   id: text("id").primaryKey(),
@@ -109,6 +111,9 @@ export const property = sqliteTable("property", {
   types: text("types", { mode: "json" }).$type<string[]>().notNull(),
   tags: text("tags", { mode: "json" }).$type<string[]>().notNull(),
   artPath: text("art_path").notNull(),
+  incomplete: integer("incomplete", { mode: "boolean" })
+    .default(false)
+    .notNull(),
   createdAt: integer("created_at", { mode: "timestamp" })
     .$defaultFn(() => new Date())
     .notNull(),

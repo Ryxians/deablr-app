@@ -16,6 +16,14 @@ export function PeakChip() {
   )
 }
 
+export function IncompleteChip() {
+  return (
+    <span className="absolute top-1 left-1 rounded bg-background/90 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-muted-foreground uppercase shadow">
+      Incomplete
+    </span>
+  )
+}
+
 /** Poster + title + average + per-metric scores, linking to the detail page. */
 export function ReviewCard({ item }: { item: RankedReview }) {
   const defined = METRICS.filter((m) => item.scores[m.key] !== undefined)
@@ -33,6 +41,7 @@ export function ReviewCard({ item }: { item: RankedReview }) {
           loading="lazy"
         />
         {isPeak(item.scores) && <PeakChip />}
+        {item.incomplete && <IncompleteChip />}
       </div>
       <p className="mt-1 line-clamp-2 text-xs leading-tight font-medium">
         {item.title}
