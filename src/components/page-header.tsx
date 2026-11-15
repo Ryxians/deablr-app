@@ -57,18 +57,22 @@ export function PageHeader({
   title,
   description,
   actions,
+  inlineActions = false,
   className,
 }: {
   path: string
   title: ReactNode
   description?: ReactNode
   actions?: ReactNode
+  /** Keep actions beside the title on phones too (for one small action). */
+  inlineActions?: boolean
   className?: string
 }) {
   return (
     <header
       className={cn(
         "mb-7 flex flex-col gap-4 border-b border-border/70 pb-5 sm:mb-8 sm:flex-row sm:items-end sm:justify-between sm:pb-6",
+        inlineActions && "flex-row items-end justify-between",
         className
       )}
     >
@@ -78,13 +82,15 @@ export function PageHeader({
           {title}
         </h1>
         {description && (
-          <p className="mt-2 max-w-prose text-[15px] leading-relaxed text-muted-foreground md:text-base">
+          <p className="mt-2 max-w-prose text-[15px] leading-relaxed text-pretty text-muted-foreground md:text-base">
             {description}
           </p>
         )}
       </div>
       {actions && (
-        <div className="flex shrink-0 flex-wrap gap-2">{actions}</div>
+        <div className="flex shrink-0 flex-wrap gap-2 max-md:[&:not(:has(>:not(.hidden)))]:hidden">
+          {actions}
+        </div>
       )}
     </header>
   )

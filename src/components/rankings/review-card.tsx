@@ -53,7 +53,7 @@ export function ReviewCard({ item }: { item: RankedReview }) {
         <span className="block text-[15px] font-extrabold text-foreground">
           {formatAverage(averageScore(item.scores))}
         </span>
-        <span className="block text-xs text-muted-foreground">
+        <span className="block text-[13px] text-muted-foreground md:text-xs">
           {defined
             .map((m) => `${m.label} ${formatScore(item.scores[m.key]!)}`)
             .join(" · ")}

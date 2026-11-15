@@ -1,10 +1,7 @@
-import { Link, useRouterState } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router"
 import { Navbar } from "@/components/Navbar"
-import { cn } from "@/lib/utils"
 
 export function Header() {
-  const isHome = useRouterState({ select: (s) => s.location.pathname === "/" })
-
   return (
     <>
       <header className="penny-watermark flex flex-col items-center px-4 pt-5 pb-4 text-center md:pt-10 md:pb-8">
@@ -19,16 +16,11 @@ export function Header() {
               className="size-full scale-[1.15] mix-blend-multiply"
             />
           </span>
-          <span className="font-mono text-2xl font-extrabold tracking-tight text-foreground [text-shadow:0.07em_0.07em_0_var(--primary)] md:text-[2.75rem] md:leading-none">
+          <span className="font-mono text-2xl font-extrabold tracking-tight text-foreground [text-shadow:2px_2px_0_var(--primary)] md:text-[2.75rem] md:leading-none md:[text-shadow:0.07em_0.07em_0_var(--primary)]">
             MY DIGITAL ABODE
           </span>
         </Link>
-        <p
-          className={cn(
-            "mt-2 font-mono text-xs text-muted-foreground italic md:mt-3 md:block md:text-[15px]",
-            !isHome && "hidden"
-          )}
-        >
+        <p className="mt-3 hidden font-mono text-[15px] text-muted-foreground italic md:block">
           Experiments, Musings, and Stuff I Want
         </p>
       </header>

@@ -12,7 +12,12 @@ import {
 } from "lucide-react"
 import { NotFound } from "@/components/NotFound"
 import { PageHeader } from "@/components/page-header"
-import { Field, FormCard, FormError } from "@/components/form-bits"
+import {
+  Field,
+  FormCard,
+  FormError,
+  PennyFormLayout,
+} from "@/components/form-bits"
 import { SectionHeading } from "@/components/section-heading"
 import { Chip } from "@/components/ui/chip"
 import { Button } from "@/components/ui/button"
@@ -113,41 +118,43 @@ function SetupForm() {
         title="First Run Setup"
         description="No Users exist yet. This one-time form creates the first Admin."
       />
-      <FormCard onSubmit={onSubmit}>
-        <Field label="Username" htmlFor="setup-username">
-          <Input
-            id="setup-username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoComplete="username"
-            required
-          />
-        </Field>
-        <Field label="Password" htmlFor="setup-password">
-          <Input
-            id="setup-password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="new-password"
-            required
-          />
-        </Field>
-        <Field label="Confirm password" htmlFor="setup-confirm">
-          <Input
-            id="setup-confirm"
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            autoComplete="new-password"
-            required
-          />
-        </Field>
-        {error && <FormError>{error}</FormError>}
-        <Button type="submit" disabled={pending} className="w-full">
-          {pending ? "Creating…" : "Create Admin"}
-        </Button>
-      </FormCard>
+      <PennyFormLayout caption="Penny will remember who set this place up.">
+        <FormCard onSubmit={onSubmit}>
+          <Field label="Username" htmlFor="setup-username">
+            <Input
+              id="setup-username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              required
+            />
+          </Field>
+          <Field label="Password" htmlFor="setup-password">
+            <Input
+              id="setup-password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </Field>
+          <Field label="Confirm password" htmlFor="setup-confirm">
+            <Input
+              id="setup-confirm"
+              type="password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </Field>
+          {error && <FormError>{error}</FormError>}
+          <Button type="submit" disabled={pending} className="w-full">
+            {pending ? "Creating…" : "Create Admin"}
+          </Button>
+        </FormCard>
+      </PennyFormLayout>
     </div>
   )
 }
@@ -184,33 +191,35 @@ function LoginForm() {
       <PageHeader
         path="admin"
         title="Log in"
-        description="Admins and Denizens only. Penny is watching."
+        description="Admins and Denizens only."
       />
-      <FormCard onSubmit={onSubmit}>
-        <Field label="Username" htmlFor="login-username">
-          <Input
-            id="login-username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoComplete="username"
-            required
-          />
-        </Field>
-        <Field label="Password" htmlFor="login-password">
-          <Input
-            id="login-password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            required
-          />
-        </Field>
-        {error && <FormError>{error}</FormError>}
-        <Button type="submit" disabled={pending} className="w-full">
-          {pending ? "Logging in…" : "Log in"}
-        </Button>
-      </FormCard>
+      <PennyFormLayout caption="Penny is watching.">
+        <FormCard onSubmit={onSubmit}>
+          <Field label="Username" htmlFor="login-username">
+            <Input
+              id="login-username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              required
+            />
+          </Field>
+          <Field label="Password" htmlFor="login-password">
+            <Input
+              id="login-password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+            />
+          </Field>
+          {error && <FormError>{error}</FormError>}
+          <Button type="submit" disabled={pending} className="w-full">
+            {pending ? "Logging in…" : "Log in"}
+          </Button>
+        </FormCard>
+      </PennyFormLayout>
     </div>
   )
 }
@@ -221,14 +230,16 @@ function RoleSelect({
   value,
   onChange,
   disabled,
+  className = "w-full min-w-28",
 }: {
   value: Role
   onChange: (role: Role) => void
   disabled?: boolean
+  className?: string
 }) {
   return (
     <Select value={value} onValueChange={(v) => onChange(v as Role)}>
-      <SelectTrigger size="sm" className="w-28" disabled={disabled}>
+      <SelectTrigger className={className} disabled={disabled}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -300,7 +311,7 @@ function UsersSection({ me }: { me: { id: string } }) {
         <p className="font-mono text-sm text-muted-foreground">Loading…</p>
       )}
       {users.data && (
-        <ul className="divide-y divide-border/60 overflow-hidden rounded-xl border border-border/80 bg-card">
+        <ul className="divide-y divide-border/60 overflow-hidden rounded-xl border border-border/50 bg-card">
           {users.data.map((u) => {
             const isSelf = u.id === me.id
             const pendingApproval =
@@ -308,11 +319,8 @@ function UsersSection({ me }: { me: { id: string } }) {
             return (
               <li
                 key={u.id}
-                className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3"
+                className="grid items-center gap-x-4 gap-y-3 px-4 py-3.5 lg:grid-cols-[minmax(0,1fr)_auto]"
               >
-                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary/15 font-mono text-sm font-bold text-primary uppercase">
-                  {(u.username ?? "?").slice(0, 1)}
-                </span>
                 <span className="flex min-w-0 items-center gap-2">
                   <span className="truncate font-bold">{u.username}</span>
                   {isSelf && (
@@ -330,8 +338,7 @@ function UsersSection({ me }: { me: { id: string } }) {
                     </Chip>
                   ) : null}
                 </span>
-                <span className="grow" />
-                <div className="flex flex-wrap items-center gap-1.5">
+                <div className="grid grid-cols-2 gap-2 lg:grid-cols-[8rem_7rem_10rem_6.5rem]">
                   <RoleSelect
                     value={u.role === "admin" ? "admin" : "denizen"}
                     disabled={isSelf}
@@ -341,7 +348,6 @@ function UsersSection({ me }: { me: { id: string } }) {
                   />
                   {u.banned ? (
                     <Button
-                      size="sm"
                       variant={pendingApproval ? "default" : "outline"}
                       onClick={() =>
                         run(() =>
@@ -355,11 +361,8 @@ function UsersSection({ me }: { me: { id: string } }) {
                     </Button>
                   ) : (
                     <Button
-                      size="sm"
-                      variant="ghost"
+                      variant="outline"
                       disabled={isSelf}
-                      title={`Ban ${u.username}`}
-                      aria-label={`Ban ${u.username}`}
                       onClick={() => {
                         if (window.confirm(`Ban ${u.username}?`)) {
                           void run(() =>
@@ -375,10 +378,7 @@ function UsersSection({ me }: { me: { id: string } }) {
                     </Button>
                   )}
                   <Button
-                    size="sm"
-                    variant="ghost"
-                    title={`Reset password for ${u.username}`}
-                    aria-label={`Reset password for ${u.username}`}
+                    variant="outline"
                     onClick={() => {
                       const newPassword = window.prompt(
                         `New password for ${u.username} (min 8 chars):`
@@ -395,13 +395,12 @@ function UsersSection({ me }: { me: { id: string } }) {
                     <KeyRound />
                     Reset password
                   </Button>
-                  {!isSelf && (
+                  {isSelf ? (
+                    <span aria-hidden className="hidden lg:block" />
+                  ) : (
                     <Button
-                      size="sm"
-                      variant="ghost"
-                      className="hover:bg-destructive/10 hover:text-destructive"
-                      title={`Delete ${u.username}`}
-                      aria-label={`Delete ${u.username}`}
+                      variant="outline"
+                      className="text-destructive hover:border-destructive/60 hover:bg-destructive/10 hover:text-destructive"
                       onClick={() => {
                         if (window.confirm(`Delete ${u.username}?`)) {
                           void run(() => deleteUser({ data: { userId: u.id } }))
@@ -522,7 +521,7 @@ function InvitesSection() {
         </div>
       )}
       <div className="mb-4 flex items-center gap-2">
-        <RoleSelect value={role} onChange={setRole} />
+        <RoleSelect value={role} onChange={setRole} className="w-32" />
         <Button onClick={() => run(() => createInvite({ data: { role } }))}>
           <Link2 />
           Generate invite
@@ -534,7 +533,7 @@ function InvitesSection() {
         </p>
       )}
       {invites.data && invites.data.length > 0 && (
-        <ul className="divide-y divide-border/60 overflow-hidden rounded-xl border border-border/80 bg-card">
+        <ul className="divide-y divide-border/60 overflow-hidden rounded-xl border border-border/50 bg-card">
           {invites.data.map((inv) => {
             const used = !!inv.usedAt
             const expired = !used && inv.expiresAt < new Date()
@@ -573,8 +572,7 @@ function InvitesSection() {
                   )}
                   <Button
                     size="sm"
-                    variant="ghost"
-                    className="hover:bg-destructive/10 hover:text-destructive"
+                    variant="ghost-destructive"
                     onClick={() =>
                       run(() => revokeInvite({ data: { inviteId: inv.id } }))
                     }

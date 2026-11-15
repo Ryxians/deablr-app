@@ -208,7 +208,7 @@ function MyType() {
         ) : (
           <section
             aria-labelledby="clearance-title"
-            className="rounded-xl border border-border/80 bg-card p-4 sm:p-6"
+            className="rounded-xl border border-border/50 bg-card p-4 sm:p-6"
           >
             <div className="flex items-center justify-between gap-3">
               <h2
@@ -298,7 +298,7 @@ function MyType() {
       </div>
 
       {granted && (
-        <div className="mt-12 animate-in space-y-14 duration-500 fade-in slide-in-from-bottom-2">
+        <div className="mt-10 animate-in space-y-10 duration-500 fade-in slide-in-from-bottom-2 md:mt-12 md:space-y-14">
           <section className="max-w-2xl">
             <SectionHeading>Field Notes</SectionHeading>
             <ol>

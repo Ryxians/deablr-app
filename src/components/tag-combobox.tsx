@@ -79,7 +79,7 @@ export function TagCombobox({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "h-auto min-h-10 w-full justify-between gap-2 bg-well px-3 py-1.5 font-normal hover:bg-well",
+            "h-auto min-h-10 w-full justify-between gap-2 bg-well px-3 py-1.5 font-sans text-sm font-normal hover:bg-well",
             className
           )}
         >

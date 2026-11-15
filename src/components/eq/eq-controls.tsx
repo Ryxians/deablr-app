@@ -30,7 +30,7 @@ export function EQControls({ bands, onChange, onReset }: EQControlsProps) {
         {bands.map((band, index) => (
           <div
             key={band.id}
-            className="flex flex-col items-center gap-2 rounded-xl border border-border/80 bg-card p-3 select-none"
+            className="flex flex-col items-center gap-2 rounded-xl border border-border/50 bg-card p-3 select-none"
             style={{ touchAction: "none" }}
           >
             <span className="font-mono text-xs font-semibold text-primary tabular-nums">

@@ -129,6 +129,7 @@ export function RankingsBoard({
             {headerAction}
             <Button
               variant="outline"
+              className="hidden md:inline-flex"
               disabled={exporting || reviews.length === 0}
               onClick={() => void onExportPdf()}
             >
@@ -142,7 +143,7 @@ export function RankingsBoard({
         <p className="-mt-4 mb-6 text-sm text-destructive">{exportError}</p>
       )}
 
-      <div className="mb-8 rounded-xl border border-border/80 bg-card md:mb-10">
+      <div className="mb-8 rounded-xl border border-border/50 bg-card md:mb-10">
         <button
           type="button"
           aria-expanded={filtersOpen}
@@ -265,6 +266,16 @@ export function RankingsBoard({
               </Button>
             )}
           </div>
+          {/* Phones: export lives with the filters it applies to. */}
+          <Button
+            variant="outline"
+            className="w-full md:hidden"
+            disabled={exporting || reviews.length === 0}
+            onClick={() => void onExportPdf()}
+          >
+            <FileDown />
+            {exporting ? "Exporting…" : "Export what's shown as PDF"}
+          </Button>
         </div>
       </div>
 

@@ -19,7 +19,7 @@ export function SectionHeading({
   return (
     <div
       className={cn(
-        "mb-4 flex flex-wrap items-end justify-between gap-x-4 gap-y-2",
+        "mb-4 flex min-h-10 flex-wrap items-center justify-between gap-x-4 gap-y-2",
         className
       )}
     >

@@ -41,7 +41,7 @@ function Spoiler({
           : "my-3 block rounded-lg border border-dashed border-border p-4",
         revealed
           ? "bg-well/70"
-          : "bg-[repeating-linear-gradient(-45deg,var(--muted)_0_6px,var(--well)_6px_12px)] hover:brightness-125"
+          : "bg-[repeating-linear-gradient(-45deg,oklch(0.5_0.09_262)_0_6px,var(--well)_6px_12px)] hover:brightness-125"
       )}
     >
       <span
@@ -139,9 +139,6 @@ const components = {
 export function ReviewText({ text }: { text: string }) {
   return (
     <section className="mt-10 border-t border-border/70 pt-8">
-      <h2 className="mb-5 font-mono text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-        The Review
-      </h2>
       <div className="max-w-[65ch] text-[17px] leading-relaxed text-foreground/95">
         <ReactMarkdown
           remarkPlugins={[remarkGfm, remarkSpoiler]}

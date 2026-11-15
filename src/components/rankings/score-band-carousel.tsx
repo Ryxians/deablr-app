@@ -9,6 +9,7 @@ import {
   CarouselPrevious,
   useCarousel,
 } from "@/components/ui/carousel"
+import { bandTone } from "@/lib/rankings"
 import { cn } from "@/lib/utils"
 
 /**
@@ -56,12 +57,8 @@ function BandBadge({ band }: { band: BandKey }) {
   return (
     <span
       className={cn(
-        "grid h-10 min-w-10 place-items-center rounded-lg px-2 font-mono text-xl font-extrabold tabular-nums md:h-14 md:min-w-14 md:text-3xl",
-        band === "poop"
-          ? "bg-[oklch(0.52_0.08_60)] text-[oklch(0.96_0.03_80)]"
-          : band === 10
-            ? "bg-sun text-[oklch(0.25_0.06_80)]"
-            : "bg-secondary/15 text-secondary ring-1 ring-secondary/40 ring-inset"
+        "grid h-11 min-w-11 place-items-center rounded-lg px-2 font-mono text-xl font-extrabold tabular-nums shadow-lift md:h-16 md:min-w-16 md:text-4xl",
+        bandTone(band)
       )}
     >
       {band === "poop" ? "<0" : band}
@@ -98,7 +95,7 @@ export function ScoreBandCarousel({
   return (
     <section
       aria-label={band === "poop" ? "Certified Poop" : `Score band ${band}`}
-      className="border-t border-border/60 py-6 first:border-t-0 first:pt-0 md:grid md:grid-cols-[9.5rem_minmax(0,1fr)] md:gap-6 md:py-8"
+      className="border-t border-border/60 py-6 first:border-t-0 first:pt-0 md:grid md:grid-cols-[8rem_minmax(0,1fr)] md:gap-6 md:py-7"
     >
       {/* Phones */}
       <div className="md:hidden">
@@ -128,7 +125,7 @@ export function ScoreBandCarousel({
         <BandBadge band={band} />
         <BandCaption band={band} count={items.length} />
       </h2>
-      <ul className="hidden md:grid md:grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))] md:gap-x-5 md:gap-y-7">
+      <ul className="hidden md:grid md:grid-cols-[repeat(auto-fill,minmax(10.5rem,1fr))] md:gap-x-6 md:gap-y-8">
         {items.map((item) => (
           <li key={item.reviewId}>
             <ReviewCard item={item} />

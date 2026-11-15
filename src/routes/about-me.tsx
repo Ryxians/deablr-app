@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { PageHeader } from "@/components/page-header"
+import { cn } from "@/lib/utils"
 import { SectionHeading } from "@/components/section-heading"
 import {
   Carousel,
@@ -77,8 +78,8 @@ function AboutMe() {
   return (
     <div>
       <PageHeader path="about-me" title="About Me" />
-      <div className="max-w-3xl">
-        <section className="grid grid-cols-[6.5rem_minmax(0,1fr)] items-center gap-x-4 gap-y-5 sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-x-8">
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-x-12">
+        <section className="grid grid-cols-[6.5rem_minmax(0,1fr)] items-center gap-x-4 gap-y-5 sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-x-8 lg:col-start-1">
           <img
             src="/jared/profile.JPG"
             alt="Jared"
@@ -121,20 +122,20 @@ function AboutMe() {
           </p>
         </section>
 
-        <section className="mt-14">
+        <section className="mt-10 lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:mt-0">
           <SectionHeading>Good to Know</SectionHeading>
-          <dl className="grid sm:grid-cols-2 sm:gap-x-10">
+          <dl className="grid sm:grid-cols-2 sm:gap-x-10 lg:grid-cols-1">
             {goodToKnow.map(({ title, description, icon: Icon }) => (
               <div
                 key={title}
-                className="flex items-baseline gap-3 border-b border-dashed border-border/80 py-3"
+                className="grid grid-cols-[1rem_minmax(0,1fr)] gap-x-3 border-b border-dashed border-border/80 py-3"
               >
                 <Icon
                   aria-hidden
-                  className="size-4 shrink-0 translate-y-0.5 self-start text-secondary"
+                  className="row-span-2 mt-0.5 size-4 text-secondary"
                 />
                 <dt className="font-mono text-sm font-bold">{title}</dt>
-                <dd className="ml-auto text-right text-[15px] text-muted-foreground">
+                <dd className="text-[15px] text-muted-foreground">
                   {description}
                 </dd>
               </div>
@@ -142,7 +143,7 @@ function AboutMe() {
           </dl>
         </section>
 
-        <section className="mt-14">
+        <section className="mt-10 md:mt-14 lg:col-start-1">
           <Carousel>
             <SectionHeading
               action={
@@ -175,7 +176,7 @@ function AboutMe() {
           </Carousel>
         </section>
 
-        <section className="mt-14">
+        <section className="mt-10 md:mt-14 lg:col-start-1">
           <SectionHeading>More Photos</SectionHeading>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
             {morePhotos.map((src, index) => (
@@ -183,7 +184,10 @@ function AboutMe() {
                 key={src}
                 src={src}
                 alt={`Jared photo ${index + 1}`}
-                className="aspect-square w-full rounded-xl object-cover ring-1 ring-border/70"
+                className={cn(
+                  "w-full rounded-xl object-cover ring-1 ring-border/70",
+                  index === 0 ? "col-span-2 aspect-[2/1]" : "aspect-square"
+                )}
                 loading="lazy"
               />
             ))}

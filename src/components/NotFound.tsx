@@ -14,7 +14,7 @@ export function NotFound() {
       <img
         src="/in-your-walls.gif"
         alt="I am in your walls."
-        className="mt-6 w-full max-w-[240px] rounded-xl ring-1 ring-border/80"
+        className="mt-6 w-full max-w-[220px] rounded-xl ring-1 ring-border/80"
       />
       <Button asChild className="mt-6">
         <Link to="/">

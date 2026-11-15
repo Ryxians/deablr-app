@@ -48,8 +48,7 @@ export function parseScore(input: string): number | null {
   const match = /^(-?)(\d+)(?:\.(\d{1,3}))?$/.exec(trimmed)
   if (!match) return null
   const [, sign, intPart, fracPart = ""] = match
-  const milli =
-    Number(intPart) * 1000 + Number(fracPart.padEnd(3, "0") || "0")
+  const milli = Number(intPart) * 1000 + Number(fracPart.padEnd(3, "0") || "0")
   const score = sign === "-" ? -milli : milli
   if (score > MAX_SCORE_MILLI) return null
   return score
@@ -91,5 +90,44 @@ export function bandLabel(key: BandKey): string {
 
 /** Band display order, best first. Reverse for worst-first ordering. */
 export const BANDS_BEST_FIRST: Array<BandKey> = [
-  10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, "poop",
+  10,
+  9,
+  8,
+  7,
+  6,
+  5,
+  4,
+  3,
+  2,
+  1,
+  0,
+  "poop",
 ]
+
+/**
+ * Tailwind classes for a Score Band's "heat": a solid fill ramp from the
+ * hottest tier (10) down to Certified Poop. Shared by the tier rail and the
+ * review detail so a review carries its tier's colour.
+ */
+export function bandTone(key: BandKey): string {
+  if (key === "poop")
+    return "bg-[oklch(0.52_0.08_60)] text-[oklch(0.97_0.03_80)]"
+  switch (key) {
+    case 10:
+      return "bg-sun text-[oklch(0.25_0.06_80)]"
+    case 9:
+      return "bg-primary text-primary-foreground"
+    case 8:
+      return "bg-[oklch(0.8_0.14_25)] text-[oklch(0.25_0.06_25)]"
+    case 7:
+      return "bg-accent text-accent-foreground"
+    case 6:
+      return "bg-secondary text-secondary-foreground"
+    case 5:
+      return "bg-[oklch(0.74_0.1_250)] text-[oklch(0.22_0.06_260)]"
+    case 4:
+      return "bg-[oklch(0.65_0.07_265)] text-[oklch(0.2_0.05_265)]"
+    default:
+      return "bg-muted text-muted-foreground"
+  }
+}

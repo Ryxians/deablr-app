@@ -74,69 +74,72 @@ function Wordle() {
         description="Tell it what you know; it narrows the word list."
       />
 
-      <div className="max-w-2xl space-y-6 rounded-xl border border-border/80 bg-card p-4 sm:p-6">
-        <fieldset className="space-y-2.5">
-          <legend className="mb-2.5 flex items-center gap-2 font-mono text-[13px] font-semibold">
-            <span aria-hidden className="size-2.5 rounded-full bg-accent" />
-            Green letters
-            <span className="font-sans font-normal text-muted-foreground">
-              (right spot)
-            </span>
-          </legend>
-          <div className="grid w-full max-w-[22rem] grid-cols-5 gap-2">
-            {[first, second, third, fourth, fifth].map((value, i) => (
-              <Input
-                key={i}
-                aria-label={`Letter ${i + 1}`}
-                className="aspect-square h-auto w-full rounded-lg p-0 text-center font-mono text-2xl font-bold uppercase data-[filled=true]:border-accent data-[filled=true]:bg-accent data-[filled=true]:text-accent-foreground md:text-3xl"
-                data-filled={value !== ""}
-                maxLength={1}
-                value={value}
-                onChange={(e) => setFns[i](e.target.value.toLowerCase())}
-              />
-            ))}
-          </div>
-        </fieldset>
+      <div className="grid items-start gap-5 lg:grid-cols-2">
+        <div className="space-y-6 rounded-xl border border-border/50 bg-card p-4 sm:p-6">
+          <fieldset className="space-y-2.5">
+            <legend className="mb-2.5 flex items-center gap-2 font-mono text-[13px] font-semibold">
+              <span aria-hidden className="size-2.5 rounded-full bg-accent" />
+              Green letters
+              <span className="font-sans font-normal text-muted-foreground">
+                (right spot)
+              </span>
+            </legend>
+            <div className="grid w-full max-w-[22rem] grid-cols-5 gap-2">
+              {[first, second, third, fourth, fifth].map((value, i) => (
+                <Input
+                  key={i}
+                  aria-label={`Letter ${i + 1}`}
+                  className="aspect-square h-auto w-full rounded-lg border-accent/60 p-0 text-center font-mono text-2xl font-bold uppercase data-[filled=true]:border-accent data-[filled=true]:bg-accent data-[filled=true]:text-accent-foreground md:text-3xl"
+                  data-filled={value !== ""}
+                  maxLength={1}
+                  value={value}
+                  onChange={(e) => setFns[i](e.target.value.toLowerCase())}
+                />
+              ))}
+            </div>
+          </fieldset>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="wordle-has">
-              <span aria-hidden className="size-2.5 rounded-full bg-sun" />
-              Yellow letters
-            </Label>
-            <Input
-              id="wordle-has"
-              placeholder="e.g. oa"
-              className="font-mono"
-              value={Array.from(hasLetters).join("")}
-              onChange={(e) =>
-                setHasLetters(new Set(Array.from(e.target.value.toLowerCase())))
-              }
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="wordle-wrong">
-              <span
-                aria-hidden
-                className="size-2.5 rounded-full bg-muted-foreground/60"
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+            <div className="space-y-2">
+              <Label htmlFor="wordle-has">
+                <span aria-hidden className="size-2.5 rounded-full bg-sun" />
+                Yellow letters
+              </Label>
+              <Input
+                id="wordle-has"
+                placeholder="e.g. oa"
+                className="border-sun/50 font-mono"
+                value={Array.from(hasLetters).join("")}
+                onChange={(e) =>
+                  setHasLetters(
+                    new Set(Array.from(e.target.value.toLowerCase()))
+                  )
+                }
               />
-              Gray letters
-            </Label>
-            <Input
-              id="wordle-wrong"
-              placeholder="e.g. rstlne"
-              className="font-mono"
-              value={Array.from(wrongLetters).join("")}
-              onChange={(e) =>
-                setWrongLetters(
-                  new Set(Array.from(e.target.value.toLowerCase()))
-                )
-              }
-            />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="wordle-wrong">
+                <span
+                  aria-hidden
+                  className="size-2.5 rounded-full bg-muted-foreground/60"
+                />
+                Gray letters
+              </Label>
+              <Input
+                id="wordle-wrong"
+                placeholder="e.g. rstlne"
+                className="font-mono"
+                value={Array.from(wrongLetters).join("")}
+                onChange={(e) =>
+                  setWrongLetters(
+                    new Set(Array.from(e.target.value.toLowerCase()))
+                  )
+                }
+              />
+            </div>
           </div>
         </div>
-
-        <div className="space-y-3 border-t border-border/60 pt-5">
+        <div className="space-y-3 rounded-xl border border-border/50 bg-card p-4 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="font-mono text-[13px] font-semibold">
               Suggestions{" "}
@@ -179,7 +182,7 @@ function Wordle() {
               {wordsToRecommend.map((word, i) => (
                 <li
                   key={word + i}
-                  className="border-b border-dashed border-border/60 py-1.5 font-mono text-sm tracking-[0.2em] uppercase"
+                  className="py-1 font-mono text-sm tracking-[0.2em] uppercase"
                 >
                   {word}
                 </li>

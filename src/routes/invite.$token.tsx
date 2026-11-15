@@ -2,7 +2,12 @@ import { Link, createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Field, FormCard, FormError } from "@/components/form-bits"
+import {
+  Field,
+  FormCard,
+  FormError,
+  PennyFormLayout,
+} from "@/components/form-bits"
 import { PageHeader } from "@/components/page-header"
 import { getInviteStatus, redeemInvite } from "@/server/invites"
 
@@ -78,41 +83,43 @@ function InvitePage() {
       <p className="-mt-4 mb-6 text-muted-foreground">
         Pick a username and password to claim your account.
       </p>
-      <FormCard onSubmit={onSubmit}>
-        <Field label="Username" htmlFor="invite-username">
-          <Input
-            id="invite-username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoComplete="username"
-            required
-          />
-        </Field>
-        <Field label="Password" htmlFor="invite-password">
-          <Input
-            id="invite-password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="new-password"
-            required
-          />
-        </Field>
-        <Field label="Confirm password" htmlFor="invite-confirm">
-          <Input
-            id="invite-confirm"
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            autoComplete="new-password"
-            required
-          />
-        </Field>
-        {error && <FormError>{error}</FormError>}
-        <Button type="submit" disabled={pending} className="w-full">
-          {pending ? "Creating…" : "Create account"}
-        </Button>
-      </FormCard>
+      <PennyFormLayout caption="Someone vouched for you. Penny approves.">
+        <FormCard onSubmit={onSubmit}>
+          <Field label="Username" htmlFor="invite-username">
+            <Input
+              id="invite-username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              required
+            />
+          </Field>
+          <Field label="Password" htmlFor="invite-password">
+            <Input
+              id="invite-password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </Field>
+          <Field label="Confirm password" htmlFor="invite-confirm">
+            <Input
+              id="invite-confirm"
+              type="password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </Field>
+          {error && <FormError>{error}</FormError>}
+          <Button type="submit" disabled={pending} className="w-full">
+            {pending ? "Creating…" : "Create account"}
+          </Button>
+        </FormCard>
+      </PennyFormLayout>
     </section>
   )
 }

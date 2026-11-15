@@ -30,7 +30,7 @@ export function GameOverScreen() {
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="flex flex-col-reverse rounded-xl border border-border/80 bg-card px-4 py-5"
+              className="flex flex-col-reverse rounded-xl border border-border/50 bg-card px-4 py-5"
             >
               <dt className="mt-1 font-mono text-xs text-muted-foreground">
                 {stat.label}

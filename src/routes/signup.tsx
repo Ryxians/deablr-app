@@ -2,7 +2,12 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Field, FormCard, FormError } from "@/components/form-bits"
+import {
+  Field,
+  FormCard,
+  FormError,
+  PennyFormLayout,
+} from "@/components/form-bits"
 import { PageHeader } from "@/components/page-header"
 import { requestAccount } from "@/server/onboarding"
 
@@ -51,41 +56,43 @@ function SignupPage() {
   return (
     <section>
       <PageHeader path="signup" title="Request an Account" />
-      <FormCard onSubmit={onSubmit}>
-        <Field label="Username" htmlFor="signup-username">
-          <Input
-            id="signup-username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoComplete="username"
-            required
-          />
-        </Field>
-        <Field label="Password" htmlFor="signup-password">
-          <Input
-            id="signup-password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="new-password"
-            required
-          />
-        </Field>
-        <Field label="Confirm password" htmlFor="signup-confirm">
-          <Input
-            id="signup-confirm"
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            autoComplete="new-password"
-            required
-          />
-        </Field>
-        {error && <FormError>{error}</FormError>}
-        <Button type="submit" disabled={pending} className="w-full">
-          {pending ? "Requesting…" : "Request account"}
-        </Button>
-      </FormCard>
+      <PennyFormLayout caption="Penny reviews every request personally.">
+        <FormCard onSubmit={onSubmit}>
+          <Field label="Username" htmlFor="signup-username">
+            <Input
+              id="signup-username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              required
+            />
+          </Field>
+          <Field label="Password" htmlFor="signup-password">
+            <Input
+              id="signup-password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </Field>
+          <Field label="Confirm password" htmlFor="signup-confirm">
+            <Input
+              id="signup-confirm"
+              type="password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </Field>
+          {error && <FormError>{error}</FormError>}
+          <Button type="submit" disabled={pending} className="w-full">
+            {pending ? "Requesting…" : "Request account"}
+          </Button>
+        </FormCard>
+      </PennyFormLayout>
     </section>
   )
 }

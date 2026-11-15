@@ -1,10 +1,73 @@
 import { Link, createFileRoute } from "@tanstack/react-router"
 import { ArrowRight } from "lucide-react"
+import type { ReactNode } from "react"
 import { PageHeader } from "@/components/page-header"
+import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/projects")({
   component: Projects,
 })
+
+/** A tiny stack of question cards, top one face up. */
+function RealTalkArt() {
+  return (
+    <div className="relative h-full w-full">
+      <div className="absolute inset-x-10 top-5 bottom-3 rotate-6 rounded-lg bg-muted" />
+      <div className="absolute inset-x-8 top-4 bottom-4 -rotate-3 rounded-lg bg-[oklch(0.45_0.09_263)]" />
+      <div className="absolute inset-x-6 top-3 bottom-5 flex flex-col justify-between rounded-lg bg-foreground p-3 text-[oklch(0.25_0.06_265)] shadow-lift">
+        <span className="font-mono text-[11px] font-bold text-primary">
+          #80
+        </span>
+        <span className="text-sm leading-tight font-bold">
+          What trait do you envy in others?
+        </span>
+      </div>
+    </div>
+  )
+}
+
+/** Six slider faders at a smiley-curve EQ setting. */
+function EQArt() {
+  const gains = [70, 45, 30, 35, 55, 75]
+  return (
+    <div className="flex h-full items-end justify-center gap-4 px-6 pt-4 pb-3">
+      {gains.map((g, i) => (
+        <div key={i} className="relative h-full w-1.5 rounded-full bg-muted">
+          <span
+            className="absolute left-1/2 size-3.5 -translate-x-1/2 translate-y-1/2 rounded-full bg-primary ring-2 ring-well"
+            style={{ bottom: `${g}%` }}
+          />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/** A Wordle row spelling ABODE, scored. */
+function WordleArt() {
+  const tiles: Array<[string, string]> = [
+    ["A", "bg-accent text-accent-foreground"],
+    ["B", "bg-muted text-foreground"],
+    ["O", "bg-sun text-[oklch(0.25_0.06_80)]"],
+    ["D", "bg-muted text-foreground"],
+    ["E", "bg-accent text-accent-foreground"],
+  ]
+  return (
+    <div className="flex h-full items-center justify-center gap-1.5">
+      {tiles.map(([letter, tone], i) => (
+        <span
+          key={i}
+          className={cn(
+            "grid size-10 place-items-center rounded-md font-mono text-lg font-extrabold",
+            tone
+          )}
+        >
+          {letter}
+        </span>
+      ))}
+    </div>
+  )
+}
 
 const projects: Array<{
   to: "/real-talk" | "/eq" | "/wordle"
@@ -12,6 +75,7 @@ const projects: Array<{
   kind: string
   description: string
   cta: string
+  art: ReactNode
 }> = [
   {
     to: "/real-talk",
@@ -20,6 +84,7 @@ const projects: Array<{
     description:
       "Players take turns drawing random questions from a numbered deck and answering them honestly.",
     cta: "Play",
+    art: <RealTalkArt />,
   },
   {
     to: "/eq",
@@ -28,6 +93,7 @@ const projects: Array<{
     description:
       "Upload a video, tweak its EQ, compare before and after, and export the result. Runs in your browser.",
     cta: "Open",
+    art: <EQArt />,
   },
   {
     to: "/wordle",
@@ -36,6 +102,7 @@ const projects: Array<{
     description:
       "Filters the word list by the letters you know so you can stop staring at the grid.",
     cta: "Open",
+    art: <WordleArt />,
   },
 ]
 
@@ -48,30 +115,31 @@ function Projects() {
         description="Games, tools, and experiments built for this digital abode."
       />
 
-      <ul className="grid gap-4 md:grid-cols-3">
-        {projects.map(({ to, title, kind, description, cta }, i) => (
+      <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {projects.map(({ to, title, kind, description, cta, art }) => (
           <li key={to}>
             <Link
               to={to}
-              className="group flex h-full flex-col rounded-xl border border-border/80 bg-card p-5 transition-colors outline-none hover:border-primary/60 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              className="group flex h-full flex-col overflow-hidden rounded-xl bg-card ring-1 ring-border/60 transition-[box-shadow,transform] outline-none hover:-translate-y-0.5 hover:ring-2 hover:ring-primary/70 focus-visible:ring-[3px] focus-visible:ring-ring/60"
             >
-              <p className="font-mono text-xs text-muted-foreground">
-                <span className="font-bold text-primary">
-                  {String(i + 1).padStart(2, "0")}
+              <div aria-hidden className="h-36 bg-well">
+                {art}
+              </div>
+              <div className="flex flex-1 flex-col p-5">
+                <p className="font-mono text-xs text-muted-foreground">
+                  {kind}
+                </p>
+                <h2 className="mt-1 text-xl font-extrabold tracking-tight">
+                  {title}
+                </h2>
+                <p className="mt-2 flex-1 text-[15px] leading-relaxed text-muted-foreground">
+                  {description}
+                </p>
+                <span className="mt-5 inline-flex items-center gap-1.5 font-mono text-[13px] font-semibold text-secondary group-hover:text-foreground">
+                  {cta} {title}
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                 </span>
-                <span className="mx-2 text-border">/</span>
-                {kind}
-              </p>
-              <h2 className="mt-3 text-xl font-extrabold tracking-tight">
-                {title}
-              </h2>
-              <p className="mt-2 flex-1 text-[15px] leading-relaxed text-muted-foreground">
-                {description}
-              </p>
-              <span className="mt-5 inline-flex items-center gap-1.5 font-mono text-[13px] font-semibold text-secondary group-hover:text-foreground">
-                {cta} {title}
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-              </span>
+              </div>
             </Link>
           </li>
         ))}

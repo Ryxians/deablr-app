@@ -10,7 +10,7 @@ export function QuestionDisplay() {
   const animationsEnabled = useSelector(store, (s) => s.animationsEnabled)
 
   return (
-    <div className="flex min-h-[300px] flex-col rounded-2xl border border-border/80 bg-card p-5 md:min-h-[360px] md:p-7">
+    <div className="flex min-h-[230px] flex-col rounded-2xl border border-border/50 bg-card p-5 sm:min-h-[300px] md:min-h-[360px] md:p-7">
       <div className="flex items-center justify-between gap-3">
         <CurrentTurnCard />
         {currentQuestion && (
@@ -19,7 +19,7 @@ export function QuestionDisplay() {
           </span>
         )}
       </div>
-      <div className="flex flex-1 items-center justify-center py-8">
+      <div className="flex flex-1 items-center justify-center py-6 sm:py-8">
         <p
           key={currentQuestion?.number ?? 0}
           className={

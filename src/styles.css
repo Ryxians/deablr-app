@@ -56,14 +56,14 @@
 
 :root {
   /* Page backdrop behind the frame. */
-  --page: oklch(0.42 0.13 263);
+  --page: oklch(0.43 0.115 263);
 
   /* Surfaces, darkest to lightest. */
-  --well: oklch(0.245 0.065 265);
+  --well: oklch(0.235 0.065 265);
   --background: oklch(0.29 0.075 264);
-  --card: oklch(0.33 0.08 264);
-  --popover: oklch(0.32 0.08 264);
-  --muted: oklch(0.37 0.08 263);
+  --card: oklch(0.355 0.085 264);
+  --popover: oklch(0.34 0.085 264);
+  --muted: oklch(0.39 0.085 263);
 
   --foreground: oklch(0.96 0.02 220);
   --card-foreground: var(--foreground);

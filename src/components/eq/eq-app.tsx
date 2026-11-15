@@ -217,7 +217,7 @@ export function EQApp() {
         >
           <span>
             <span className="block font-mono text-lg font-bold">
-              Drop in a video
+              Pick a video
             </span>
             <span className="mt-1 block text-[15px] text-muted-foreground">
               EQ changes play live. Nothing leaves your device.
@@ -286,7 +286,7 @@ export function EQApp() {
 
           <EQControls bands={bands} onChange={setBands} onReset={handleReset} />
 
-          <div className="rounded-xl border border-border/80 bg-card p-4">
+          <div className="rounded-xl border border-border/50 bg-card p-4">
             <div className="flex items-center gap-3">
               <span className="font-mono text-xs font-semibold whitespace-nowrap">
                 Volume
