@@ -46,14 +46,14 @@ export function ReviewCard({ item }: { item: RankedReview }) {
         {isPeak(item.scores) && <PeakChip />}
         {item.incomplete && <IncompleteChip />}
       </div>
-      <p className="mt-2.5 line-clamp-2 text-sm leading-snug font-bold text-foreground group-hover:text-primary">
+      <p className="mt-2.5 line-clamp-2 text-sm leading-snug font-bold text-foreground underline-offset-2 group-hover:underline">
         {item.title}
       </p>
-      <p className="mt-1 flex items-baseline gap-2 font-mono tabular-nums">
-        <span className="text-sm font-bold text-primary">
+      <p className="mt-1 font-mono tabular-nums">
+        <span className="block text-[15px] font-extrabold text-foreground">
           {formatAverage(averageScore(item.scores))}
         </span>
-        <span className="truncate text-[11px] text-muted-foreground">
+        <span className="block text-xs text-muted-foreground">
           {defined
             .map((m) => `${m.label} ${formatScore(item.scores[m.key]!)}`)
             .join(" · ")}

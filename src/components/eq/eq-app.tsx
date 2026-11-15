@@ -7,7 +7,7 @@ import { useFFmpeg } from "./use-ffmpeg"
 import { VideoPlayer } from "./video-player"
 import type { EQBand } from "./types"
 import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 
 function downloadFile(file: File) {
   const url = URL.createObjectURL(file)
@@ -215,16 +215,17 @@ export function EQApp() {
           }}
           className="group flex w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-border bg-card/60 px-6 py-16 text-center transition-colors outline-none hover:border-primary/70 hover:bg-card focus-visible:ring-[3px] focus-visible:ring-ring/50 md:py-20"
         >
-          <span className="grid size-14 place-items-center rounded-xl bg-primary/15 text-primary transition-transform group-hover:-translate-y-0.5">
-            <Upload className="size-6" />
-          </span>
           <span>
             <span className="block font-mono text-lg font-bold">
-              Choose a video
+              Drop in a video
             </span>
             <span className="mt-1 block text-[15px] text-muted-foreground">
               EQ changes play live. Nothing leaves your device.
             </span>
+          </span>
+          <span className={buttonVariants({ className: "mt-1" })}>
+            <Upload />
+            Browse files
           </span>
         </button>
       ) : (

@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react"
-import { FileDown, X } from "lucide-react"
+import { ChevronDown, FileDown, SlidersHorizontal, X } from "lucide-react"
 import { ScoreBandCarousel } from "./score-band-carousel"
 import { TypeToggles } from "./type-toggles"
 import type { ReactNode } from "react"
 import type { MetricKey, PropertyType } from "@/lib/rankings"
 import type { RankedReview } from "@/server/rankings"
+import { PageHeader } from "@/components/page-header"
 import { TagCombobox } from "@/components/tag-combobox"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -40,7 +41,14 @@ function axisScore(item: RankedReview, axis: Axis): number | null {
  * always grouped into Score Band carousels. Reviews with no Score on the
  * active Metric are hidden; bands survive filtering.
  */
-export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
+export function RankingsBoard({
+  reviews,
+  headerAction,
+}: {
+  reviews: Array<RankedReview>
+  /** Extra page-header action, e.g. the Admin's New Review button. */
+  headerAction?: ReactNode
+}) {
   const [axis, setAxis] = useState<Axis>("average")
   const [direction, setDirection] = useState<Direction>("desc")
   const [selectedTypes, setSelectedTypes] = useState<Array<PropertyType>>([])
@@ -48,6 +56,7 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
   const [completion, setCompletion] = useState<Completion>("all")
   const [exporting, setExporting] = useState(false)
   const [exportError, setExportError] = useState<string | null>(null)
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const allTags = useMemo(
     () => [...new Set(reviews.flatMap((r) => r.tags))].sort(),
@@ -106,85 +115,145 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
     }
   }
 
+  const filterCount =
+    selectedTypes.length + selectedTags.length + (completion !== "all" ? 1 : 0)
+
   return (
     <div>
-      <div className="mb-10 space-y-4 rounded-xl border border-border/80 bg-card p-4 md:p-5">
-        <div className="flex flex-wrap items-end gap-x-3 gap-y-3">
-          <FilterField label="Rank by" htmlFor="rankings-axis">
-            <Select value={axis} onValueChange={(v) => setAxis(v as Axis)}>
-              <SelectTrigger id="rankings-axis" className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="average">Average</SelectItem>
-                {METRICS.map((m) => (
-                  <SelectItem key={m.key} value={m.key}>
-                    {m.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </FilterField>
-          <FilterField label="Order" htmlFor="rankings-direction">
-            <Select
-              value={direction}
-              onValueChange={(v) => setDirection(v as Direction)}
+      <PageHeader
+        path="rankings"
+        title="Rankings"
+        description="Everything I've watched, played, and read, scored on Fun and Art. Ten is the best; there is no floor."
+        actions={
+          <>
+            {headerAction}
+            <Button
+              variant="outline"
+              disabled={exporting || reviews.length === 0}
+              onClick={() => void onExportPdf()}
             >
-              <SelectTrigger id="rankings-direction" className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="desc">Best to worst</SelectItem>
-                <SelectItem value="asc">Worst to best</SelectItem>
-              </SelectContent>
-            </Select>
-          </FilterField>
-          <FilterField label="Status" htmlFor="rankings-completion">
-            <Select
-              value={completion}
-              onValueChange={(v) => setCompletion(v as Completion)}
-            >
-              <SelectTrigger id="rankings-completion" className="w-36">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="complete">Complete</SelectItem>
-                <SelectItem value="incomplete">Incomplete</SelectItem>
-              </SelectContent>
-            </Select>
-          </FilterField>
-          {allTags.length > 0 && (
-            <FilterField
-              label="Tags"
-              htmlFor="filter-tags"
-              className="min-w-48 flex-1 basis-56"
-            >
-              <TagCombobox
-                id="filter-tags"
-                options={allTags}
-                selected={selectedTags}
-                onChange={setSelectedTags}
-                placeholder="Filter by tags…"
-              />
-            </FilterField>
-          )}
-        </div>
+              <FileDown />
+              {exporting ? "Exporting…" : "Export PDF"}
+            </Button>
+          </>
+        }
+      />
+      {exportError && (
+        <p className="-mt-4 mb-6 text-sm text-destructive">{exportError}</p>
+      )}
 
-        <div className="flex flex-wrap items-center gap-2 border-t border-border/60 pt-4">
-          <span className="mr-1 font-mono text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
-            Type
-          </span>
-          <TypeToggles
-            idPrefix="filter-type"
-            selected={selectedTypes}
-            onToggle={toggleType}
+      <div className="mb-8 rounded-xl border border-border/80 bg-card md:mb-10">
+        <button
+          type="button"
+          aria-expanded={filtersOpen}
+          aria-controls="rankings-filters"
+          onClick={() => setFiltersOpen((o) => !o)}
+          className="flex min-h-12 w-full cursor-pointer items-center gap-2.5 rounded-xl px-4 font-mono text-sm font-semibold outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 md:hidden"
+        >
+          <SlidersHorizontal className="size-4 text-secondary" />
+          Sort &amp; filter
+          {filterCount > 0 && (
+            <span className="grid h-5 min-w-5 place-items-center rounded-full bg-secondary px-1.5 text-xs text-secondary-foreground">
+              {filterCount}
+            </span>
+          )}
+          <ChevronDown
+            className={cn(
+              "ml-auto size-4 text-muted-foreground transition-transform",
+              filtersOpen && "rotate-180"
+            )}
           />
-          <div className="ml-auto flex items-center gap-2">
+        </button>
+
+        <div
+          id="rankings-filters"
+          className={cn(
+            "space-y-4 border-t border-border/60 p-4 md:block md:border-t-0 md:p-5",
+            !filtersOpen && "hidden"
+          )}
+        >
+          <div className="grid grid-cols-2 gap-3 md:flex md:flex-wrap md:items-end">
+            <FilterField label="Rank by" htmlFor="rankings-axis">
+              <Select value={axis} onValueChange={(v) => setAxis(v as Axis)}>
+                <SelectTrigger id="rankings-axis" className="w-full md:w-36">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="average">Average</SelectItem>
+                  {METRICS.map((m) => (
+                    <SelectItem key={m.key} value={m.key}>
+                      {m.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FilterField>
+            <FilterField label="Order" htmlFor="rankings-direction">
+              <Select
+                value={direction}
+                onValueChange={(v) => setDirection(v as Direction)}
+              >
+                <SelectTrigger
+                  id="rankings-direction"
+                  className="w-full md:w-36"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="desc">Best first</SelectItem>
+                  <SelectItem value="asc">Worst first</SelectItem>
+                </SelectContent>
+              </Select>
+            </FilterField>
+            <FilterField label="Status" htmlFor="rankings-completion">
+              <Select
+                value={completion}
+                onValueChange={(v) => setCompletion(v as Completion)}
+              >
+                <SelectTrigger
+                  id="rankings-completion"
+                  className="w-full md:w-36"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="complete">Complete</SelectItem>
+                  <SelectItem value="incomplete">Incomplete</SelectItem>
+                </SelectContent>
+              </Select>
+            </FilterField>
+            {allTags.length > 0 && (
+              <FilterField
+                label="Tags"
+                htmlFor="filter-tags"
+                className="col-span-2 md:min-w-56 md:flex-1"
+              >
+                <TagCombobox
+                  id="filter-tags"
+                  options={allTags}
+                  selected={selectedTags}
+                  onChange={setSelectedTags}
+                  placeholder="Filter by tags…"
+                />
+              </FilterField>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 border-t border-border/60 pt-4">
+            <span className="mr-1 w-full font-mono text-xs font-semibold tracking-wide text-muted-foreground uppercase md:w-auto">
+              Type
+            </span>
+            <TypeToggles
+              idPrefix="filter-type"
+              selected={selectedTypes}
+              onToggle={toggleType}
+            />
             {hasFilters && (
               <Button
                 variant="ghost"
                 size="sm"
+                className="ml-auto"
                 onClick={() => {
                   setSelectedTypes([])
                   setSelectedTags([])
@@ -192,23 +261,11 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
                 }}
               >
                 <X />
-                Clear
+                Clear filters
               </Button>
             )}
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={exporting || reviews.length === 0}
-              onClick={() => void onExportPdf()}
-            >
-              <FileDown />
-              {exporting ? "Exporting…" : "Export PDF"}
-            </Button>
           </div>
         </div>
-        {exportError && (
-          <p className="text-sm text-destructive">{exportError}</p>
-        )}
       </div>
 
       {reviews.length === 0 ? (
@@ -216,9 +273,11 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
       ) : bands.every((b) => b.items.length === 0) ? (
         <EmptyState>Nothing matches those filters.</EmptyState>
       ) : (
-        bands.map(({ band, items }) => (
-          <ScoreBandCarousel key={band} band={band} items={items} />
-        ))
+        <div>
+          {bands.map(({ band, items }) => (
+            <ScoreBandCarousel key={band} band={band} items={items} />
+          ))}
+        </div>
       )}
     </div>
   )
@@ -239,7 +298,7 @@ function FilterField({
     <div className={cn("flex flex-col gap-1.5", className)}>
       <Label
         htmlFor={htmlFor}
-        className="text-[11px] tracking-wider text-muted-foreground uppercase"
+        className="text-xs tracking-wide text-muted-foreground uppercase"
       >
         {label}
       </Label>

@@ -25,7 +25,7 @@ export function TypeToggles({
             type="button"
             aria-pressed={on}
             onClick={() => onToggle(type, !on)}
-            className="h-8 cursor-pointer rounded-full border border-border bg-well/50 px-3 font-mono text-xs font-semibold text-muted-foreground transition-colors outline-none hover:border-secondary/60 hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-pressed:border-secondary aria-pressed:bg-secondary aria-pressed:text-secondary-foreground"
+            className="h-10 cursor-pointer rounded-full border border-border bg-well/50 px-3.5 font-mono text-xs font-semibold text-muted-foreground transition-colors outline-none hover:border-secondary/60 hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-pressed:border-secondary aria-pressed:bg-secondary aria-pressed:text-secondary-foreground md:h-8 md:px-3"
           >
             {typeLabel(type)}
           </button>

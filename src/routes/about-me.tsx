@@ -75,114 +75,112 @@ function AboutMe() {
   const age = calculateAge(new Date(2000, 4, 10))
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
       <PageHeader path="about-me" title="About Me" />
-
-      <section className="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-center sm:gap-8 sm:text-left">
-        <img
-          src="/jared/profile.JPG"
-          alt="Jared"
-          className="aspect-square w-56 shrink-0 rounded-2xl object-cover ring-1 ring-border/80 sm:w-60"
-        />
-        <div className="min-w-0">
-          <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">
-            Jared, <span className="text-primary">{age}</span>
-          </h2>
-          <ul className="mt-3 flex flex-wrap justify-center gap-2 sm:justify-start">
-            {[
-              { icon: MapPin, label: "Broken Arrow, OK" },
-              { icon: Ruler, label: `5'8"` },
-              { icon: Heart, label: "Long-term" },
-            ].map(({ icon: Icon, label }) => (
-              <li
-                key={label}
-                className="flex items-center gap-1.5 rounded-full border border-border/80 bg-well/60 px-3 py-1 font-mono text-xs text-muted-foreground"
-              >
-                <Icon className="size-3.5 text-secondary" />
-                {label}
-              </li>
-            ))}
-          </ul>
-          <p className="mt-5 text-[17px] leading-relaxed text-foreground/95">
+      <div className="max-w-3xl">
+        <section className="grid grid-cols-[6.5rem_minmax(0,1fr)] items-center gap-x-4 gap-y-5 sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-x-8">
+          <img
+            src="/jared/profile.JPG"
+            alt="Jared"
+            className="aspect-square w-full rounded-2xl object-cover ring-1 ring-border/80 sm:row-span-2 sm:self-start"
+          />
+          <div className="min-w-0">
+            <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">
+              Jared, <span className="text-primary">{age}</span>
+            </h2>
+            <ul className="mt-3 flex flex-wrap gap-1.5 sm:gap-2">
+              {[
+                { icon: MapPin, label: "Broken Arrow, OK" },
+                { icon: Ruler, label: `5'8"` },
+                { icon: Heart, label: "Long-term" },
+              ].map(({ icon: Icon, label }) => (
+                <li
+                  key={label}
+                  className="flex items-center gap-1.5 rounded-full border border-border/80 bg-well/60 px-2.5 py-1 font-mono text-xs text-muted-foreground"
+                >
+                  <Icon className="size-3.5 text-secondary" />
+                  {label}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <p className="col-span-2 text-[17px] leading-relaxed text-foreground/95 sm:col-span-1 sm:col-start-2">
             Henlo, I am here! Local fool who likes to talk. Will be an extremist
             if it&apos;s funny. Die hard Oklahoman (Okie). Red Truck. God &amp;
             State. Scooby Doo is the pinnacle of animation (pre-youtube). Broken
             Arrow native.
           </p>
-        </div>
-      </section>
+        </section>
 
-      <section className="mt-14">
-        <SectionHeading>Good to Know</SectionHeading>
-        <ul className="grid gap-3 sm:grid-cols-2">
-          {goodToKnow.map(({ title, description, icon: Icon }) => (
-            <li
-              key={title}
-              className="flex items-center gap-3.5 rounded-lg border border-border/70 bg-card px-4 py-3.5"
-            >
-              <span className="grid size-10 shrink-0 place-items-center rounded-md bg-primary/15 text-primary">
-                <Icon className="size-5" />
-              </span>
-              <span className="min-w-0">
-                <span className="block font-mono text-sm font-bold">
-                  {title}
-                </span>
-                <span className="block text-sm text-muted-foreground">
+        <section className="mt-14">
+          <SectionHeading>Good to Know</SectionHeading>
+          <dl className="grid sm:grid-cols-2 sm:gap-x-10">
+            {goodToKnow.map(({ title, description, icon: Icon }) => (
+              <div
+                key={title}
+                className="flex items-baseline gap-3 border-b border-dashed border-border/80 py-3"
+              >
+                <Icon
+                  aria-hidden
+                  className="size-4 shrink-0 translate-y-0.5 self-start text-secondary"
+                />
+                <dt className="font-mono text-sm font-bold">{title}</dt>
+                <dd className="ml-auto text-right text-[15px] text-muted-foreground">
                   {description}
-                </span>
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mt-14">
-        <Carousel>
-          <SectionHeading
-            action={
-              <div className="flex gap-1.5">
-                <CarouselPrevious className="static size-8 translate-y-0" />
-                <CarouselNext className="static size-8 translate-y-0" />
+                </dd>
               </div>
-            }
-          >
-            On Repeat
-          </SectionHeading>
-          <CarouselContent>
-            {playlists.map((src, index) => (
-              <CarouselItem key={src}>
-                <div className="h-[352px] overflow-hidden rounded-xl bg-well ring-1 ring-border/70">
-                  <iframe
-                    title={`Spotify playlist ${index + 1}`}
-                    className="block w-full"
-                    src={src}
-                    height={352}
-                    frameBorder={0}
-                    allowFullScreen
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    loading="lazy"
-                  />
-                </div>
-              </CarouselItem>
             ))}
-          </CarouselContent>
-        </Carousel>
-      </section>
+          </dl>
+        </section>
 
-      <section className="mt-14">
-        <SectionHeading>More Photos</SectionHeading>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
-          {morePhotos.map((src, index) => (
-            <img
-              key={src}
-              src={src}
-              alt={`Jared photo ${index + 1}`}
-              className="aspect-square w-full rounded-xl object-cover ring-1 ring-border/70"
-              loading="lazy"
-            />
-          ))}
-        </div>
-      </section>
+        <section className="mt-14">
+          <Carousel>
+            <SectionHeading
+              action={
+                <div className="flex gap-1.5">
+                  <CarouselPrevious className="static translate-y-0" />
+                  <CarouselNext className="static translate-y-0" />
+                </div>
+              }
+            >
+              On Repeat
+            </SectionHeading>
+            <CarouselContent>
+              {playlists.map((src, index) => (
+                <CarouselItem key={src}>
+                  <div className="h-[352px] overflow-hidden rounded-xl bg-well ring-1 ring-border/70">
+                    <iframe
+                      title={`Spotify playlist ${index + 1}`}
+                      className="block w-full"
+                      src={src}
+                      height={352}
+                      frameBorder={0}
+                      allowFullScreen
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      loading="lazy"
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+        </section>
+
+        <section className="mt-14">
+          <SectionHeading>More Photos</SectionHeading>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
+            {morePhotos.map((src, index) => (
+              <img
+                key={src}
+                src={src}
+                alt={`Jared photo ${index + 1}`}
+                className="aspect-square w-full rounded-xl object-cover ring-1 ring-border/70"
+                loading="lazy"
+              />
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   )
 }

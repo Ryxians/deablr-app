@@ -59,7 +59,7 @@ export function EQControls({ bands, onChange, onReset }: EQControlsProps) {
               <div className="font-mono text-xs font-semibold">
                 {band.freq} Hz
               </div>
-              <div className="font-mono text-[10px] text-muted-foreground">
+              <div className="font-mono text-xs text-muted-foreground">
                 Q={band.q}
               </div>
             </div>

@@ -20,7 +20,7 @@ export function Navbar() {
   return (
     <nav
       aria-label="Main"
-      className="flex justify-center gap-1 overflow-x-auto border-y border-border/80 bg-well/50 px-2 py-2 [scrollbar-width:none] md:gap-2 md:py-2.5"
+      className="flex justify-center gap-1 overflow-x-auto border-y border-border/80 bg-well/50 px-2 py-1.5 [scrollbar-width:none] md:gap-2 md:py-2.5"
     >
       {navItems.map((item) => {
         const active =
@@ -33,10 +33,10 @@ export function Navbar() {
             to={item.to}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "shrink-0 rounded-md px-3 py-2 font-mono text-xs font-semibold tracking-wider whitespace-nowrap uppercase transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 md:px-4 md:text-[13px]",
+              "inline-flex min-h-11 shrink-0 items-center rounded-md px-3.5 font-mono text-xs font-semibold tracking-wider whitespace-nowrap uppercase transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 md:min-h-10 md:px-4 md:text-[13px]",
               active
                 ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
             {item.label}

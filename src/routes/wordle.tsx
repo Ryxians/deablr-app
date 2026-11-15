@@ -67,24 +67,28 @@ function Wordle() {
   ]
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div>
       <PageHeader
         path="projects/wordle"
         title="Wordle Helper"
         description="Tell it what you know; it narrows the word list."
       />
 
-      <div className="space-y-6 rounded-xl border border-border/80 bg-card p-5 md:p-6">
+      <div className="max-w-2xl space-y-6 rounded-xl border border-border/80 bg-card p-4 sm:p-6">
         <fieldset className="space-y-2.5">
-          <legend className="mb-2.5 font-mono text-[13px] font-semibold">
+          <legend className="mb-2.5 flex items-center gap-2 font-mono text-[13px] font-semibold">
+            <span aria-hidden className="size-2.5 rounded-full bg-accent" />
             Green letters
+            <span className="font-sans font-normal text-muted-foreground">
+              (right spot)
+            </span>
           </legend>
-          <div className="flex gap-2">
+          <div className="grid w-full max-w-[22rem] grid-cols-5 gap-2">
             {[first, second, third, fourth, fifth].map((value, i) => (
               <Input
                 key={i}
                 aria-label={`Letter ${i + 1}`}
-                className="size-14 rounded-lg p-0 text-center font-mono text-2xl font-bold uppercase data-[filled=true]:border-accent data-[filled=true]:bg-accent data-[filled=true]:text-accent-foreground md:size-16 md:text-3xl"
+                className="aspect-square h-auto w-full rounded-lg p-0 text-center font-mono text-2xl font-bold uppercase data-[filled=true]:border-accent data-[filled=true]:bg-accent data-[filled=true]:text-accent-foreground md:text-3xl"
                 data-filled={value !== ""}
                 maxLength={1}
                 value={value}
@@ -96,7 +100,10 @@ function Wordle() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="wordle-has">Yellow letters</Label>
+            <Label htmlFor="wordle-has">
+              <span aria-hidden className="size-2.5 rounded-full bg-sun" />
+              Yellow letters
+            </Label>
             <Input
               id="wordle-has"
               placeholder="e.g. oa"
@@ -108,7 +115,13 @@ function Wordle() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="wordle-wrong">Gray letters</Label>
+            <Label htmlFor="wordle-wrong">
+              <span
+                aria-hidden
+                className="size-2.5 rounded-full bg-muted-foreground/60"
+              />
+              Gray letters
+            </Label>
             <Input
               id="wordle-wrong"
               placeholder="e.g. rstlne"
@@ -162,11 +175,11 @@ function Wordle() {
               No words match.
             </p>
           ) : (
-            <ul className="grid max-h-72 grid-cols-3 gap-1.5 overflow-y-auto sm:grid-cols-5">
+            <ul className="grid grid-cols-3 gap-x-4 gap-y-1 sm:grid-cols-5">
               {wordsToRecommend.map((word, i) => (
                 <li
                   key={word + i}
-                  className="rounded-md bg-well px-2 py-1.5 text-center font-mono text-sm tracking-widest uppercase"
+                  className="border-b border-dashed border-border/60 py-1.5 font-mono text-sm tracking-[0.2em] uppercase"
                 >
                   {word}
                 </li>

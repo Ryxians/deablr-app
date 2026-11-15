@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 
 export function NotFound() {
   return (
-    <div className="flex flex-col items-center py-6 text-center md:py-10">
+    <div className="flex flex-col items-center py-2 text-center md:py-8">
       <p className="font-mono text-6xl font-extrabold tracking-tight text-primary [text-shadow:4px_4px_0_oklch(0.2_0.08_266/0.6)] md:text-7xl">
         404
       </p>
@@ -14,9 +14,9 @@ export function NotFound() {
       <img
         src="/in-your-walls.gif"
         alt="I am in your walls."
-        className="mt-8 w-full max-w-sm rounded-xl ring-1 ring-border/80"
+        className="mt-6 w-full max-w-[240px] rounded-xl ring-1 ring-border/80"
       />
-      <Button asChild variant="outline" className="mt-8">
+      <Button asChild className="mt-6">
         <Link to="/">
           <ArrowLeft />
           Back home

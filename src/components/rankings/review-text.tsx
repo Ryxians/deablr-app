@@ -139,7 +139,7 @@ const components = {
 export function ReviewText({ text }: { text: string }) {
   return (
     <section className="mt-10 border-t border-border/70 pt-8">
-      <h2 className="mb-5 font-mono text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+      <h2 className="mb-5 font-mono text-xs font-semibold tracking-wide text-muted-foreground uppercase">
         The Review
       </h2>
       <div className="max-w-[65ch] text-[17px] leading-relaxed text-foreground/95">

@@ -17,7 +17,7 @@ const chipVariants = cva(
         solid: "bg-well/90 text-foreground shadow-lift",
       },
       size: {
-        xs: "px-1.5 py-0.5 text-[10px] tracking-wider uppercase",
+        xs: "px-1.5 py-0.5 text-[11px] leading-tight tracking-wide uppercase",
         sm: "px-2 py-0.5 text-xs",
       },
     },

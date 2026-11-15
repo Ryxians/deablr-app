@@ -50,6 +50,7 @@
   --radius-3xl: calc(var(--radius) * 2.2);
 
   --shadow-frame: 8px 8px 0 0 oklch(0.2 0.08 266 / 0.55);
+  --shadow-frame-sm: 0 5px 0 0 oklch(0.2 0.08 266 / 0.55);
   --shadow-lift: 0 3px 0 0 oklch(0.16 0.05 266 / 0.55);
 }
 
@@ -58,11 +59,11 @@
   --page: oklch(0.42 0.13 263);
 
   /* Surfaces, darkest to lightest. */
-  --well: oklch(0.22 0.06 265);
-  --background: oklch(0.265 0.07 264);
-  --card: oklch(0.305 0.075 264);
-  --popover: oklch(0.29 0.075 264);
-  --muted: oklch(0.34 0.075 263);
+  --well: oklch(0.245 0.065 265);
+  --background: oklch(0.29 0.075 264);
+  --card: oklch(0.33 0.08 264);
+  --popover: oklch(0.32 0.08 264);
+  --muted: oklch(0.37 0.08 263);
 
   --foreground: oklch(0.96 0.02 220);
   --card-foreground: var(--foreground);
@@ -79,8 +80,8 @@
   --sun: oklch(0.9 0.15 95);
   --destructive: oklch(0.7 0.19 25);
 
-  --border: oklch(0.44 0.085 258);
-  --input: oklch(0.44 0.085 258);
+  --border: oklch(0.47 0.085 258);
+  --input: oklch(0.47 0.085 258);
   --ring: var(--secondary);
   --radius: 0.625rem;
 }
@@ -131,6 +132,24 @@ body::before {
 }
 
 @layer components {
+  /* Penny's line art, inverted to pale lines, for dark bands like the
+     masthead so she shows up even where the page backdrop doesn't. */
+  .penny-watermark {
+    position: relative;
+    isolation: isolate;
+  }
+  .penny-watermark::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: url("/penny.svg") 0 0 / 150px repeat;
+    filter: invert(1);
+    mix-blend-mode: screen;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+
   /* Hazard-stripe highlighter, used sparingly on a loud phrase. */
   .highlight-stripes {
     padding: 0.05em 0.3em;

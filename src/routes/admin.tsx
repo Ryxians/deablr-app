@@ -331,7 +331,7 @@ function UsersSection({ me }: { me: { id: string } }) {
                   ) : null}
                 </span>
                 <span className="grow" />
-                <div className="flex items-center gap-1.5">
+                <div className="flex flex-wrap items-center gap-1.5">
                   <RoleSelect
                     value={u.role === "admin" ? "admin" : "denizen"}
                     disabled={isSelf}
@@ -355,24 +355,27 @@ function UsersSection({ me }: { me: { id: string } }) {
                     </Button>
                   ) : (
                     <Button
-                      size="icon-sm"
+                      size="sm"
                       variant="ghost"
                       disabled={isSelf}
                       title={`Ban ${u.username}`}
                       aria-label={`Ban ${u.username}`}
-                      onClick={() =>
-                        run(() =>
-                          setUserBanned({
-                            data: { userId: u.id, banned: true },
-                          })
-                        )
-                      }
+                      onClick={() => {
+                        if (window.confirm(`Ban ${u.username}?`)) {
+                          void run(() =>
+                            setUserBanned({
+                              data: { userId: u.id, banned: true },
+                            })
+                          )
+                        }
+                      }}
                     >
                       <Ban />
+                      Ban
                     </Button>
                   )}
                   <Button
-                    size="icon-sm"
+                    size="sm"
                     variant="ghost"
                     title={`Reset password for ${u.username}`}
                     aria-label={`Reset password for ${u.username}`}
@@ -390,10 +393,11 @@ function UsersSection({ me }: { me: { id: string } }) {
                     }}
                   >
                     <KeyRound />
+                    Reset password
                   </Button>
                   {!isSelf && (
                     <Button
-                      size="icon-sm"
+                      size="sm"
                       variant="ghost"
                       className="hover:bg-destructive/10 hover:text-destructive"
                       title={`Delete ${u.username}`}
@@ -405,6 +409,7 @@ function UsersSection({ me }: { me: { id: string } }) {
                       }}
                     >
                       <Trash2 />
+                      Delete
                     </Button>
                   )}
                 </div>

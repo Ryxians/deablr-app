@@ -7,14 +7,16 @@ import { DrawnHistory } from "./drawn-history"
 
 export function GameScreen() {
   return (
-    <div className="mx-auto max-w-2xl space-y-5">
+    <div>
       <GameHeader />
-      <PlayerIndicator />
-      <QuestionDisplay />
-      <ActionButtons />
-      <div className="space-y-5 pt-2">
-        <ProgressBar />
-        <DrawnHistory />
+      <div className="max-w-2xl space-y-5">
+        <PlayerIndicator />
+        <QuestionDisplay />
+        <ActionButtons />
+        <div className="space-y-5 pt-2">
+          <ProgressBar />
+          <DrawnHistory />
+        </div>
       </div>
     </div>
   )

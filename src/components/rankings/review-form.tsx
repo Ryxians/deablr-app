@@ -1,14 +1,14 @@
 import { useNavigate } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
-import { ImageIcon } from "lucide-react"
+import { ImageIcon, Upload } from "lucide-react"
 import { ScoreNeighborPreview } from "./score-neighbor-preview"
 import { TypeToggles } from "./type-toggles"
 import type { ReactNode } from "react"
 import type { MetricKey, PropertyType } from "@/lib/rankings"
 import type { RankedReview } from "@/server/rankings"
 import { TagCombobox } from "@/components/tag-combobox"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -110,7 +110,7 @@ export function ReviewForm({ initial }: { initial?: RankedReview }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="max-w-3xl space-y-6">
+    <form onSubmit={onSubmit} className="max-w-3xl space-y-6 sm:space-y-6">
       <FormSection title="The basics">
         <Field label="Property title" htmlFor="review-title">
           <Input
@@ -178,7 +178,7 @@ export function ReviewForm({ initial }: { initial?: RankedReview }) {
             ) : (
               <div className="grid size-full place-content-center gap-1.5 p-2 text-center text-muted-foreground">
                 <ImageIcon className="mx-auto size-5" />
-                <span className="font-mono text-[11px]">2:3 poster</span>
+                <span className="font-mono text-xs">2:3 poster</span>
               </div>
             )}
           </div>
@@ -188,14 +188,30 @@ export function ReviewForm({ initial }: { initial?: RankedReview }) {
             hint="Cropped to a 2:3 poster on upload. Max 10 MB."
             className="flex-1"
           >
-            <Input
-              id="review-art"
-              type="file"
-              accept="image/*"
-              onChange={(e) => setArtFile(e.target.files?.[0] ?? null)}
-              required={!initial}
-              className="h-auto py-1.5"
-            />
+            <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+              <label
+                htmlFor="review-art"
+                className={buttonVariants({
+                  variant: "outline",
+                  size: "sm",
+                  className: "has-[+input:focus-visible]:ring-[3px]",
+                })}
+              >
+                <Upload />
+                {artPreview ? "Replace image" : "Choose image"}
+              </label>
+              <span className="min-w-0 truncate text-sm text-muted-foreground">
+                {artFile?.name ?? (initial ? "Current poster" : "No file yet")}
+              </span>
+              <input
+                id="review-art"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setArtFile(e.target.files?.[0] ?? null)}
+                required={!initial}
+                className="sr-only"
+              />
+            </div>
           </Field>
         </div>
       </FormSection>
@@ -277,10 +293,12 @@ function FormSection({
   children: ReactNode
 }) {
   return (
-    <fieldset className="space-y-5 rounded-xl border border-border/80 bg-card p-5 md:p-6">
+    <fieldset className="space-y-5 border-t border-border/70 pt-6 sm:rounded-xl sm:border sm:border-border/80 sm:bg-card sm:p-6">
       <legend className="sr-only">{title}</legend>
       <div aria-hidden>
-        <p className="font-mono text-sm font-bold">{title}</p>
+        <p className="font-mono text-xs font-semibold tracking-widest text-secondary uppercase">
+          {title}
+        </p>
         {description && (
           <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         )}

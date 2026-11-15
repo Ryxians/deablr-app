@@ -1,10 +1,13 @@
-import { Link } from "@tanstack/react-router"
+import { Link, useRouterState } from "@tanstack/react-router"
 import { Navbar } from "@/components/Navbar"
+import { cn } from "@/lib/utils"
 
 export function Header() {
+  const isHome = useRouterState({ select: (s) => s.location.pathname === "/" })
+
   return (
     <>
-      <header className="flex flex-col items-center px-4 pt-7 pb-6 text-center md:pt-10 md:pb-8">
+      <header className="penny-watermark flex flex-col items-center px-4 pt-5 pb-4 text-center md:pt-10 md:pb-8">
         <Link
           to="/"
           className="group flex items-center gap-3 rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 md:gap-4"
@@ -16,11 +19,16 @@ export function Header() {
               className="size-full scale-[1.15] mix-blend-multiply"
             />
           </span>
-          <span className="font-mono text-2xl font-extrabold tracking-tight text-foreground [text-shadow:3px_3px_0_oklch(0.75_0.18_342/0.55)] md:text-[2.75rem] md:leading-none">
+          <span className="font-mono text-2xl font-extrabold tracking-tight text-foreground [text-shadow:0.07em_0.07em_0_var(--primary)] md:text-[2.75rem] md:leading-none">
             MY DIGITAL ABODE
           </span>
         </Link>
-        <p className="mt-2.5 font-mono text-[13px] text-muted-foreground italic md:mt-3 md:text-[15px]">
+        <p
+          className={cn(
+            "mt-2 font-mono text-xs text-muted-foreground italic md:mt-3 md:block md:text-[15px]",
+            !isHome && "hidden"
+          )}
+        >
           Experiments, Musings, and Stuff I Want
         </p>
       </header>

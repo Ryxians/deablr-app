@@ -152,8 +152,8 @@ export function ScoreNeighborPreview({
       <p
         className={
           taken
-            ? "mb-1.5 px-1 font-mono text-[11px] font-semibold text-destructive"
-            : "mb-1.5 px-1 font-mono text-[11px] text-muted-foreground"
+            ? "mb-1.5 px-1 font-mono text-xs font-semibold text-destructive"
+            : "mb-1.5 px-1 font-mono text-xs text-muted-foreground"
         }
       >
         {taken

@@ -1,4 +1,5 @@
 import { useSelector } from "@tanstack/react-store"
+import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { store } from "@/stores/real-talk"
 
@@ -15,10 +16,7 @@ export function PlayerIndicator() {
   )
 
   return (
-    <ol
-      aria-label="Turn order"
-      className="flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none]"
-    >
+    <ol aria-label="Turn order" className="flex flex-wrap items-center gap-2">
       {shuffledOrder.map((playerIndex, position) => {
         const isCurrent = position === currentPlayerIndex
         const isDone = position < currentPlayerIndex
@@ -40,7 +38,11 @@ export function PlayerIndicator() {
                 isCurrent ? "bg-primary-foreground/15" : "bg-muted"
               )}
             >
-              {position + 1}
+              {isDone ? (
+                <Check className="size-3.5" strokeWidth={3} />
+              ) : (
+                position + 1
+              )}
             </span>
             {players[playerIndex]}
           </li>

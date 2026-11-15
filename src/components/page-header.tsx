@@ -1,9 +1,56 @@
+import { Link } from "@tanstack/react-router"
+import { Fragment } from "react"
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
+/** Path segments that are real pages, so the breadcrumb can link them. */
+const SEGMENT_ROUTES: Record<string, string> = {
+  rankings: "/rankings",
+  projects: "/projects",
+  "about-me": "/about-me",
+  admin: "/admin",
+}
+
 /**
- * A page's title block: a little shell-style path, the title, an optional
- * one-line intro, and an optional actions slot aligned to the right.
+ * A shell-style breadcrumb, e.g. ~/projects/real-talk. Every segment but the
+ * last links back up when it's a real page.
+ */
+export function PathCrumb({ path }: { path: string }) {
+  const segments = path.split("/").filter(Boolean)
+  const linkClass =
+    "rounded-sm underline-offset-4 outline-none hover:text-foreground hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50"
+  return (
+    <nav
+      aria-label="Breadcrumb"
+      className="font-mono text-xs font-medium text-secondary"
+    >
+      <Link to="/" className={linkClass}>
+        ~
+      </Link>
+      {segments.map((segment, i) => {
+        const route = SEGMENT_ROUTES[segment]
+        const last = i === segments.length - 1
+        return (
+          <Fragment key={`${segment}-${i}`}>
+            <span className="text-secondary/60">/</span>
+            {route && !last ? (
+              <Link to={route} className={linkClass}>
+                {segment}
+              </Link>
+            ) : (
+              <span aria-current={last ? "page" : undefined}>{segment}</span>
+            )}
+          </Fragment>
+        )
+      })}
+    </nav>
+  )
+}
+
+/**
+ * A page's title block: breadcrumb, title, optional one-line intro, and an
+ * optional actions slot. Always full width so the title never shifts between
+ * pages; narrow pages constrain their body instead.
  */
 export function PageHeader({
   path,
@@ -21,15 +68,13 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        "mb-8 flex flex-col gap-4 border-b border-border/70 pb-6 sm:flex-row sm:items-end sm:justify-between",
+        "mb-7 flex flex-col gap-4 border-b border-border/70 pb-5 sm:mb-8 sm:flex-row sm:items-end sm:justify-between sm:pb-6",
         className
       )}
     >
       <div className="min-w-0">
-        <p className="mb-1.5 font-mono text-xs font-medium text-secondary">
-          ~/{path}
-        </p>
-        <h1 className="text-3xl leading-tight font-extrabold tracking-tight md:text-4xl">
+        <PathCrumb path={path} />
+        <h1 className="mt-1.5 text-[1.75rem] leading-tight font-extrabold tracking-tight sm:text-3xl md:text-4xl">
           {title}
         </h1>
         {description && (
@@ -38,7 +83,9 @@ export function PageHeader({
           </p>
         )}
       </div>
-      {actions && <div className="flex shrink-0 gap-2">{actions}</div>}
+      {actions && (
+        <div className="flex shrink-0 flex-wrap gap-2">{actions}</div>
+      )}
     </header>
   )
 }
