@@ -18,7 +18,7 @@ const SEGMENT_ROUTES: Record<string, string> = {
 export function PathCrumb({ path }: { path: string }) {
   const segments = path.split("/").filter(Boolean)
   const linkClass =
-    "rounded-sm underline-offset-4 outline-none hover:text-foreground hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50"
+    "-my-2 inline-block rounded-sm py-2 underline-offset-4 outline-none hover:text-foreground hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50"
   return (
     <nav
       aria-label="Breadcrumb"
@@ -71,7 +71,7 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        "mb-7 flex flex-col gap-4 border-b border-border/70 pb-5 sm:mb-8 sm:flex-row sm:items-end sm:justify-between sm:pb-6",
+        "mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between sm:border-b sm:border-border/70 sm:pb-6",
         inlineActions && "flex-row items-end justify-between",
         className
       )}
@@ -82,7 +82,7 @@ export function PageHeader({
           {title}
         </h1>
         {description && (
-          <p className="mt-2 max-w-prose text-[15px] leading-relaxed text-pretty text-muted-foreground md:text-base">
+          <p className="mt-1.5 max-w-prose text-[15px] leading-normal text-pretty text-muted-foreground sm:mt-2 sm:leading-relaxed md:text-base">
             {description}
           </p>
         )}

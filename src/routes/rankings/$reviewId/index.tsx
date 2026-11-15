@@ -4,7 +4,7 @@ import {
   notFound,
   useNavigate,
 } from "@tanstack/react-router"
-import { Pencil, Trash2 } from "lucide-react"
+import { ArrowLeft, Pencil, Trash2 } from "lucide-react"
 import { useState } from "react"
 import type { PropertyType } from "@/lib/rankings"
 import { PathCrumb } from "@/components/page-header"
@@ -70,12 +70,19 @@ function ReviewDetailPage() {
 
   return (
     <div>
-      <div className="mb-6">
+      <div className="mb-6 flex items-center justify-between gap-3">
         <PathCrumb path={`rankings/${slugify(review.title)}`} />
+        <Link
+          to="/rankings"
+          className="-my-2 inline-flex shrink-0 items-center gap-1.5 rounded-md py-2 font-mono text-xs font-semibold text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        >
+          <ArrowLeft className="size-3.5" />
+          All rankings
+        </Link>
       </div>
 
-      <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-x-4 gap-y-6 sm:grid-cols-[14rem_minmax(0,1fr)] sm:grid-rows-[auto_1fr] sm:gap-x-8">
-        <div className="relative self-start overflow-hidden rounded-xl ring-1 ring-border/80 sm:row-span-2">
+      <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-x-4 gap-y-6 sm:grid-cols-[14rem_minmax(0,1fr)] sm:grid-rows-[auto_auto_1fr] sm:gap-x-10">
+        <div className="relative self-start overflow-hidden rounded-xl ring-1 ring-border/80 sm:sticky sm:top-6 sm:row-span-3">
           <img
             src={review.artUrl}
             alt={review.title}
@@ -114,13 +121,19 @@ function ReviewDetailPage() {
             <div className="flex items-center gap-3 p-4 sm:gap-4 sm:p-5">
               <Link
                 to="/rankings"
-                title={band === "poop" ? "Certified Poop" : `Tier ${band}`}
-                className={cn(
-                  "grid h-12 min-w-12 place-items-center rounded-lg px-2 font-mono text-2xl font-extrabold shadow-lift outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
-                  bandTone(band)
-                )}
+                className="group flex flex-col items-center gap-1 rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
               >
-                {band === "poop" ? "<0" : band}
+                <span
+                  className={cn(
+                    "grid h-12 min-w-12 place-items-center rounded-lg px-2 font-mono text-2xl font-extrabold shadow-lift transition-transform group-hover:-translate-y-0.5",
+                    bandTone(band)
+                  )}
+                >
+                  {band === "poop" ? "<0" : band}
+                </span>
+                <span className="font-mono text-xs text-muted-foreground">
+                  {band === "poop" ? "poop" : "tier"}
+                </span>
               </Link>
               <div className="flex flex-col-reverse">
                 <dt className="mt-1 font-mono text-xs text-muted-foreground">
@@ -172,9 +185,11 @@ function ReviewDetailPage() {
           )}
           {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
         </div>
-      </div>
 
-      <ReviewText text={review.text} />
+        <div className="col-span-2 sm:col-span-1 sm:col-start-2">
+          <ReviewText text={review.text} />
+        </div>
+      </div>
     </div>
   )
 }

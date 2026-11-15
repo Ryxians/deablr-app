@@ -57,11 +57,11 @@ const goodToKnow: Array<{
 ]
 
 const playlists = [
-  "https://open.spotify.com/embed/playlist/4Zxs6hjuX3HO5pd97OwyZ3?utm_source=generator&si=521fecaba4dc46f5",
-  "https://open.spotify.com/embed/playlist/3xxRaISAq1WBippP2JdHoE?utm_source=generator&si=c73d9aa231a94db1",
-  "https://open.spotify.com/embed/playlist/2FiV8RJINYdcYW0zO8mR7A?utm_source=generator&si=83caf61b6eb74255",
-  "https://open.spotify.com/embed/playlist/4N7mTgHCyMjxyhiF2XzfpG?utm_source=generator&si=341fc5b347e346b9",
-  "https://open.spotify.com/embed/playlist/2wFOez3ihkVNqrrl7P2n7J?utm_source=generator&si=933981332b20498b",
+  "https://open.spotify.com/embed/playlist/4Zxs6hjuX3HO5pd97OwyZ3?utm_source=generator&si=521fecaba4dc46f5&theme=0",
+  "https://open.spotify.com/embed/playlist/3xxRaISAq1WBippP2JdHoE?utm_source=generator&si=c73d9aa231a94db1&theme=0",
+  "https://open.spotify.com/embed/playlist/2FiV8RJINYdcYW0zO8mR7A?utm_source=generator&si=83caf61b6eb74255&theme=0",
+  "https://open.spotify.com/embed/playlist/4N7mTgHCyMjxyhiF2XzfpG?utm_source=generator&si=341fc5b347e346b9&theme=0",
+  "https://open.spotify.com/embed/playlist/2wFOez3ihkVNqrrl7P2n7J?utm_source=generator&si=933981332b20498b&theme=0",
 ]
 
 const morePhotos = [
@@ -96,7 +96,7 @@ function AboutMe() {
               ].map(({ icon: Icon, label }) => (
                 <li
                   key={label}
-                  className="flex items-center gap-1.5 rounded-full border border-border/80 bg-well/60 px-2.5 py-1 font-mono text-xs text-muted-foreground"
+                  className="flex items-center gap-1.5 rounded-md border border-border/80 bg-well/60 px-2.5 py-1 font-mono text-xs text-muted-foreground"
                 >
                   <Icon className="size-3.5 text-secondary" />
                   {label}
@@ -106,7 +106,7 @@ function AboutMe() {
                 {/* Easter egg: the heart opens the classified "My Type" file. */}
                 <Link
                   to="/my-type"
-                  className="group flex items-center gap-1.5 rounded-full border border-border/80 bg-well/60 px-2.5 py-1 font-mono text-xs text-muted-foreground outline-none hover:border-primary/60 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                  className="group flex items-center gap-1.5 rounded-md border border-border/80 bg-well/60 px-2.5 py-1 font-mono text-xs text-muted-foreground outline-none hover:border-primary/60 focus-visible:ring-[3px] focus-visible:ring-ring/50"
                 >
                   <Heart className="size-3.5 text-secondary transition-colors group-hover:fill-primary group-hover:text-primary" />
                   Long-term
@@ -122,7 +122,7 @@ function AboutMe() {
           </p>
         </section>
 
-        <section className="mt-10 lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:mt-0">
+        <section className="mt-10 lg:col-start-2 lg:row-start-1 lg:mt-0">
           <SectionHeading>Good to Know</SectionHeading>
           <dl className="grid sm:grid-cols-2 sm:gap-x-10 lg:grid-cols-1">
             {goodToKnow.map(({ title, description, icon: Icon }) => (
@@ -143,7 +143,7 @@ function AboutMe() {
           </dl>
         </section>
 
-        <section className="mt-10 md:mt-14 lg:col-start-1">
+        <section className="mt-10 md:mt-14 lg:col-span-2">
           <Carousel>
             <SectionHeading
               action={
@@ -158,10 +158,13 @@ function AboutMe() {
             <CarouselContent>
               {playlists.map((src, index) => (
                 <CarouselItem key={src}>
-                  <div className="h-[352px] overflow-hidden rounded-xl bg-well ring-1 ring-border/70">
+                  <div className="relative h-[352px] overflow-hidden rounded-xl bg-well ring-1 ring-border/70">
+                    <span className="absolute inset-0 grid place-items-center font-mono text-xs text-muted-foreground">
+                      Loading playlist…
+                    </span>
                     <iframe
                       title={`Spotify playlist ${index + 1}`}
-                      className="block w-full"
+                      className="relative block w-full"
                       src={src}
                       height={352}
                       frameBorder={0}
@@ -176,7 +179,7 @@ function AboutMe() {
           </Carousel>
         </section>
 
-        <section className="mt-10 md:mt-14 lg:col-start-1">
+        <section className="mt-10 md:mt-14 lg:col-span-2">
           <SectionHeading>More Photos</SectionHeading>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
             {morePhotos.map((src, index) => (

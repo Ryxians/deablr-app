@@ -152,12 +152,12 @@ export function ScoreNeighborPreview({
       <p
         className={
           taken
-            ? "mb-1.5 px-1 font-mono text-xs font-semibold text-destructive"
+            ? "mb-2 px-1 text-sm font-semibold text-destructive"
             : "mb-1.5 px-1 font-mono text-xs text-muted-foreground"
         }
       >
         {taken
-          ? "Taken. Quick-edit the holder below to free it."
+          ? `Taken by ${at[0].title}. Tap its score below to change it and free the slot.`
           : "Would slot between"}
       </p>
       {above.length === 0 && at.length === 0 && below.length === 0 ? (

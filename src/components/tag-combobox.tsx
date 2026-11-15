@@ -90,13 +90,13 @@ export function TagCombobox({
               selected.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-0.5 rounded-sm bg-secondary/15 py-0.5 pr-0.5 pl-1.5 text-xs text-secondary ring-1 ring-secondary/35 ring-inset"
+                  className="inline-flex items-center gap-0.5 rounded-full bg-secondary/15 py-0.5 pr-0.5 pl-2 text-xs text-secondary ring-1 ring-secondary/35 ring-inset"
                 >
                   {tag}
                   <span
                     role="button"
                     aria-label={`Remove ${tag}`}
-                    className="cursor-pointer rounded-sm p-0.5 hover:bg-secondary/25"
+                    className="cursor-pointer rounded-full p-0.5 hover:bg-secondary/25"
                     onClick={(e) => {
                       e.stopPropagation()
                       toggle(tag)

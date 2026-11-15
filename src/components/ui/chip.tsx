@@ -25,7 +25,10 @@ const chipVariants = cva(
   }
 )
 
-/** A small label for types, tags, and statuses. */
+/**
+ * A small static label for types, tags, and statuses. Shape rule: static
+ * labels are `rounded-sm`; anything you can toggle or remove is a pill.
+ */
 export function Chip({
   className,
   tone,

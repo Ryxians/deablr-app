@@ -541,22 +541,24 @@ function InvitesSection() {
             return (
               <li
                 key={inv.id}
-                className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 text-sm"
+                className="grid gap-2.5 px-4 py-3.5 text-sm lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-center lg:gap-4"
               >
+                <div className="flex items-center gap-1.5">
+                  <Chip tone="muted" size="xs">
+                    {inv.role}
+                  </Chip>
+                  <Chip tone={active ? "accent" : "muted"} size="xs">
+                    {used ? "Used" : expired ? "Expired" : "Active"}
+                  </Chip>
+                </div>
                 <code
                   className={cn(
-                    "min-w-0 flex-1 basis-60 font-mono text-xs break-all",
+                    "min-w-0 font-mono text-xs break-all",
                     active ? "text-foreground" : "text-muted-foreground"
                   )}
                 >
                   {active ? inviteUrl(inv.token) : inv.token.slice(0, 8) + "…"}
                 </code>
-                <Chip tone="muted" size="xs">
-                  {inv.role}
-                </Chip>
-                <Chip tone={active ? "accent" : "muted"} size="xs">
-                  {used ? "Used" : expired ? "Expired" : "Active"}
-                </Chip>
                 <div className="flex items-center gap-1.5">
                   {active && (
                     <Button

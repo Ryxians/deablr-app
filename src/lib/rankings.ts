@@ -118,16 +118,18 @@ export function bandTone(key: BandKey): string {
     case 9:
       return "bg-primary text-primary-foreground"
     case 8:
-      return "bg-[oklch(0.8_0.14_25)] text-[oklch(0.25_0.06_25)]"
+      return "bg-[oklch(0.74_0.15_315)] text-[oklch(0.2_0.06_315)]"
     case 7:
-      return "bg-accent text-accent-foreground"
+      return "bg-[oklch(0.72_0.13_290)] text-[oklch(0.18_0.06_290)]"
     case 6:
-      return "bg-secondary text-secondary-foreground"
+      return "bg-[oklch(0.74_0.1_265)] text-[oklch(0.18_0.06_265)]"
     case 5:
-      return "bg-[oklch(0.74_0.1_250)] text-[oklch(0.22_0.06_260)]"
+      return "bg-[oklch(0.68_0.06_250)] text-[oklch(0.17_0.04_250)]"
     case 4:
-      return "bg-[oklch(0.65_0.07_265)] text-[oklch(0.2_0.05_265)]"
+      return "bg-[oklch(0.6_0.045_250)] text-[oklch(0.15_0.03_250)]"
+    case 3:
+      return "bg-[oklch(0.54_0.035_250)] text-[oklch(0.97_0.01_250)]"
     default:
-      return "bg-muted text-muted-foreground"
+      return "bg-[oklch(0.48_0.03_250)] text-[oklch(0.95_0.01_250)]"
   }
 }

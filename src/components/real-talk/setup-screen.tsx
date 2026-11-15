@@ -157,7 +157,7 @@ export function SetupScreen() {
             ) : (
               <div className="mt-3 flex items-center justify-between gap-3">
                 <p className="font-mono text-xs text-muted-foreground">
-                  {questionsCount} questions in the deck
+                  {questionsCount} cards in the deck
                 </p>
                 <MotionToggle />
               </div>

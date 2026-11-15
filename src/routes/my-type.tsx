@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { Check, Lock, LockOpen, Shuffle } from "lucide-react"
 import { useState } from "react"
 import type { ReactNode } from "react"
+import { PennyFormLayout } from "@/components/form-bits"
 import { PageHeader } from "@/components/page-header"
 import { SectionHeading } from "@/components/section-heading"
 import { Button } from "@/components/ui/button"
@@ -25,13 +26,13 @@ const youngestAgeToDate =
 
 const fieldNotes: Array<ReactNode> = [
   <>
-    I would never ask out a women under the age of 21, but I would date a woman
+    I would never ask out a woman under the age of 21, but I would date a woman
     who is half my age plus 7 ({youngestAgeToDate}).
   </>,
   "I would never date a woman who rejects the Nicene Creed.",
-  "I find light skinned women more attractive then dark skinned women.",
-  "I find women with extreme views more attractive then women with no views.",
-  "I will not date a women on birth control.",
+  "I find light skinned women more attractive than dark skinned women.",
+  "I find women with extreme views more attractive than women with no views.",
+  "I will not date a woman on birth control.",
   "I find tattoos very unflattering.",
 ]
 
@@ -185,12 +186,16 @@ function MyType() {
       <PageHeader
         path="about-me/my-type"
         title="My Type"
-        description="A classified file. Complete the clearance form to open it."
+        description={
+          granted
+            ? "The file is open. Viewer discretion is advised."
+            : "A classified file. Complete the clearance form to open it."
+        }
       />
 
-      <div className="max-w-2xl">
+      <div>
         {granted ? (
-          <div className="flex flex-wrap items-center gap-3 rounded-xl border border-accent/50 bg-accent/10 px-4 py-3">
+          <div className="flex flex-nowrap items-center gap-3 rounded-xl border border-accent/50 bg-accent/10 px-4 py-3">
             <LockOpen className="size-5 text-accent" />
             <p className="font-mono text-sm font-bold tracking-wide text-accent uppercase">
               Access granted
@@ -202,110 +207,113 @@ function MyType() {
               onClick={lockUp}
             >
               <Lock />
-              Lock it back up
+              <span className="sm:hidden">Lock</span>
+              <span className="hidden sm:inline">Lock it back up</span>
             </Button>
           </div>
         ) : (
-          <section
-            aria-labelledby="clearance-title"
-            className="rounded-xl border border-border/50 bg-card p-4 sm:p-6"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <h2
-                id="clearance-title"
-                className="flex items-center gap-2 font-mono text-sm font-bold"
-              >
-                <Lock className="size-4 text-primary" />
-                Clearance required
-              </h2>
-              <span className="font-mono text-xs text-muted-foreground tabular-nums">
-                {cleared}/{total} cleared
-              </span>
-            </div>
-            <div
-              aria-hidden
-              className="mt-3 h-1.5 overflow-hidden rounded-full bg-well"
+          <PennyFormLayout caption="Penny is guarding this file.">
+            <section
+              aria-labelledby="clearance-title"
+              className="rounded-xl border border-border/50 bg-card p-4 sm:p-6"
             >
-              <div
-                className="h-full rounded-full bg-primary transition-[width] duration-300"
-                style={{ width: `${(cleared / total) * 100}%` }}
-              />
-            </div>
-
-            <ul className="mt-5 space-y-2.5">
-              {clearances.map(({ key, label }) => (
-                <li key={key}>
-                  <label
-                    htmlFor={`clearance-${key}`}
-                    className={cn(
-                      "flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition-colors",
-                      checked[key]
-                        ? "border-secondary/60 bg-secondary/10"
-                        : "border-border/70 bg-well/50 hover:border-border"
-                    )}
-                  >
-                    <Checkbox
-                      id={`clearance-${key}`}
-                      checked={checked[key]}
-                      onCheckedChange={(value) =>
-                        setChecked((prev) => ({ ...prev, [key]: !!value }))
-                      }
-                      className="mt-0.5"
-                    />
-                    <span className="text-[15px] leading-snug">{label}</span>
-                  </label>
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-5 space-y-2">
-              <Label htmlFor="clearance-middle-name">
-                Security question: Jared&apos;s middle name
-              </Label>
-              <div className="relative">
-                <Input
-                  id="clearance-middle-name"
-                  value={middleName}
-                  onChange={(e) => setMiddleName(e.target.value)}
-                  autoComplete="off"
-                  spellCheck={false}
-                  placeholder="It's not Danger"
-                  aria-invalid={nameWrong || undefined}
-                  className="pr-10 font-mono"
-                />
-                {nameCorrect && (
-                  <Check
-                    aria-label="Correct"
-                    className="absolute top-1/2 right-3 size-4 -translate-y-1/2 text-accent"
-                    strokeWidth={3}
-                  />
-                )}
+              <div className="flex items-center justify-between gap-3">
+                <h2
+                  id="clearance-title"
+                  className="flex items-center gap-2 font-mono text-sm font-bold"
+                >
+                  <Lock className="size-4 text-primary" />
+                  Clearance required
+                </h2>
+                <span className="font-mono text-xs text-muted-foreground tabular-nums">
+                  {cleared}/{total} cleared
+                </span>
               </div>
-              <p
-                aria-live="polite"
-                className={cn(
-                  "font-mono text-xs",
-                  nameWrong ? "text-destructive" : "text-muted-foreground"
-                )}
+              <div
+                aria-hidden
+                className="mt-3 h-1.5 overflow-hidden rounded-full bg-well"
               >
-                {nameWrong
-                  ? "Nope. Penny is disappointed in you."
-                  : "Friends and family should know this one."}
-              </p>
-            </div>
-          </section>
+                <div
+                  className="h-full rounded-full bg-primary transition-[width] duration-300"
+                  style={{ width: `${(cleared / total) * 100}%` }}
+                />
+              </div>
+
+              <ul className="mt-5 space-y-2.5">
+                {clearances.map(({ key, label }) => (
+                  <li key={key}>
+                    <label
+                      htmlFor={`clearance-${key}`}
+                      className={cn(
+                        "flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition-colors",
+                        checked[key]
+                          ? "border-secondary/60 bg-secondary/10"
+                          : "border-border/70 bg-well/50 hover:border-border"
+                      )}
+                    >
+                      <Checkbox
+                        id={`clearance-${key}`}
+                        checked={checked[key]}
+                        onCheckedChange={(value) =>
+                          setChecked((prev) => ({ ...prev, [key]: !!value }))
+                        }
+                        className="mt-0.5"
+                      />
+                      <span className="text-[15px] leading-snug">{label}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-5 space-y-2">
+                <Label htmlFor="clearance-middle-name">
+                  Security question: Jared&apos;s middle name
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="clearance-middle-name"
+                    value={middleName}
+                    onChange={(e) => setMiddleName(e.target.value)}
+                    autoComplete="off"
+                    spellCheck={false}
+                    placeholder="It's not Danger"
+                    aria-invalid={nameWrong || undefined}
+                    className="pr-10 font-mono"
+                  />
+                  {nameCorrect && (
+                    <Check
+                      aria-label="Correct"
+                      className="absolute top-1/2 right-3 size-4 -translate-y-1/2 text-accent"
+                      strokeWidth={3}
+                    />
+                  )}
+                </div>
+                <p
+                  aria-live="polite"
+                  className={cn(
+                    "font-mono text-xs",
+                    nameWrong ? "text-destructive" : "text-muted-foreground"
+                  )}
+                >
+                  {nameWrong
+                    ? "Nope. Penny is disappointed in you."
+                    : "Friends and family should know this one."}
+                </p>
+              </div>
+            </section>
+          </PennyFormLayout>
         )}
       </div>
 
       {granted && (
         <div className="mt-10 animate-in space-y-10 duration-500 fade-in slide-in-from-bottom-2 md:mt-12 md:space-y-14">
-          <section className="max-w-2xl">
+          <section>
             <SectionHeading>Field Notes</SectionHeading>
-            <ol>
+            <ol className="md:grid md:grid-cols-2 md:gap-x-10">
               {fieldNotes.map((note, i) => (
                 <li
                   key={i}
-                  className="flex gap-4 border-b border-dashed border-border/80 py-3.5 first:pt-1"
+                  className="flex gap-4 border-b border-dashed border-border/80 py-3.5"
                 >
                   <span className="font-mono text-sm font-bold text-primary tabular-nums">
                     {String(i + 1).padStart(2, "0")}
@@ -365,7 +373,7 @@ function MyType() {
                     ) : (
                       <ExhibitPhoto src={exhibit.src} alt={exhibit.caption} />
                     )}
-                    <figcaption className="truncate px-1 py-2.5 text-center font-mono text-xs font-semibold text-[oklch(0.25_0.05_265)]">
+                    <figcaption className="line-clamp-2 min-h-[3.25em] px-1 py-2 text-center font-mono text-xs leading-tight font-semibold text-balance text-[oklch(0.25_0.05_265)]">
                       {exhibit.caption}
                     </figcaption>
                   </figure>

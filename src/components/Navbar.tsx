@@ -35,7 +35,7 @@ export function Navbar() {
             className={cn(
               "inline-flex min-h-11 shrink-0 items-center rounded-md px-3.5 font-mono text-xs font-semibold tracking-wider whitespace-nowrap uppercase transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 md:min-h-10 md:px-4 md:text-[13px]",
               active
-                ? "bg-primary/15 text-primary ring-1 ring-primary/45 ring-inset"
+                ? "bg-primary/20 text-foreground ring-1 ring-primary/60 ring-inset"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >

@@ -257,6 +257,7 @@ export function ReviewForm({ initial }: { initial?: RankedReview }) {
               </Field>
             ))}
           </div>
+          <LandsIn scores={scores} className="lg:hidden" />
         </FormSection>
 
         <FormSection title="Review">
@@ -308,6 +309,49 @@ export function ReviewForm({ initial }: { initial?: RankedReview }) {
   )
 }
 
+/** The average a set of score inputs would produce, if any parse. */
+function previewAverage(scores: Record<MetricKey, string>): number | null {
+  const parsed = METRICS.flatMap((m) => {
+    const v = parseScore(scores[m.key])
+    return v === null ? [] : [v]
+  })
+  return parsed.length > 0
+    ? parsed.reduce((sum, v) => sum + v, 0) / parsed.length
+    : null
+}
+
+/** "Lands in [9] tier": where the entered scores would put this review. */
+function LandsIn({
+  scores,
+  className,
+}: {
+  scores: Record<MetricKey, string>
+  className?: string
+}) {
+  const average = previewAverage(scores)
+  if (average === null) return null
+  const band = bandForScore(average)
+  return (
+    <p
+      className={cn(
+        "flex flex-wrap items-center gap-2 font-mono text-xs text-muted-foreground",
+        className
+      )}
+    >
+      Lands in
+      <span
+        className={cn(
+          "grid h-6 min-w-6 place-items-center rounded-md px-1 font-bold",
+          bandTone(band)
+        )}
+      >
+        {band === "poop" ? "<0" : band}
+      </span>
+      {band === "poop" ? "Certified Poop" : "tier"}
+    </p>
+  )
+}
+
 /** A live look at how the card will read on the board. */
 function ReviewPreview({
   title,
@@ -330,12 +374,11 @@ function ReviewPreview({
     parsed.length > 0
       ? parsed.reduce((sum, p) => sum + p.value, 0) / parsed.length
       : null
-  const band = average === null ? null : bandForScore(average)
 
   return (
     <div>
       <p className="mb-3 font-mono text-sm font-bold">Preview</p>
-      <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-well ring-1 ring-border/80">
+      <div className="relative mx-auto aspect-[2/3] max-h-64 overflow-hidden rounded-lg bg-well ring-1 ring-border/80">
         {artPreview ? (
           <img src={artPreview} alt="" className="size-full object-cover" />
         ) : (
@@ -374,20 +417,7 @@ function ReviewPreview({
           ))}
         </div>
       )}
-      {band !== null && (
-        <p className="mt-4 flex items-center gap-2 font-mono text-xs text-muted-foreground">
-          Lands in
-          <span
-            className={cn(
-              "grid h-6 min-w-6 place-items-center rounded-md px-1 font-bold",
-              bandTone(band)
-            )}
-          >
-            {band === "poop" ? "<0" : band}
-          </span>
-          {band === "poop" ? "Certified Poop" : "tier"}
-        </p>
-      )}
+      <LandsIn scores={scores} className="mt-4" />
     </div>
   )
 }
@@ -405,7 +435,7 @@ function FormSection({
     <fieldset className="space-y-5 border-t border-border/70 pt-6 max-sm:first-of-type:border-t-0 max-sm:first-of-type:pt-0 sm:rounded-xl sm:border sm:border-border/80 sm:bg-card sm:p-6">
       <legend className="sr-only">{title}</legend>
       <div aria-hidden>
-        <p className="font-mono text-[15px] font-bold">{title}</p>
+        <p className="font-mono text-base font-extrabold md:text-lg">{title}</p>
         {description && (
           <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         )}

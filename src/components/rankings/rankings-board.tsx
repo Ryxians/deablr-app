@@ -284,7 +284,7 @@ export function RankingsBoard({
       ) : bands.every((b) => b.items.length === 0) ? (
         <EmptyState>Nothing matches those filters.</EmptyState>
       ) : (
-        <div>
+        <div className="md:grid md:grid-cols-2 md:gap-x-10">
           {bands.map(({ band, items }) => (
             <ScoreBandCarousel key={band} band={band} items={items} />
           ))}

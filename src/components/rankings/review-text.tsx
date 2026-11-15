@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { EyeOff } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import type { ReactNode } from "react"
@@ -27,6 +28,7 @@ function Spoiler({
       tabIndex={0}
       aria-expanded={revealed}
       title={revealed ? "Hide spoiler" : "Reveal spoiler"}
+      aria-label={revealed ? undefined : "Spoiler, activate to reveal"}
       onClick={() => setRevealed((r) => !r)}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -35,7 +37,7 @@ function Spoiler({
         }
       }}
       className={cn(
-        "cursor-pointer rounded-sm transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+        "relative cursor-pointer rounded-sm transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
         inline
           ? "px-1 py-0.5"
           : "my-3 block rounded-lg border border-dashed border-border p-4",
@@ -52,6 +54,15 @@ function Spoiler({
       >
         {children}
       </span>
+      {!revealed && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 flex items-center justify-center gap-1.5 font-mono text-[11px] font-bold tracking-wide text-foreground uppercase"
+        >
+          <EyeOff className="size-3.5" />
+          spoiler
+        </span>
+      )}
     </Tag>
   )
 }
@@ -138,7 +149,7 @@ const components = {
 /** A Review's text, rendered as Markdown with <spoiler> tag support. */
 export function ReviewText({ text }: { text: string }) {
   return (
-    <section className="mt-10 border-t border-border/70 pt-8">
+    <section className="border-t border-border/70 pt-7">
       <div className="max-w-[65ch] text-[17px] leading-relaxed text-foreground/95">
         <ReactMarkdown
           remarkPlugins={[remarkGfm, remarkSpoiler]}
