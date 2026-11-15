@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import {
   Baby,
   Ban,
@@ -92,7 +92,6 @@ function AboutMe() {
               {[
                 { icon: MapPin, label: "Broken Arrow, OK" },
                 { icon: Ruler, label: `5'8"` },
-                { icon: Heart, label: "Long-term" },
               ].map(({ icon: Icon, label }) => (
                 <li
                   key={label}
@@ -102,6 +101,16 @@ function AboutMe() {
                   {label}
                 </li>
               ))}
+              <li>
+                {/* Easter egg: the heart opens the classified "My Type" file. */}
+                <Link
+                  to="/my-type"
+                  className="group flex items-center gap-1.5 rounded-full border border-border/80 bg-well/60 px-2.5 py-1 font-mono text-xs text-muted-foreground outline-none hover:border-primary/60 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                >
+                  <Heart className="size-3.5 text-secondary transition-colors group-hover:fill-primary group-hover:text-primary" />
+                  Long-term
+                </Link>
+              </li>
             </ul>
           </div>
           <p className="col-span-2 text-[17px] leading-relaxed text-foreground/95 sm:col-span-1 sm:col-start-2">
