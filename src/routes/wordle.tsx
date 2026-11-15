@@ -1,19 +1,28 @@
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
+import type { WordleColor, WordleTile } from "@/lib/wordle"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { matchesWordleGuess } from "@/lib/wordle"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const Route = createFileRoute("/wordle")({
   component: Wordle,
 })
+
+const colors: Record<WordleColor, string> = {
+  gray: "bg-gray-600 text-white dark:bg-gray-600",
+  yellow: "bg-yellow-700 text-white dark:bg-yellow-700",
+  green: "bg-green-700 text-white dark:bg-green-700",
+}
+
+function emptyGuesses(): Array<Array<WordleTile>> {
+  return Array.from({ length: 6 }, () =>
+    Array.from({ length: 5 }, () => ({ letter: "", color: "gray" as const }))
+  )
+}
 
 function Wordle() {
   const { data } = useQuery({
@@ -31,96 +40,127 @@ function Wordle() {
   })
 
   const [limit, setLimit] = useState(50)
-  const [first, setFirst] = useState("")
-  const [second, setSecond] = useState("")
-  const [third, setThird] = useState("")
-  const [fourth, setFourth] = useState("")
-  const [fifth, setFifth] = useState("")
-  const [wrongLetters, setWrongLetters] = useState(new Set<string>())
-  const [hasLetters, setHasLetters] = useState(new Set<string>())
+  const [guesses, setGuesses] = useState(emptyGuesses)
+  const inputs = useRef<Array<Array<HTMLInputElement | null>>>([])
+
+  function updateTile(
+    row: number,
+    column: number,
+    update: Partial<WordleTile>
+  ) {
+    setGuesses((previous) =>
+      previous.map((tiles, rowIndex) =>
+        rowIndex === row
+          ? tiles.map((tile, index) =>
+              index === column ? { ...tile, ...update } : tile
+            )
+          : tiles
+      )
+    )
+  }
 
   const wordsToRecommend = useMemo(() => {
     const filtered =
-      data?.filter((word) => {
-        const f = [first, second, third, fourth, fifth]
-        const matches =
-          f.every((ch, i) => !ch || ch === word[i]) &&
-          Array.from(wrongLetters).every((l) => !word.includes(l)) &&
-          Array.from(hasLetters).every((l) => word.includes(l))
-        return matches
-      }) ?? []
+      data?.filter((word) =>
+        guesses.every((guess) => matchesWordleGuess(word, guess))
+      ) ?? []
 
     return filtered.sort(() => Math.random() - 0.5).slice(0, limit)
-  }, [
-    data,
-    first,
-    second,
-    third,
-    fourth,
-    fifth,
-    wrongLetters,
-    hasLetters,
-    limit,
-  ])
+  }, [data, guesses, limit])
 
   return (
     <div className="container mx-auto max-w-2xl py-12">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold text-center">
+          <CardTitle className="text-center text-2xl font-semibold">
             Wordle Helper
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Correct Letters */}
+          {/* Guesses */}
           <div className="space-y-2">
-            <Label>Correct Letters</Label>
-            <div className="flex gap-2">
-              {[first, second, third, fourth, fifth].map((value, i) => {
-                const setFns: Array<(value: string) => void> = [
-                  setFirst,
-                  setSecond,
-                  setThird,
-                  setFourth,
-                  setFifth,
-                ]
-                return (
-                  <Input
-                    key={i}
-                    className="text-center text-lg font-mono"
-                    maxLength={1}
-                    value={value}
-                    onChange={(e) => setFns[i](e.target.value.toLowerCase())}
-                  />
-                )
-              })}
+            <Label>Guesses</Label>
+            <p className="text-sm text-muted-foreground">
+              Enter your guesses and select the color of each tile from Wordle.
+            </p>
+            <div className="space-y-3">
+              {guesses.map((guess, row) => (
+                <div key={row} className="grid grid-cols-5 gap-2">
+                  {guess.map((tile, column) => (
+                    <div key={column} className="min-w-0 space-y-1">
+                      <Input
+                        ref={(element) => {
+                          inputs.current[row] ??= []
+                          inputs.current[row][column] = element
+                        }}
+                        aria-label={`Guess ${row + 1}, letter ${column + 1}`}
+                        className={`h-10 text-center font-mono text-lg font-bold uppercase ${colors[tile.color]}`}
+                        maxLength={1}
+                        value={tile.letter}
+                        onChange={(e) => {
+                          const letter = e.target.value
+                            .toLowerCase()
+                            .replace(/[^a-z]/g, "")
+                          updateTile(row, column, { letter })
+                          if (letter && column < 4)
+                            inputs.current[row]?.[column + 1]?.focus()
+                        }}
+                        onKeyDown={(e) => {
+                          if (
+                            e.key === "Backspace" &&
+                            !tile.letter &&
+                            column > 0
+                          ) {
+                            inputs.current[row]?.[column - 1]?.focus()
+                          }
+                        }}
+                        onPaste={(e) => {
+                          const letters = e.clipboardData
+                            .getData("text")
+                            .toLowerCase()
+                            .replace(/[^a-z]/g, "")
+                            .slice(0, 5 - column)
+                          if (!letters) return
+                          e.preventDefault()
+                          setGuesses((previous) =>
+                            previous.map((tiles, rowIndex) =>
+                              rowIndex === row
+                                ? tiles.map((item, index) =>
+                                    index >= column &&
+                                    index < column + letters.length
+                                      ? {
+                                          ...item,
+                                          letter: letters[index - column],
+                                        }
+                                      : item
+                                  )
+                                : tiles
+                            )
+                          )
+                          inputs.current[row]?.[
+                            Math.min(column + letters.length, 4)
+                          ]?.focus()
+                        }}
+                      />
+                      <select
+                        aria-label={`Guess ${row + 1}, letter ${column + 1} color`}
+                        className={`w-full min-w-0 rounded border px-1 py-1 text-xs ${colors[tile.color]}`}
+                        value={tile.color}
+                        onChange={(e) =>
+                          updateTile(row, column, {
+                            color: e.target.value as WordleColor,
+                          })
+                        }
+                      >
+                        <option value="gray">Gray</option>
+                        <option value="yellow">Yellow</option>
+                        <option value="green">Green</option>
+                      </select>
+                    </div>
+                  ))}
+                </div>
+              ))}
             </div>
-          </div>
-
-          {/* Wrong Letters */}
-          <div className="space-y-2">
-            <Label>Wrong Letters</Label>
-            <Input
-              placeholder="e.g. rstlne"
-              value={Array.from(wrongLetters).join("")}
-              onChange={(e) =>
-                setWrongLetters(
-                  new Set(Array.from(e.target.value.toLowerCase())),
-                )
-              }
-            />
-          </div>
-
-          {/* Has Letters */}
-          <div className="space-y-2">
-            <Label>Has Letters</Label>
-            <Input
-              placeholder="e.g. oa"
-              value={Array.from(hasLetters).join("")}
-              onChange={(e) =>
-                setHasLetters(new Set(Array.from(e.target.value.toLowerCase())))
-              }
-            />
           </div>
 
           {/* Word Limit */}
@@ -145,26 +185,22 @@ function Wordle() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() =>
-                  [setFirst, setSecond, setThird, setFourth, setFifth].forEach(
-                    (fn) => fn(""),
-                  )
-                }
+                onClick={() => setGuesses(emptyGuesses())}
               >
                 Clear
               </Button>
             </div>
 
-            <div className="border rounded-md p-2 max-h-60 overflow-y-auto divide-y">
+            <div className="max-h-60 divide-y overflow-y-auto rounded-md border p-2">
               {wordsToRecommend.length === 0 ? (
-                <p className="text-center text-sm text-muted-foreground py-8">
+                <p className="py-8 text-center text-sm text-muted-foreground">
                   No words match your criteria.
                 </p>
               ) : (
                 wordsToRecommend.map((word, i) => (
                   <div
                     key={word + i}
-                    className={`py-1 px-2 font-mono text-sm ${
+                    className={`px-2 py-1 font-mono text-sm ${
                       i % 2 === 0 ? "bg-muted/40" : ""
                     }`}
                   >
