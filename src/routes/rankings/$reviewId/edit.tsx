@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router"
 import { ReviewForm } from "@/components/rankings/review-form"
 import { NotFound } from "@/components/NotFound"
+import { PageHeader } from "@/components/page-header"
 import { getReview } from "@/server/rankings"
 import { getCurrentUser } from "@/server/session"
 
@@ -21,7 +22,7 @@ function EditReviewPage() {
   if (user?.role !== "admin") return <NotFound />
   return (
     <div>
-      <h1 className="mb-4 text-2xl font-bold">Edit Review</h1>
+      <PageHeader path="rankings/edit" title={`Edit: ${review.title}`} />
       <ReviewForm initial={review} />
     </div>
   )

@@ -5,10 +5,7 @@ import type { RankedReview } from "@/server/rankings"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { formatScore, parseScore } from "@/lib/rankings"
-import {
-  getScoreNeighbors,
-  quickUpdateScore,
-} from "@/server/rankings"
+import { getScoreNeighbors, quickUpdateScore } from "@/server/rankings"
 
 function NeighborRow({
   item,
@@ -46,15 +43,15 @@ function NeighborRow({
     <li
       className={
         highlight
-          ? "border border-red-400 bg-red-50 p-1.5 text-xs dark:bg-red-950/30"
-          : "border border-border p-1.5 text-xs"
+          ? "rounded-md bg-destructive/15 p-1.5 text-xs ring-1 ring-destructive/60 ring-inset"
+          : "rounded-md bg-well/60 p-1.5 text-xs"
       }
     >
       <div className="flex items-center gap-2">
         <img
           src={item.artUrl}
           alt=""
-          className="aspect-[2/3] w-8 rounded-sm object-cover"
+          className="aspect-[2/3] w-7 rounded-sm object-cover"
         />
         <span className="min-w-0 flex-1 truncate font-medium">
           {item.title}
@@ -85,7 +82,7 @@ function NeighborRow({
           <button
             type="button"
             title="Quick-edit score"
-            className="rounded px-1.5 py-0.5 font-bold tabular-nums hover:bg-muted"
+            className="cursor-pointer rounded-sm px-1.5 py-0.5 font-mono font-bold tabular-nums hover:bg-muted"
             onClick={() => {
               setValue(formatScore(item.scores[metric] ?? 0))
               setError(null)
@@ -96,7 +93,7 @@ function NeighborRow({
           </button>
         )}
       </div>
-      {error && <p className="mt-1 text-red-600">{error}</p>}
+      {error && <p className="mt-1 text-destructive">{error}</p>}
     </li>
   )
 }
@@ -148,23 +145,23 @@ export function ScoreNeighborPreview({
     <div
       className={
         taken
-          ? "rounded-md border border-red-400 p-2"
-          : "rounded-md border border-dashed border-border p-2"
+          ? "rounded-lg border border-destructive/60 p-2"
+          : "rounded-lg border border-dashed border-border p-2"
       }
     >
       <p
         className={
           taken
-            ? "mb-1.5 text-xs font-medium text-red-600"
-            : "mb-1.5 text-xs text-muted-foreground"
+            ? "mb-2 px-1 text-sm font-semibold text-destructive"
+            : "mb-1.5 px-1 font-mono text-xs text-muted-foreground"
         }
       >
         {taken
-          ? "Score already taken — quick-edit the holder below to free it:"
-          : "Would slot between:"}
+          ? `Taken by ${at[0].title}. Tap its score below to change it and free the slot.`
+          : "Would slot between"}
       </p>
       {above.length === 0 && at.length === 0 && below.length === 0 ? (
-        <p className="text-xs text-muted-foreground">
+        <p className="px-1 text-xs text-muted-foreground">
           No neighbours on this Metric.
         </p>
       ) : (
@@ -188,8 +185,10 @@ export function ScoreNeighborPreview({
               />
             ))
           ) : (
-            <li className="py-0.5 text-center text-xs font-bold text-primary">
-              ⟵ {formatScore(parseScore(debounced)!)}
+            <li className="flex items-center gap-2 px-1 py-0.5 font-mono text-xs font-bold text-primary">
+              <span className="h-px flex-1 bg-primary/50" />
+              {formatScore(parseScore(debounced)!)}
+              <span className="h-px flex-1 bg-primary/50" />
             </li>
           )}
           {below.map((item) => (

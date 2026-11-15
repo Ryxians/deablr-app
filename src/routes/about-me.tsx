@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { Link, createFileRoute } from "@tanstack/react-router"
 import {
   Baby,
   Ban,
@@ -11,14 +11,9 @@ import {
   Wine,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item"
+import { PageHeader } from "@/components/page-header"
+import { cn } from "@/lib/utils"
+import { SectionHeading } from "@/components/section-heading"
 import {
   Carousel,
   CarouselContent,
@@ -49,24 +44,24 @@ const goodToKnow: Array<{
   description: string
   icon: LucideIcon
 }> = [
-    {
-      title: "Bachelor's degree",
-      description: "Educated fool",
-      icon: GraduationCap,
-    },
-    { title: "Catholic", description: "God Oriented", icon: Church },
-    { title: "No Pets", description: "Want pets", icon: PawPrint },
-    { title: "No kids", description: "Want kids", icon: Baby },
-    { title: "Marijuana Gross", description: "hard pass", icon: Ban },
-    { title: "Wine Prince", description: "Parents own a winery", icon: Wine },
-  ]
+  {
+    title: "Bachelor's degree",
+    description: "Educated fool",
+    icon: GraduationCap,
+  },
+  { title: "Catholic", description: "God Oriented", icon: Church },
+  { title: "No Pets", description: "Want pets", icon: PawPrint },
+  { title: "No kids", description: "Want kids", icon: Baby },
+  { title: "Marijuana Gross", description: "hard pass", icon: Ban },
+  { title: "Wine Prince", description: "Parents own a winery", icon: Wine },
+]
 
 const playlists = [
-  "https://open.spotify.com/embed/playlist/4Zxs6hjuX3HO5pd97OwyZ3?utm_source=generator&si=521fecaba4dc46f5",
-  "https://open.spotify.com/embed/playlist/3xxRaISAq1WBippP2JdHoE?utm_source=generator&si=c73d9aa231a94db1",
-  "https://open.spotify.com/embed/playlist/2FiV8RJINYdcYW0zO8mR7A?utm_source=generator&si=83caf61b6eb74255",
-  "https://open.spotify.com/embed/playlist/4N7mTgHCyMjxyhiF2XzfpG?utm_source=generator&si=341fc5b347e346b9",
-  "https://open.spotify.com/embed/playlist/2wFOez3ihkVNqrrl7P2n7J?utm_source=generator&si=933981332b20498b"
+  "https://open.spotify.com/embed/playlist/4Zxs6hjuX3HO5pd97OwyZ3?utm_source=generator&si=521fecaba4dc46f5&theme=0",
+  "https://open.spotify.com/embed/playlist/3xxRaISAq1WBippP2JdHoE?utm_source=generator&si=c73d9aa231a94db1&theme=0",
+  "https://open.spotify.com/embed/playlist/2FiV8RJINYdcYW0zO8mR7A?utm_source=generator&si=83caf61b6eb74255&theme=0",
+  "https://open.spotify.com/embed/playlist/4N7mTgHCyMjxyhiF2XzfpG?utm_source=generator&si=341fc5b347e346b9&theme=0",
+  "https://open.spotify.com/embed/playlist/2wFOez3ihkVNqrrl7P2n7J?utm_source=generator&si=933981332b20498b&theme=0",
 ]
 
 const morePhotos = [
@@ -81,101 +76,127 @@ function AboutMe() {
   const age = calculateAge(new Date(2000, 4, 10))
 
   return (
-    <div className="mx-auto max-w-2xl space-y-8">
-      <section className="flex flex-col items-center text-center">
-        <img
-          src="/jared/profile.JPG"
-          alt="Jared"
-          className="w-full max-w-sm rounded-3xl object-cover shadow-sm"
-        />
-        <h1 className="mt-4 text-3xl font-bold">Jared, {age}</h1>
-        <div className="mt-2 flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <MapPin className="h-4 w-4" />
-            Broken Arrow, OK
-          </span>
-          <span className="flex items-center gap-1">
-            <Ruler className="h-4 w-4" />
-            5&apos;8&quot;
-          </span>
-          <span className="flex items-center gap-1">
-            <Heart className="h-4 w-4" />
-            Long-term
-          </span>
-        </div>
-      </section>
+    <div>
+      <PageHeader path="about-me" title="About Me" />
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-x-12">
+        <section className="grid grid-cols-[6.5rem_minmax(0,1fr)] items-center gap-x-4 gap-y-5 sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-x-8 lg:col-start-1">
+          <img
+            src="/jared/profile.JPG"
+            alt="Jared"
+            className="aspect-square w-full rounded-2xl object-cover ring-1 ring-border/80 sm:row-span-2 sm:self-start"
+          />
+          <div className="min-w-0">
+            <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">
+              Jared, <span className="text-primary">{age}</span>
+            </h2>
+            <ul className="mt-3 flex flex-wrap gap-1.5 sm:gap-2">
+              {[
+                { icon: MapPin, label: "Broken Arrow, OK" },
+                { icon: Ruler, label: `5'8"` },
+              ].map(({ icon: Icon, label }) => (
+                <li
+                  key={label}
+                  className="flex items-center gap-1.5 rounded-md border border-border/80 bg-well/60 px-2.5 py-1 font-mono text-xs text-muted-foreground"
+                >
+                  <Icon className="size-3.5 text-secondary" />
+                  {label}
+                </li>
+              ))}
+              <li>
+                {/* Easter egg: the heart opens the classified "My Type" file. */}
+                <Link
+                  to="/my-type"
+                  className="group flex items-center gap-1.5 rounded-md border border-border/80 bg-well/60 px-2.5 py-1 font-mono text-xs text-muted-foreground outline-none hover:border-primary/60 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                >
+                  <Heart className="size-3.5 text-secondary transition-colors group-hover:fill-primary group-hover:text-primary" />
+                  Long-term
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <p className="col-span-2 text-[17px] leading-relaxed text-foreground/95 sm:col-span-1 sm:col-start-2">
+            Henlo, I am here! Local fool who likes to talk. Will be an extremist
+            if it&apos;s funny. Die hard Oklahoman (Okie). Red Truck. God &amp;
+            State. Scooby Doo is the pinnacle of animation (pre-youtube). Broken
+            Arrow native.
+          </p>
+        </section>
 
-      <section>
-        <p className="text-center">
-          Henlo, I am here! Local fool who likes to talk. Will be an extremist
-          if it&apos;s funny. Die hard Oklahoman (Okie). Red Truck. God & State.
-          Scooby Doo is the pinnacle of animation (pre-youtube). Broken Arrow
-          native.
-        </p>
-      </section>
+        <section className="mt-10 lg:col-start-2 lg:row-start-1 lg:mt-0">
+          <SectionHeading>Good to Know</SectionHeading>
+          <dl className="grid sm:grid-cols-2 sm:gap-x-10 lg:grid-cols-1">
+            {goodToKnow.map(({ title, description, icon: Icon }) => (
+              <div
+                key={title}
+                className="grid grid-cols-[1rem_minmax(0,1fr)] gap-x-3 border-b border-dashed border-border/80 py-3"
+              >
+                <Icon
+                  aria-hidden
+                  className="row-span-2 mt-0.5 size-4 text-secondary"
+                />
+                <dt className="font-mono text-sm font-bold">{title}</dt>
+                <dd className="text-[15px] text-muted-foreground">
+                  {description}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
 
-      <section>
-        <h2 className="mb-3 border-b border-border pb-1 text-xl font-bold">
-          Good to Know
-        </h2>
-        <ItemGroup>
-          {goodToKnow.map(({ title, description, icon: Icon }) => (
-            <Item key={title}>
-              <ItemMedia>
-                <Icon className="h-5 w-5 text-primary" />
-              </ItemMedia>
-              <ItemContent>
-                <ItemTitle>{title}</ItemTitle>
-                <ItemDescription>{description}</ItemDescription>
-              </ItemContent>
-            </Item>
-          ))}
-        </ItemGroup>
-      </section>
-
-      <section>
-        <h2 className="mb-3 border-b border-border pb-1 text-xl font-bold">
-          On Repeat
-        </h2>
-        <div className="px-10 md:px-12">
+        <section className="mt-10 md:mt-14 lg:col-span-2">
           <Carousel>
+            <SectionHeading
+              action={
+                <div className="flex gap-1.5">
+                  <CarouselPrevious className="static translate-y-0" />
+                  <CarouselNext className="static translate-y-0" />
+                </div>
+              }
+            >
+              On Repeat
+            </SectionHeading>
             <CarouselContent>
               {playlists.map((src, index) => (
                 <CarouselItem key={src}>
-                  <iframe
-                    title={`Spotify playlist ${index + 1}`}
-                    className="w-full rounded-xl"
-                    src={src}
-                    height={352}
-                    frameBorder={0}
-                    allowFullScreen
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    loading="lazy"
-                  />
+                  <div className="relative h-[352px] overflow-hidden rounded-xl bg-well ring-1 ring-border/70">
+                    <span className="absolute inset-0 grid place-items-center font-mono text-xs text-muted-foreground">
+                      Loading playlist…
+                    </span>
+                    <iframe
+                      title={`Spotify playlist ${index + 1}`}
+                      className="relative block w-full"
+                      src={src}
+                      height={352}
+                      frameBorder={0}
+                      allowFullScreen
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      loading="lazy"
+                    />
+                  </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
           </Carousel>
-        </div>
-      </section>
+        </section>
 
-      <section>
-        <h2 className="mb-3 border-b border-border pb-1 text-xl font-bold">
-          More Photos
-        </h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-          {morePhotos.map((src, index) => (
-            <img
-              key={src}
-              src={src}
-              alt={`Jared photo ${index + 1}`}
-              className="aspect-square w-full rounded-xl object-cover"
-            />
-          ))}
-        </div>
-      </section>
+        <section className="mt-10 md:mt-14 lg:col-span-2">
+          <SectionHeading>More Photos</SectionHeading>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
+            {morePhotos.map((src, index) => (
+              <img
+                key={src}
+                src={src}
+                alt={`Jared photo ${index + 1}`}
+                className={cn(
+                  "w-full rounded-xl object-cover ring-1 ring-border/70",
+                  index === 0 ? "col-span-2 aspect-[2/1]" : "aspect-square"
+                )}
+                loading="lazy"
+              />
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   )
 }

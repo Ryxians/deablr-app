@@ -79,7 +79,7 @@ export function TagCombobox({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "h-auto min-h-9 w-full justify-between gap-2 px-3 py-1.5 font-normal",
+            "h-auto min-h-10 w-full justify-between gap-2 bg-well px-3 py-1.5 font-sans text-sm font-normal hover:bg-well",
             className
           )}
         >
@@ -90,13 +90,13 @@ export function TagCombobox({
               selected.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-0.5 rounded bg-muted px-1.5 py-0.5 text-xs"
+                  className="inline-flex items-center gap-0.5 rounded-full bg-secondary/15 py-0.5 pr-0.5 pl-2 text-xs text-secondary ring-1 ring-secondary/35 ring-inset"
                 >
                   {tag}
                   <span
                     role="button"
                     aria-label={`Remove ${tag}`}
-                    className="cursor-pointer rounded-sm p-0.5 hover:bg-background"
+                    className="cursor-pointer rounded-full p-0.5 hover:bg-secondary/25"
                     onClick={(e) => {
                       e.stopPropagation()
                       toggle(tag)
@@ -114,7 +114,7 @@ export function TagCombobox({
               ))
             )}
           </span>
-          <ChevronsUpDownIcon className="size-4 shrink-0 opacity-50" />
+          <ChevronsUpDownIcon className="size-4 shrink-0 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
       <PopoverContent

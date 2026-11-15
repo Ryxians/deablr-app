@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router"
+import { Star } from "lucide-react"
 import type { RankedReview } from "@/server/rankings"
+import { Chip } from "@/components/ui/chip"
 import {
   METRICS,
   averageScore,
@@ -10,17 +12,18 @@ import {
 
 export function PeakChip() {
   return (
-    <span className="absolute top-1 right-1 rounded bg-yellow-400 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-yellow-950 uppercase shadow">
+    <Chip tone="sun" size="xs" className="absolute top-2 right-2">
+      <Star className="size-2.5 fill-current" strokeWidth={0} />
       Peak
-    </span>
+    </Chip>
   )
 }
 
 export function IncompleteChip() {
   return (
-    <span className="absolute top-1 left-1 rounded bg-background/90 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-muted-foreground uppercase shadow">
+    <Chip tone="solid" size="xs" className="absolute top-2 left-2">
       Incomplete
-    </span>
+    </Chip>
   )
 }
 
@@ -31,28 +34,33 @@ export function ReviewCard({ item }: { item: RankedReview }) {
     <Link
       to="/rankings/$reviewId"
       params={{ reviewId: item.reviewId }}
-      className="group block"
+      className="group block rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
     >
-      <div className="relative aspect-[2/3] overflow-hidden rounded-md border border-border bg-muted">
+      <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-well ring-1 ring-border/80 transition-[box-shadow,transform] duration-200 group-hover:-translate-y-0.5 group-hover:ring-2 group-hover:ring-primary">
         <img
           src={item.artUrl}
-          alt={item.title}
-          className="size-full object-cover transition-transform duration-200 group-hover:scale-105"
+          alt=""
+          className="size-full object-cover"
           loading="lazy"
         />
         {isPeak(item.scores) && <PeakChip />}
         {item.incomplete && <IncompleteChip />}
       </div>
-      <p className="mt-1 line-clamp-2 text-xs leading-tight font-medium">
+      <p className="mt-2.5 line-clamp-2 text-sm leading-snug font-bold text-foreground underline-offset-2 group-hover:underline">
         {item.title}
       </p>
-      <p className="text-xs font-bold tabular-nums">
-        {formatAverage(averageScore(item.scores))}
-      </p>
-      <p className="text-[10px] text-muted-foreground tabular-nums">
-        {defined
-          .map((m) => `${m.label} ${formatScore(item.scores[m.key]!)}`)
-          .join(" · ")}
+      <p className="mt-1 font-mono tabular-nums">
+        <span className="block text-[15px] font-extrabold text-foreground">
+          {formatAverage(averageScore(item.scores))}
+        </span>
+        <span className="flex flex-wrap gap-x-1.5 text-xs text-muted-foreground">
+          {defined.map((m, idx) => (
+            <span key={m.key} className="whitespace-nowrap">
+              {idx > 0 && <span aria-hidden>· </span>}
+              {m.label} {formatScore(item.scores[m.key]!)}
+            </span>
+          ))}
+        </span>
       </p>
     </Link>
   )

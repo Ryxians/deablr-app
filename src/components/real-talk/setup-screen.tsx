@@ -1,37 +1,33 @@
 import { useState } from "react"
 import { useSelector } from "@tanstack/react-store"
-import {
-  AlertTriangle,
-  Play,
-  RotateCcw,
-  Sparkles,
-  Trash2,
-  Users,
-  X,
-  Zap,
-  ZapOff,
-} from "lucide-react"
+import { AlertTriangle, Play, Plus, RotateCcw, X } from "lucide-react"
+import { MotionToggle } from "./motion-toggle"
+import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import {
-  store,
-  startGame,
-  loadQuestions,
-  toggleAnimations,
-  resumeSavedGame,
   clearSavedGame,
+  loadQuestions,
+  resumeSavedGame,
+  startGame,
+  store,
 } from "@/stores/real-talk"
+
+const HOW_TO_PLAY = [
+  "Add everyone who's playing.",
+  "On your turn, read the card out loud and answer it honestly.",
+  "Redraw if the card doesn't land, then pass to the next player.",
+  "Turn order reshuffles every round. Drawn cards never come back.",
+]
 
 export function SetupScreen() {
   const savedGameExists = useSelector(store, (s) => s.savedGameExists)
   const questionsCount = useSelector(store, (s) => s.questions.length)
   const loadError = useSelector(store, (s) => s.loadError)
-  const animationsEnabled = useSelector(store, (s) => s.animationsEnabled)
 
   const [newPlayerName, setNewPlayerName] = useState("")
-  const [tempPlayers, setTempPlayers] = useState<string[]>([])
+  const [tempPlayers, setTempPlayers] = useState<Array<string>>([])
 
   const addPlayer = () => {
     const trimmed = newPlayerName.trim()
@@ -46,149 +42,143 @@ export function SetupScreen() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 md:space-y-8">
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-primary/10 mb-2">
-          <Sparkles className="size-6 md:size-8 text-primary" />
-        </div>
-        <h1 className="text-3xl md:text-4xl font-bold">Real Talk</h1>
-        <p className="text-muted-foreground max-w-md mx-auto">
-          A social question game where players take turns drawing random
-          questions from a deck and answering them honestly.
-        </p>
-        <Button
-          onClick={toggleAnimations}
-          variant="ghost"
-          size="sm"
-          className="text-muted-foreground hover:text-foreground"
-          title={
-            animationsEnabled ? "Disable animations" : "Enable animations"
-          }
-        >
-          {animationsEnabled ? (
-            <ZapOff className="size-4 mr-1.5" />
-          ) : (
-            <Zap className="size-4 mr-1.5" />
-          )}
-          {animationsEnabled ? "Animations on" : "Animations off"}
-        </Button>
-      </div>
-
-      {savedGameExists && (
-        <Card className="border-primary/30 bg-primary/5">
-          <CardContent className="py-6 space-y-4">
-            <div className="flex items-center gap-2 text-primary">
-              <AlertTriangle className="size-5" />
-              <p className="text-sm font-medium">
-                A saved game was found in your browser.
+    <div>
+      <PageHeader
+        path="projects/real-talk"
+        title="Real Talk"
+        description="Take turns drawing questions from the deck and answer them honestly. No skipping."
+      />
+      <div className="grid gap-x-10 gap-y-10 lg:grid-cols-[minmax(0,1fr)_15rem]">
+        <div className="min-w-0">
+          {savedGameExists && (
+            <div className="mb-6 flex flex-col gap-3 rounded-xl border border-secondary/50 bg-secondary/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-[15px]">
+                You have a game in progress on this device.
               </p>
+              <div className="flex gap-2">
+                <Button onClick={resumeSavedGame} variant="secondary" size="sm">
+                  <RotateCcw />
+                  Resume
+                </Button>
+                <Button
+                  onClick={clearSavedGame}
+                  variant="ghost-destructive"
+                  size="sm"
+                >
+                  Discard
+                </Button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Button
-                onClick={resumeSavedGame}
-                variant="outline"
-                className="flex-1"
-              >
-                <RotateCcw className="size-4 mr-2" />
-                Resume Game
-              </Button>
-              <Button
-                onClick={clearSavedGame}
-                variant="ghost"
-                className="text-destructive hover:text-destructive hover:bg-destructive/10"
-              >
-                <Trash2 className="size-4 mr-1.5" />
-                Clear
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+          )}
 
-      <Card className="border-primary/20">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Users className="size-5 text-primary" />
-            Enter Players
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Input
-              placeholder="Player name..."
-              value={newPlayerName}
-              onChange={(e) => setNewPlayerName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") addPlayer()
+          <div className="rounded-xl border border-border/50 bg-card p-5 md:p-6">
+            <Label htmlFor="real-talk-player">Who&apos;s playing?</Label>
+            <form
+              className="mt-2.5 flex gap-2"
+              onSubmit={(e) => {
+                e.preventDefault()
+                addPlayer()
               }}
-              className="h-11"
-            />
-            <Button
-              onClick={addPlayer}
-              disabled={!newPlayerName.trim()}
-              className="h-11 px-6 w-full sm:w-auto"
             >
-              Add
-            </Button>
-          </div>
+              <Input
+                id="real-talk-player"
+                placeholder="Player name"
+                value={newPlayerName}
+                onChange={(e) => setNewPlayerName(e.target.value)}
+                autoComplete="off"
+              />
+              <Button
+                type="submit"
+                variant="outline"
+                disabled={!newPlayerName.trim()}
+              >
+                <Plus />
+                Add
+              </Button>
+            </form>
 
-          {tempPlayers.length > 0 && (
-            <div className="space-y-3">
-              <Label className="text-sm font-medium">
-                Players ({tempPlayers.length})
-              </Label>
-              <div className="flex flex-wrap gap-2">
-                {tempPlayers.map((player) => (
-                  <div
+            <ul
+              className="mt-4 flex min-h-9 flex-wrap gap-2"
+              aria-label="Players"
+            >
+              {tempPlayers.length === 0 ? (
+                <li className="self-center text-sm text-muted-foreground">
+                  Add at least one player to start.
+                </li>
+              ) : (
+                tempPlayers.map((player, i) => (
+                  <li
                     key={player}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary/10 text-sm font-medium border border-primary/20"
+                    className="flex items-center gap-1.5 rounded-full border border-border bg-well/60 py-1 pr-1 pl-3 text-sm font-semibold"
                   >
-                    <span>{player}</span>
+                    <span className="font-mono text-xs text-muted-foreground">
+                      {i + 1}
+                    </span>
+                    {player}
                     <button
+                      type="button"
                       onClick={() => removeTempPlayer(player)}
-                      className="text-muted-foreground hover:text-destructive transition-colors p-0.5 rounded-full hover:bg-destructive/10"
+                      aria-label={`Remove ${player}`}
+                      className="grid size-9 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/15 hover:text-destructive"
                     >
                       <X className="size-3.5" />
                     </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+                  </li>
+                ))
+              )}
+            </ul>
 
-          <Button
-            onClick={() => startGame(tempPlayers)}
-            disabled={tempPlayers.length === 0 || questionsCount === 0}
-            className="w-full h-12 text-base"
-            size="lg"
-          >
-            <Play className="size-5 mr-2" />
-            Start Game
-          </Button>
+            <Button
+              onClick={() => startGame(tempPlayers)}
+              disabled={tempPlayers.length === 0 || questionsCount === 0}
+              className="mt-6 w-full"
+              size="lg"
+            >
+              <Play className="fill-current" />
+              Start game
+            </Button>
 
-          {loadError ? (
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-destructive text-sm">
-                <AlertTriangle className="size-4" />
-                <span>{loadError}</span>
+            {loadError ? (
+              <div className="mt-4 space-y-2">
+                <p className="flex items-center gap-2 text-sm text-destructive">
+                  <AlertTriangle className="size-4" />
+                  {loadError}
+                </p>
+                <Button
+                  onClick={loadQuestions}
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                >
+                  <RotateCcw />
+                  Retry loading questions
+                </Button>
               </div>
-              <Button
-                onClick={loadQuestions}
-                variant="outline"
-                size="sm"
-                className="w-full"
-              >
-                <RotateCcw className="size-4 mr-2" />
-                Retry Loading Questions
-              </Button>
-            </div>
-          ) : (
-            <p className="text-xs text-muted-foreground text-center">
-              {questionsCount} questions available
-            </p>
-          )}
-        </CardContent>
-      </Card>
+            ) : (
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <p className="font-mono text-xs text-muted-foreground">
+                  {questionsCount} cards in the deck
+                </p>
+                <MotionToggle />
+              </div>
+            )}
+          </div>
+        </div>
+
+        <aside>
+          <h2 className="mb-3 font-mono text-sm font-bold">How it works</h2>
+          <ol className="space-y-3">
+            {HOW_TO_PLAY.map((step, i) => (
+              <li key={step} className="flex gap-3 text-[15px] leading-snug">
+                <span className="font-mono text-sm font-bold text-secondary">
+                  {i + 1}
+                </span>
+                <span className="text-muted-foreground">{step}</span>
+              </li>
+            ))}
+          </ol>
+        </aside>
+      </div>
     </div>
   )
 }

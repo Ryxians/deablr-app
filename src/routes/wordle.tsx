@@ -6,16 +6,16 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { matchesWordleGuess } from "@/lib/wordle"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { PageHeader } from "@/components/page-header"
 
 export const Route = createFileRoute("/wordle")({
   component: Wordle,
 })
 
 const colors: Record<WordleColor, string> = {
-  gray: "bg-gray-600 text-white dark:bg-gray-600",
-  yellow: "bg-yellow-700 text-white dark:bg-yellow-700",
-  green: "bg-green-700 text-white dark:bg-green-700",
+  gray: "border-zinc-600 bg-zinc-600 text-white",
+  yellow: "border-yellow-500 bg-yellow-500 text-zinc-950",
+  green: "border-green-600 bg-green-600 text-white",
 }
 
 function emptyGuesses(): Array<Array<WordleTile>> {
@@ -69,149 +69,170 @@ function Wordle() {
   }, [data, guesses, limit])
 
   return (
-    <div className="container mx-auto max-w-2xl py-12">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-center text-2xl font-semibold">
-            Wordle Helper
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Guesses */}
-          <div className="space-y-2">
-            <Label>Guesses</Label>
+    <div>
+      <PageHeader
+        path="projects/wordle"
+        title="Wordle Helper"
+        description="Enter each guess, mark its tiles the way Wordle colored them, and it narrows the word list."
+      />
+
+      <div className="grid items-start gap-5 lg:grid-cols-2">
+        <section
+          aria-labelledby="wordle-guesses"
+          className="space-y-4 rounded-xl border border-border/50 bg-card p-4 sm:p-6"
+        >
+          <div className="space-y-1">
+            <h2
+              id="wordle-guesses"
+              className="flex items-center gap-2 font-mono text-[13px] font-semibold"
+            >
+              <span aria-hidden className="size-2.5 rounded-full bg-accent" />
+              Guesses
+            </h2>
             <p className="text-sm text-muted-foreground">
-              Enter your guesses and select the color of each tile from Wordle.
+              Type a guess, then set each tile's color.
             </p>
-            <div className="space-y-3">
-              {guesses.map((guess, row) => (
-                <div key={row} className="grid grid-cols-5 gap-2">
-                  {guess.map((tile, column) => (
-                    <div key={column} className="min-w-0 space-y-1">
-                      <Input
-                        ref={(element) => {
-                          inputs.current[row] ??= []
-                          inputs.current[row][column] = element
-                        }}
-                        aria-label={`Guess ${row + 1}, letter ${column + 1}`}
-                        className={`h-10 text-center font-mono text-lg font-bold uppercase ${colors[tile.color]}`}
-                        maxLength={1}
-                        value={tile.letter}
-                        onChange={(e) => {
-                          const letter = e.target.value
-                            .toLowerCase()
-                            .replace(/[^a-z]/g, "")
-                          updateTile(row, column, { letter })
-                          if (letter && column < 4)
-                            inputs.current[row]?.[column + 1]?.focus()
-                        }}
-                        onKeyDown={(e) => {
-                          if (
-                            e.key === "Backspace" &&
-                            !tile.letter &&
-                            column > 0
-                          ) {
-                            inputs.current[row]?.[column - 1]?.focus()
-                          }
-                        }}
-                        onPaste={(e) => {
-                          const letters = e.clipboardData
-                            .getData("text")
-                            .toLowerCase()
-                            .replace(/[^a-z]/g, "")
-                            .slice(0, 5 - column)
-                          if (!letters) return
-                          e.preventDefault()
-                          setGuesses((previous) =>
-                            previous.map((tiles, rowIndex) =>
-                              rowIndex === row
-                                ? tiles.map((item, index) =>
-                                    index >= column &&
-                                    index < column + letters.length
-                                      ? {
-                                          ...item,
-                                          letter: letters[index - column],
-                                        }
-                                      : item
-                                  )
-                                : tiles
-                            )
-                          )
-                          inputs.current[row]?.[
-                            Math.min(column + letters.length, 4)
-                          ]?.focus()
-                        }}
-                      />
-                      <select
-                        aria-label={`Guess ${row + 1}, letter ${column + 1} color`}
-                        className={`w-full min-w-0 rounded border px-1 py-1 text-xs ${colors[tile.color]}`}
-                        value={tile.color}
-                        onChange={(e) =>
-                          updateTile(row, column, {
-                            color: e.target.value as WordleColor,
-                          })
+          </div>
+
+          <div className="space-y-3">
+            {guesses.map((guess, row) => (
+              <div key={row} className="grid grid-cols-5 gap-2">
+                {guess.map((tile, column) => (
+                  <div key={column} className="min-w-0 space-y-1.5">
+                    <Input
+                      ref={(element) => {
+                        inputs.current[row] ??= []
+                        inputs.current[row][column] = element
+                      }}
+                      aria-label={`Guess ${row + 1}, letter ${column + 1}`}
+                      className={`aspect-square h-auto w-full rounded-lg p-0 text-center font-mono text-xl font-bold uppercase sm:text-2xl ${colors[tile.color]}`}
+                      maxLength={1}
+                      value={tile.letter}
+                      onChange={(e) => {
+                        const letter = e.target.value
+                          .toLowerCase()
+                          .replace(/[^a-z]/g, "")
+                        updateTile(row, column, { letter })
+                        if (letter && column < 4)
+                          inputs.current[row]?.[column + 1]?.focus()
+                      }}
+                      onKeyDown={(e) => {
+                        if (
+                          e.key === "Backspace" &&
+                          !tile.letter &&
+                          column > 0
+                        ) {
+                          inputs.current[row]?.[column - 1]?.focus()
                         }
-                      >
-                        <option value="gray">Gray</option>
-                        <option value="yellow">Yellow</option>
-                        <option value="green">Green</option>
-                      </select>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Word Limit */}
-          <div className="space-y-2">
-            <Label>Word Limit</Label>
-            <Input
-              type="number"
-              min={1}
-              max={100}
-              value={limit}
-              onChange={(e) => setLimit(+e.target.value)}
-            />
-          </div>
-
-          {/* Results */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>
-                Suggestions{" "}
-                <span className="font-mono">({wordsToRecommend.length})</span>
-              </Label>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setGuesses(emptyGuesses())}
-              >
-                Clear
-              </Button>
-            </div>
-
-            <div className="max-h-60 divide-y overflow-y-auto rounded-md border p-2">
-              {wordsToRecommend.length === 0 ? (
-                <p className="py-8 text-center text-sm text-muted-foreground">
-                  No words match your criteria.
-                </p>
-              ) : (
-                wordsToRecommend.map((word, i) => (
-                  <div
-                    key={word + i}
-                    className={`px-2 py-1 font-mono text-sm ${
-                      i % 2 === 0 ? "bg-muted/40" : ""
-                    }`}
-                  >
-                    {word}
+                      }}
+                      onPaste={(e) => {
+                        const letters = e.clipboardData
+                          .getData("text")
+                          .toLowerCase()
+                          .replace(/[^a-z]/g, "")
+                          .slice(0, 5 - column)
+                        if (!letters) return
+                        e.preventDefault()
+                        setGuesses((previous) =>
+                          previous.map((tiles, rowIndex) =>
+                            rowIndex === row
+                              ? tiles.map((item, index) =>
+                                  index >= column &&
+                                  index < column + letters.length
+                                    ? {
+                                        ...item,
+                                        letter: letters[index - column],
+                                      }
+                                    : item
+                                )
+                              : tiles
+                          )
+                        )
+                        inputs.current[row]?.[
+                          Math.min(column + letters.length, 4)
+                        ]?.focus()
+                      }}
+                    />
+                    <select
+                      aria-label={`Guess ${row + 1}, letter ${column + 1} color`}
+                      className="w-full min-w-0 rounded-md border border-border bg-background px-1 py-1 font-sans text-[11px] text-foreground"
+                      value={tile.color}
+                      onChange={(e) =>
+                        updateTile(row, column, {
+                          color: e.target.value as WordleColor,
+                        })
+                      }
+                    >
+                      <option value="gray">Gray</option>
+                      <option value="yellow">Yellow</option>
+                      <option value="green">Green</option>
+                    </select>
                   </div>
-                ))
-              )}
+                ))}
+              </div>
+            ))}
+          </div>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setGuesses(emptyGuesses())}
+          >
+            Clear all guesses
+          </Button>
+        </section>
+
+        <section
+          aria-labelledby="wordle-suggestions"
+          className="space-y-3 rounded-xl border border-border/50 bg-card p-4 sm:p-6"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2
+              id="wordle-suggestions"
+              className="font-mono text-[13px] font-semibold"
+            >
+              Suggestions{" "}
+              <span className="text-muted-foreground">
+                ({wordsToRecommend.length})
+              </span>
+            </h2>
+            <div className="flex items-center gap-2">
+              <Label
+                htmlFor="wordle-limit"
+                className="text-xs font-normal text-muted-foreground"
+              >
+                Show
+              </Label>
+              <Input
+                id="wordle-limit"
+                type="number"
+                min={1}
+                max={100}
+                value={limit}
+                onChange={(e) => setLimit(+e.target.value)}
+                className="h-8 w-16 font-mono text-xs"
+              />
             </div>
           </div>
-        </CardContent>
-      </Card>
+
+          {wordsToRecommend.length === 0 ? (
+            <p className="rounded-lg border border-dashed border-border py-10 text-center font-mono text-sm text-muted-foreground">
+              No words match.
+            </p>
+          ) : (
+            <ul className="grid grid-cols-3 gap-x-4 gap-y-1 sm:grid-cols-5">
+              {wordsToRecommend.map((word, i) => (
+                <li
+                  key={word + i}
+                  className="py-1 font-mono text-sm tracking-[0.2em] uppercase"
+                >
+                  {word}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
     </div>
   )
 }

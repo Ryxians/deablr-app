@@ -2,7 +2,13 @@ import { Link, createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import {
+  Field,
+  FormCard,
+  FormError,
+  PennyFormLayout,
+} from "@/components/form-bits"
+import { PageHeader } from "@/components/page-header"
 import { getInviteStatus, redeemInvite } from "@/server/invites"
 
 export const Route = createFileRoute("/invite/$token")({
@@ -46,10 +52,8 @@ function InvitePage() {
           ? "This invite link has expired."
           : "This invite link is not valid."
     return (
-      <section className="mb-6">
-        <h2 className="mb-2 border-b border-border text-xl font-bold">
-          Invite Unavailable
-        </h2>
+      <section>
+        <PageHeader path="invite" title="Invite Unavailable" />
         <p>{reason} Ask an Admin for a new one.</p>
       </section>
     )
@@ -57,13 +61,14 @@ function InvitePage() {
 
   if (done) {
     return (
-      <section className="mb-6">
-        <h2 className="mb-2 border-b border-border text-xl font-bold">
-          Welcome, Denizen
-        </h2>
+      <section>
+        <PageHeader path="invite" title="Welcome, Denizen" />
         <p>
           Your account is ready. You can now{" "}
-          <Link to="/admin" className="underline">
+          <Link
+            to="/admin"
+            className="font-semibold text-secondary underline underline-offset-4"
+          >
             log in
           </Link>
           .
@@ -73,49 +78,48 @@ function InvitePage() {
   }
 
   return (
-    <section className="mb-6">
-      <h2 className="mb-2 border-b border-border text-xl font-bold">
-        You Have Been Invited
-      </h2>
-      <p className="mb-4">Pick a username and password to claim your account.</p>
-      <form onSubmit={onSubmit} className="max-w-sm space-y-4">
-        <div className="space-y-1">
-          <Label htmlFor="invite-username">Username</Label>
-          <Input
-            id="invite-username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoComplete="username"
-            required
-          />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="invite-password">Password</Label>
-          <Input
-            id="invite-password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="new-password"
-            required
-          />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="invite-confirm">Confirm password</Label>
-          <Input
-            id="invite-confirm"
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            autoComplete="new-password"
-            required
-          />
-        </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <Button type="submit" disabled={pending}>
-          {pending ? "Creating…" : "Create account"}
-        </Button>
-      </form>
+    <section>
+      <PageHeader path="invite" title="You Have Been Invited" />
+      <p className="-mt-4 mb-6 text-muted-foreground">
+        Pick a username and password to claim your account.
+      </p>
+      <PennyFormLayout caption="Someone vouched for you. Penny approves.">
+        <FormCard onSubmit={onSubmit}>
+          <Field label="Username" htmlFor="invite-username">
+            <Input
+              id="invite-username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              required
+            />
+          </Field>
+          <Field label="Password" htmlFor="invite-password">
+            <Input
+              id="invite-password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </Field>
+          <Field label="Confirm password" htmlFor="invite-confirm">
+            <Input
+              id="invite-confirm"
+              type="password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </Field>
+          {error && <FormError>{error}</FormError>}
+          <Button type="submit" disabled={pending} className="w-full">
+            {pending ? "Creating…" : "Create account"}
+          </Button>
+        </FormCard>
+      </PennyFormLayout>
     </section>
   )
 }

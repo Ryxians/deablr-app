@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import "../styles.css"
 
 import { Header } from "@/components/Header"
-import { Navbar } from "@/components/Navbar"
+import { SiteFooter } from "@/components/SiteFooter"
 import { NotFound } from "@/components/NotFound"
 
 const queryClient = new QueryClient()
@@ -37,11 +37,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <QueryClientProvider client={queryClient}>
-          <div className="min-h-screen w-full min-w-0 p-4 font-mono text-foreground md:p-6">
-            <div className="mx-auto w-full min-w-0 overflow-x-hidden border border-border bg-background shadow-sm md:w-3xl lg:w-4xl xl:w-5xl">
+          <div className="min-h-screen w-full min-w-0 px-3 py-3 sm:px-4 sm:py-5 md:px-6 md:py-8">
+            <div className="mx-auto w-full max-w-5xl min-w-0 overflow-clip rounded-xl border border-border bg-background shadow-frame-sm sm:rounded-2xl sm:shadow-frame">
               <Header />
-              <Navbar />
-              <main className="p-4 leading-relaxed md:p-8">{children}</main>
+              <main className="px-4 pt-5 pb-8 sm:px-6 sm:pt-7 md:px-10 md:py-10">
+                {children}
+              </main>
+              <SiteFooter />
             </div>
           </div>
         </QueryClientProvider>

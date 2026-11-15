@@ -1,16 +1,10 @@
-import { useSelector } from "@tanstack/react-store"
-import { store } from "@/stores/real-talk"
+import { Loader2 } from "lucide-react"
 
 export function LoadingScreen() {
-  const animationsEnabled = useSelector(store, (s) => s.animationsEnabled)
-
   return (
-    <div className="flex items-center justify-center py-20">
-      <div
-        className={`text-muted-foreground ${animationsEnabled ? "animate-pulse" : ""}`}
-      >
-        Loading questions...
-      </div>
+    <div className="flex items-center justify-center gap-2 py-24 font-mono text-sm text-muted-foreground">
+      <Loader2 className="size-4 animate-spin" />
+      Shuffling the deck…
     </div>
   )
 }

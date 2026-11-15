@@ -1,14 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import {
-  Activity,
-  ArrowLeft,
-  Download,
-  Loader2,
-  Share,
-  SlidersHorizontal,
-  Upload,
-} from "lucide-react"
-import { Link } from "@tanstack/react-router"
+import { Activity, Download, Loader2, Share, Upload } from "lucide-react"
 import { DEFAULT_BANDS, DEFAULT_VOLUME } from "./types"
 import { EQControls } from "./eq-controls"
 import { useEQAudio } from "./use-eq-audio"
@@ -16,7 +7,7 @@ import { useFFmpeg } from "./use-ffmpeg"
 import { VideoPlayer } from "./video-player"
 import type { EQBand } from "./types"
 import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 
 function downloadFile(file: File) {
   const url = URL.createObjectURL(file)
@@ -57,7 +48,9 @@ export function EQApp() {
   const videoUrlRef = useRef<string | null>(null)
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [videoUrl, setVideoUrl] = useState<string | null>(null)
-  const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(null)
+  const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(
+    null
+  )
   const [bands, setBands] = useState<Array<EQBand>>(DEFAULT_BANDS)
   const [volume, setVolume] = useState(DEFAULT_VOLUME)
   const [compare, setCompare] = useState(false)
@@ -71,10 +64,11 @@ export function EQApp() {
     bands,
     volume,
     compare,
-    muted,
+    muted
   )
 
-  const { loaded, loading, progress, exporting, error, processVideo } = useFFmpeg()
+  const { loaded, loading, progress, exporting, error, processVideo } =
+    useFFmpeg()
 
   const updateVideoUrl = useCallback((file: File | null) => {
     if (videoUrlRef.current) {
@@ -102,7 +96,7 @@ export function EQApp() {
       setShareDialogOpen(false)
       updateVideoUrl(file)
     },
-    [updateVideoUrl],
+    [updateVideoUrl]
   )
 
   const handleExport = useCallback(async () => {
@@ -172,13 +166,8 @@ export function EQApp() {
         onChange={handleFileSelect}
       />
 
-      <div className="flex items-center justify-between gap-2">
-        <Link to="/projects">
-          <Button type="button" variant="ghost" size="icon">
-            <ArrowLeft className="size-5" />
-          </Button>
-        </Link>
-        <div className="flex items-center gap-2">
+      {videoUrl && (
+        <div className="flex items-center justify-end gap-2">
           <Button
             type="button"
             variant="outline"
@@ -188,59 +177,57 @@ export function EQApp() {
               fileInputRef.current?.click()
             }}
           >
-            <Upload className="size-4" />
-            <span className="hidden sm:inline">Upload</span>
+            <Upload />
+            <span className="hidden sm:inline">Replace video</span>
           </Button>
           <Button
             type="button"
-            variant="outline"
             size="sm"
             disabled={!videoFile || exporting || loading}
             onClick={handleExport}
           >
             {exporting ? (
               <>
-                <Loader2 className="size-4 animate-spin" />
+                <Loader2 className="animate-spin" />
                 <span className="hidden sm:inline">{progress}%</span>
               </>
             ) : loading ? (
               <>
-                <Loader2 className="size-4 animate-spin" />
-                <span className="hidden sm:inline">Loading...</span>
+                <Loader2 className="animate-spin" />
+                <span className="hidden sm:inline">Loading…</span>
               </>
             ) : (
               <>
-                <Download className="size-4" />
+                <Download />
                 <span className="hidden sm:inline">Export</span>
               </>
             )}
           </Button>
         </div>
-      </div>
+      )}
 
       {!videoUrl ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center gap-4 py-16">
-            <div className="rounded-full bg-muted p-4">
-              <SlidersHorizontal className="size-8 text-muted-foreground" />
-            </div>
-            <div className="text-center">
-              <h2 className="font-semibold text-lg">Upload a video to get started</h2>
-              <p className="text-muted-foreground text-sm">
-                EQ changes happen live in the browser. Export with ffmpeg.wasm.
-              </p>
-            </div>
-            <Button
-              onClick={() => {
-                if (fileInputRef.current) fileInputRef.current.value = ""
-                fileInputRef.current?.click()
-              }}
-            >
-              <Upload className="size-4" />
-              Choose video
-            </Button>
-          </CardContent>
-        </Card>
+        <button
+          type="button"
+          onClick={() => {
+            if (fileInputRef.current) fileInputRef.current.value = ""
+            fileInputRef.current?.click()
+          }}
+          className="group flex w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-border bg-card/60 px-6 py-16 text-center transition-colors outline-none hover:border-primary/70 hover:bg-card focus-visible:ring-[3px] focus-visible:ring-ring/50 md:py-20"
+        >
+          <span>
+            <span className="block font-mono text-lg font-bold">
+              Pick a video
+            </span>
+            <span className="mt-1 block text-[15px] text-muted-foreground">
+              EQ changes play live. Nothing leaves your device.
+            </span>
+          </span>
+          <span className={buttonVariants({ className: "mt-1" })}>
+            <Upload />
+            Browse files
+          </span>
+        </button>
       ) : (
         <div className="space-y-4">
           <VideoPlayer
@@ -261,7 +248,7 @@ export function EQApp() {
                 size="sm"
                 onClick={() => setShowLiveEQ((s) => !s)}
               >
-                <Activity className="size-4" />
+                <Activity />
                 Live EQ
               </Button>
               <Button
@@ -284,7 +271,7 @@ export function EQApp() {
                 Compare
               </Button>
             </div>
-            <div className="text-muted-foreground text-xs">
+            <div className="font-mono text-xs text-muted-foreground">
               {compare
                 ? "Bypassing EQ"
                 : exporting
@@ -299,9 +286,11 @@ export function EQApp() {
 
           <EQControls bands={bands} onChange={setBands} onReset={handleReset} />
 
-          <div className="rounded-lg border bg-muted/30 p-4">
+          <div className="rounded-xl border border-border/50 bg-card p-4">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-medium whitespace-nowrap">Volume</span>
+              <span className="font-mono text-xs font-semibold whitespace-nowrap">
+                Volume
+              </span>
               <input
                 type="range"
                 min={0}
@@ -311,24 +300,24 @@ export function EQApp() {
                 onChange={(e) => setVolume(Number.parseFloat(e.target.value))}
                 onTouchStart={(e) => e.preventDefault()}
                 onTouchMove={(e) => e.preventDefault()}
-                className="h-2 flex-1 cursor-pointer appearance-none rounded bg-border accent-primary"
+                className="h-2 flex-1 cursor-pointer accent-primary"
                 style={{ touchAction: "none" }}
               />
-              <span className="w-12 text-right text-xs tabular-nums">
+              <span className="w-12 text-right font-mono text-xs tabular-nums">
                 {Math.round(volume * 100)}%
               </span>
             </div>
           </div>
 
           {error && (
-            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-xs text-destructive">
+            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
               {error}
             </div>
           )}
 
           {shareDialogOpen && exportedFile && (
             <div
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+              className="fixed inset-0 z-50 flex items-center justify-center bg-[oklch(0.15_0.05_265/0.75)] p-4 backdrop-blur-sm"
               role="dialog"
               aria-modal="true"
               aria-labelledby="share-title"
@@ -339,22 +328,16 @@ export function EQApp() {
               <Card className="w-full max-w-sm">
                 <CardContent className="flex flex-col gap-4 p-6">
                   <div className="text-center">
-                    <h3
-                      id="share-title"
-                      className="font-semibold text-lg"
-                    >
+                    <h3 id="share-title" className="text-lg font-bold">
                       Export ready
                     </h3>
-                    <p className="text-muted-foreground text-sm">
+                    <p className="text-sm text-muted-foreground">
                       Your EQ&apos;d video is ready to share.
                     </p>
                   </div>
                   <div className="grid gap-2">
-                    <Button
-                      type="button"
-                      onClick={handleDialogShare}
-                    >
-                      <Share className="size-4" />
+                    <Button type="button" onClick={handleDialogShare}>
+                      <Share />
                       Share
                     </Button>
                     <Button
@@ -362,7 +345,7 @@ export function EQApp() {
                       variant="outline"
                       onClick={handleDialogDownload}
                     >
-                      <Download className="size-4" />
+                      <Download />
                       Download
                     </Button>
                     <Button
