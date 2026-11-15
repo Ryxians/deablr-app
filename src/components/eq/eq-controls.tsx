@@ -10,7 +10,7 @@ interface EQControlsProps {
 export function EQControls({ bands, onChange, onReset }: EQControlsProps) {
   const updateBand = (index: number, patch: Partial<EQBand>) => {
     const next = bands.map((band, i) =>
-      i === index ? { ...band, ...patch } : band,
+      i === index ? { ...band, ...patch } : band
     )
     onChange(next)
   }
@@ -18,7 +18,7 @@ export function EQControls({ bands, onChange, onReset }: EQControlsProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="font-semibold text-sm">Custom EQ</h3>
+        <h3 className="font-mono text-sm font-bold">Bands</h3>
         <div className="flex gap-2">
           <Button type="button" variant="outline" size="sm" onClick={onReset}>
             Reset
@@ -30,10 +30,10 @@ export function EQControls({ bands, onChange, onReset }: EQControlsProps) {
         {bands.map((band, index) => (
           <div
             key={band.id}
-            className="flex flex-col items-center gap-2 rounded-lg border bg-muted/30 p-3 select-none"
+            className="flex flex-col items-center gap-2 rounded-xl border border-border/80 bg-card p-3 select-none"
             style={{ touchAction: "none" }}
           >
-            <span className="text-xs font-medium tabular-nums">
+            <span className="font-mono text-xs font-semibold text-primary tabular-nums">
               {band.gain.toFixed(1)} dB
             </span>
             <input
@@ -47,7 +47,7 @@ export function EQControls({ bands, onChange, onReset }: EQControlsProps) {
               }
               onTouchStart={(e) => e.preventDefault()}
               onTouchMove={(e) => e.preventDefault()}
-              className="h-32 w-2 cursor-pointer appearance-none rounded bg-border accent-primary sm:h-40"
+              className="h-32 w-2 cursor-pointer accent-primary sm:h-40"
               style={{
                 writingMode: "vertical-lr",
                 direction: "rtl",
@@ -56,8 +56,10 @@ export function EQControls({ bands, onChange, onReset }: EQControlsProps) {
               }}
             />
             <div className="text-center">
-              <div className="text-xs font-semibold">{band.freq} Hz</div>
-              <div className="text-[10px] text-muted-foreground">
+              <div className="font-mono text-xs font-semibold">
+                {band.freq} Hz
+              </div>
+              <div className="font-mono text-[10px] text-muted-foreground">
                 Q={band.q}
               </div>
             </div>

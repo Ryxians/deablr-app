@@ -4,12 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { PageHeader } from "@/components/page-header"
 
 export const Route = createFileRoute("/wordle")({
   component: Wordle,
@@ -63,119 +58,123 @@ function Wordle() {
     limit,
   ])
 
+  const setFns: Array<(value: string) => void> = [
+    setFirst,
+    setSecond,
+    setThird,
+    setFourth,
+    setFifth,
+  ]
+
   return (
-    <div className="container mx-auto max-w-2xl py-12">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-semibold text-center">
-            Wordle Helper
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Correct Letters */}
-          <div className="space-y-2">
-            <Label>Correct Letters</Label>
-            <div className="flex gap-2">
-              {[first, second, third, fourth, fifth].map((value, i) => {
-                const setFns: Array<(value: string) => void> = [
-                  setFirst,
-                  setSecond,
-                  setThird,
-                  setFourth,
-                  setFifth,
-                ]
-                return (
-                  <Input
-                    key={i}
-                    className="text-center text-lg font-mono"
-                    maxLength={1}
-                    value={value}
-                    onChange={(e) => setFns[i](e.target.value.toLowerCase())}
-                  />
-                )
-              })}
-            </div>
-          </div>
+    <div className="mx-auto max-w-2xl">
+      <PageHeader
+        path="projects/wordle"
+        title="Wordle Helper"
+        description="Tell it what you know; it narrows the word list."
+      />
 
-          {/* Wrong Letters */}
-          <div className="space-y-2">
-            <Label>Wrong Letters</Label>
-            <Input
-              placeholder="e.g. rstlne"
-              value={Array.from(wrongLetters).join("")}
-              onChange={(e) =>
-                setWrongLetters(
-                  new Set(Array.from(e.target.value.toLowerCase())),
-                )
-              }
-            />
+      <div className="space-y-6 rounded-xl border border-border/80 bg-card p-5 md:p-6">
+        <fieldset className="space-y-2.5">
+          <legend className="mb-2.5 font-mono text-[13px] font-semibold">
+            Green letters
+          </legend>
+          <div className="flex gap-2">
+            {[first, second, third, fourth, fifth].map((value, i) => (
+              <Input
+                key={i}
+                aria-label={`Letter ${i + 1}`}
+                className="size-14 rounded-lg p-0 text-center font-mono text-2xl font-bold uppercase data-[filled=true]:border-accent data-[filled=true]:bg-accent data-[filled=true]:text-accent-foreground md:size-16 md:text-3xl"
+                data-filled={value !== ""}
+                maxLength={1}
+                value={value}
+                onChange={(e) => setFns[i](e.target.value.toLowerCase())}
+              />
+            ))}
           </div>
+        </fieldset>
 
-          {/* Has Letters */}
+        <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label>Has Letters</Label>
+            <Label htmlFor="wordle-has">Yellow letters</Label>
             <Input
+              id="wordle-has"
               placeholder="e.g. oa"
+              className="font-mono"
               value={Array.from(hasLetters).join("")}
               onChange={(e) =>
                 setHasLetters(new Set(Array.from(e.target.value.toLowerCase())))
               }
             />
           </div>
-
-          {/* Word Limit */}
           <div className="space-y-2">
-            <Label>Word Limit</Label>
+            <Label htmlFor="wordle-wrong">Gray letters</Label>
             <Input
-              type="number"
-              min={1}
-              max={100}
-              value={limit}
-              onChange={(e) => setLimit(+e.target.value)}
+              id="wordle-wrong"
+              placeholder="e.g. rstlne"
+              className="font-mono"
+              value={Array.from(wrongLetters).join("")}
+              onChange={(e) =>
+                setWrongLetters(
+                  new Set(Array.from(e.target.value.toLowerCase()))
+                )
+              }
             />
           </div>
+        </div>
 
-          {/* Results */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>
-                Suggestions{" "}
-                <span className="font-mono">({wordsToRecommend.length})</span>
-              </Label>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  [setFirst, setSecond, setThird, setFourth, setFifth].forEach(
-                    (fn) => fn(""),
-                  )
-                }
+        <div className="space-y-3 border-t border-border/60 pt-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="font-mono text-[13px] font-semibold">
+              Suggestions{" "}
+              <span className="text-muted-foreground">
+                ({wordsToRecommend.length})
+              </span>
+            </p>
+            <div className="flex items-center gap-2">
+              <Label
+                htmlFor="wordle-limit"
+                className="text-xs font-normal text-muted-foreground"
               >
-                Clear
+                Show
+              </Label>
+              <Input
+                id="wordle-limit"
+                type="number"
+                min={1}
+                max={100}
+                value={limit}
+                onChange={(e) => setLimit(+e.target.value)}
+                className="h-8 w-16 font-mono text-xs"
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setFns.forEach((fn) => fn(""))}
+              >
+                Clear greens
               </Button>
             </div>
-
-            <div className="border rounded-md p-2 max-h-60 overflow-y-auto divide-y">
-              {wordsToRecommend.length === 0 ? (
-                <p className="text-center text-sm text-muted-foreground py-8">
-                  No words match your criteria.
-                </p>
-              ) : (
-                wordsToRecommend.map((word, i) => (
-                  <div
-                    key={word + i}
-                    className={`py-1 px-2 font-mono text-sm ${
-                      i % 2 === 0 ? "bg-muted/40" : ""
-                    }`}
-                  >
-                    {word}
-                  </div>
-                ))
-              )}
-            </div>
           </div>
-        </CardContent>
-      </Card>
+
+          {wordsToRecommend.length === 0 ? (
+            <p className="rounded-lg border border-dashed border-border py-10 text-center font-mono text-sm text-muted-foreground">
+              No words match.
+            </p>
+          ) : (
+            <ul className="grid max-h-72 grid-cols-3 gap-1.5 overflow-y-auto sm:grid-cols-5">
+              {wordsToRecommend.map((word, i) => (
+                <li
+                  key={word + i}
+                  className="rounded-md bg-well px-2 py-1.5 text-center font-mono text-sm tracking-widest uppercase"
+                >
+                  {word}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

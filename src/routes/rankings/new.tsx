@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { ReviewForm } from "@/components/rankings/review-form"
 import { NotFound } from "@/components/NotFound"
+import { PageHeader } from "@/components/page-header"
 import { getCurrentUser } from "@/server/session"
 
 export const Route = createFileRoute("/rankings/new")({
@@ -13,7 +14,7 @@ function NewReviewPage() {
   if (user?.role !== "admin") return <NotFound />
   return (
     <div>
-      <h1 className="mb-4 text-2xl font-bold">New Review</h1>
+      <PageHeader path="rankings/new" title="New Review" />
       <ReviewForm />
     </div>
   )

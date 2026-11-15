@@ -35,9 +35,13 @@ function Spoiler({
         }
       }}
       className={cn(
-        "cursor-pointer rounded transition-colors",
-        inline ? "px-1" : "my-2 block border border-dashed border-border p-3",
-        revealed ? "bg-muted/40" : "bg-foreground"
+        "cursor-pointer rounded-sm transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+        inline
+          ? "px-1 py-0.5"
+          : "my-3 block rounded-lg border border-dashed border-border p-4",
+        revealed
+          ? "bg-well/70"
+          : "bg-[repeating-linear-gradient(-45deg,var(--muted)_0_6px,var(--well)_6px_12px)] hover:brightness-125"
       )}
     >
       <span
@@ -60,12 +64,12 @@ const components = {
     <Spoiler inline={"data-inline" in props}>{props.children}</Spoiler>
   ),
   p: ({ children }: MdProps) => (
-    <p className="my-3 first:mt-0 last:mb-0">{children}</p>
+    <p className="my-4 first:mt-0 last:mb-0">{children}</p>
   ),
   a: ({ children, href }: MdProps & { href?: string }) => (
     <a
       href={href}
-      className="text-primary underline underline-offset-2"
+      className="font-semibold text-secondary underline decoration-secondary/40 underline-offset-[3px] hover:decoration-secondary"
       target="_blank"
       rel="noreferrer"
     >
@@ -73,64 +77,79 @@ const components = {
     </a>
   ),
   ul: ({ children }: MdProps) => (
-    <ul className="my-2 list-disc pl-6">{children}</ul>
+    <ul className="my-4 list-disc space-y-1 pl-6 marker:text-primary">
+      {children}
+    </ul>
   ),
   ol: ({ children }: MdProps) => (
-    <ol className="my-2 list-decimal pl-6">{children}</ol>
+    <ol className="my-4 list-decimal space-y-1 pl-6 marker:font-mono marker:text-primary">
+      {children}
+    </ol>
   ),
-  li: ({ children }: MdProps) => <li className="my-0.5">{children}</li>,
+  li: ({ children }: MdProps) => <li className="pl-1">{children}</li>,
   blockquote: ({ children }: MdProps) => (
-    <blockquote className="my-2 border-l-2 border-border pl-3 text-muted-foreground">
+    <blockquote className="my-4 border-l-[3px] border-primary pl-4 text-muted-foreground italic">
       {children}
     </blockquote>
   ),
   code: ({ children }: MdProps) => (
-    <code className="rounded bg-muted px-1 py-0.5 text-[0.85em]">
+    <code className="rounded-sm bg-well px-1.5 py-0.5 font-mono text-[0.85em]">
       {children}
     </code>
   ),
   pre: ({ children }: MdProps) => (
-    <pre className="my-2 overflow-x-auto rounded bg-muted p-3 text-sm [&_code]:bg-transparent [&_code]:p-0">
+    <pre className="my-4 overflow-x-auto rounded-lg border border-border/70 bg-well p-4 font-mono text-sm [&_code]:bg-transparent [&_code]:p-0">
       {children}
     </pre>
   ),
   h1: ({ children }: MdProps) => (
-    <h1 className="mt-4 mb-2 text-xl font-bold">{children}</h1>
+    <h1 className="mt-8 mb-3 text-2xl font-extrabold tracking-tight first:mt-0">
+      {children}
+    </h1>
   ),
   h2: ({ children }: MdProps) => (
-    <h2 className="mt-4 mb-2 text-lg font-bold">{children}</h2>
+    <h2 className="mt-8 mb-3 text-xl font-extrabold tracking-tight first:mt-0">
+      {children}
+    </h2>
   ),
   h3: ({ children }: MdProps) => (
-    <h3 className="mt-3 mb-1 font-bold">{children}</h3>
+    <h3 className="mt-6 mb-2 text-lg font-bold first:mt-0">{children}</h3>
   ),
   h4: ({ children }: MdProps) => (
-    <h4 className="mt-3 mb-1 font-bold">{children}</h4>
+    <h4 className="mt-6 mb-2 font-bold first:mt-0">{children}</h4>
   ),
-  hr: () => <hr className="my-4 border-border" />,
+  hr: () => <hr className="my-8 border-border/70" />,
   img: ({ src, alt }: MdProps & { src?: string; alt?: string }) => (
-    <img src={src} alt={alt} className="my-2 max-w-full rounded" />
+    <img src={src} alt={alt} className="my-4 max-w-full rounded-lg" />
   ),
   table: ({ children }: MdProps) => (
-    <table className="my-2 border-collapse text-sm">{children}</table>
+    <table className="my-4 border-collapse text-sm">{children}</table>
   ),
   th: ({ children }: MdProps) => (
-    <th className="border border-border px-2 py-1 text-left">{children}</th>
+    <th className="border border-border bg-well px-3 py-1.5 text-left font-mono text-xs">
+      {children}
+    </th>
   ),
   td: ({ children }: MdProps) => (
-    <td className="border border-border px-2 py-1">{children}</td>
+    <td className="border border-border px-3 py-1.5">{children}</td>
   ),
 } as Components
 
 /** A Review's text, rendered as Markdown with <spoiler> tag support. */
 export function ReviewText({ text }: { text: string }) {
   return (
-    <div className="mt-6 max-w-prose">
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkSpoiler]}
-        components={components}
-      >
-        {prepareSpoilers(text)}
-      </ReactMarkdown>
-    </div>
+    <section className="mt-10 border-t border-border/70 pt-8">
+      <h2 className="mb-5 font-mono text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+        The Review
+      </h2>
+      <div className="max-w-[65ch] text-[17px] leading-relaxed text-foreground/95">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm, remarkSpoiler]}
+          components={components}
+        >
+          {prepareSpoilers(text)}
+        </ReactMarkdown>
+      </div>
+    </section>
   )
 }

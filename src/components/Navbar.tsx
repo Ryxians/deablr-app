@@ -2,36 +2,44 @@ import { Link, useRouterState } from "@tanstack/react-router"
 import { cn } from "@/lib/utils"
 
 const navItems = [
-  { to: "/about-me", label: "About Me" },
+  { to: "/about-me", label: "About Me", also: [] },
   // { to: "/wordle", label: "Wordle" },
   // { to: "/manifesto", label: "Manifesto" },
-  { to: "/rankings", label: "Rankings" },
-  { to: "/projects", label: "Projects" },
-]
+  { to: "/rankings", label: "Rankings", also: [] },
+  {
+    to: "/projects",
+    label: "Projects",
+    // Project pages live at the top level but belong under Projects.
+    also: ["/real-talk", "/eq", "/wordle"],
+  },
+] as const
 
 export function Navbar() {
-  const { location } = useRouterState()
-  const currentPath = location.pathname
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
 
   return (
-    <nav className="scrollbar-none flex justify-start gap-0.5 overflow-x-auto border-b border-border bg-muted/50 px-2 py-2 md:justify-center md:gap-1 md:px-4 md:py-3">
+    <nav
+      aria-label="Main"
+      className="flex justify-center gap-1 overflow-x-auto border-y border-border/80 bg-well/50 px-2 py-2 [scrollbar-width:none] md:gap-2 md:py-2.5"
+    >
       {navItems.map((item) => {
-        const isActive = currentPath === item.to
+        const active =
+          pathname === item.to ||
+          pathname.startsWith(`${item.to}/`) ||
+          (item.also as ReadonlyArray<string>).includes(pathname)
         return (
           <Link
             key={item.to}
             to={item.to}
+            aria-current={active ? "page" : undefined}
             className={cn(
-              "relative rounded-md px-2 py-1.5 text-[10px] font-medium whitespace-nowrap uppercase transition-all duration-200 md:px-4 md:py-2 md:text-sm md:tracking-wide",
-              isActive
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              "shrink-0 rounded-md px-3 py-2 font-mono text-xs font-semibold tracking-wider whitespace-nowrap uppercase transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 md:px-4 md:text-[13px]",
+              active
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
             {item.label}
-            {isActive && (
-              <span className="absolute bottom-0 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-primary md:w-8" />
-            )}
           </Link>
         )
       })}

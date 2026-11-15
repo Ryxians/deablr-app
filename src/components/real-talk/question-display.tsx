@@ -1,35 +1,37 @@
-import { Card, CardContent } from "@/components/ui/card"
 import { useSelector } from "@tanstack/react-store"
+import { CurrentTurnCard } from "./current-turn-card"
 import { store } from "@/stores/real-talk"
 
 export function QuestionDisplay() {
   const currentQuestion = useSelector(
     store,
-    (s) => s.gameState?.currentQuestion,
+    (s) => s.gameState?.currentQuestion
   )
   const animationsEnabled = useSelector(store, (s) => s.animationsEnabled)
 
   return (
-    <Card className="border-2 border-primary/20 shadow-lg shadow-primary/5 min-h-[300px] md:min-h-[380px] flex flex-col">
-      <CardContent className="py-8 px-4 md:py-14 md:px-8 flex-1 flex items-center justify-center">
-        <div className="text-center space-y-4 md:space-y-6 w-full">
-          <div
-            key={currentQuestion?.number ?? 0}
-            className={
-              animationsEnabled
-                ? "animate-in fade-in slide-in-from-bottom-4 duration-500"
-                : ""
-            }
-          >
-            <div className="text-sm text-muted-foreground font-mono mb-2 md:mb-4">
-              Question #{currentQuestion?.number}
-            </div>
-            <p className="text-2xl md:text-3xl font-medium leading-relaxed">
-              {currentQuestion?.text}
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="flex min-h-[300px] flex-col rounded-2xl border border-border/80 bg-card p-5 md:min-h-[360px] md:p-7">
+      <div className="flex items-center justify-between gap-3">
+        <CurrentTurnCard />
+        {currentQuestion && (
+          <span className="rounded-sm bg-well px-2 py-1 font-mono text-xs font-semibold text-secondary">
+            #{currentQuestion.number}
+          </span>
+        )}
+      </div>
+      <div className="flex flex-1 items-center justify-center py-8">
+        <p
+          key={currentQuestion?.number ?? 0}
+          className={
+            "max-w-[24ch] text-center text-[1.75rem] leading-snug font-bold text-balance md:text-4xl md:leading-tight " +
+            (animationsEnabled
+              ? "animate-in duration-500 fade-in slide-in-from-bottom-3"
+              : "")
+          }
+        >
+          {currentQuestion?.text}
+        </p>
+      </div>
+    </div>
   )
 }

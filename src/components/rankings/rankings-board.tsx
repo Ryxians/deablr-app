@@ -1,10 +1,12 @@
 import { useMemo, useState } from "react"
+import { FileDown, X } from "lucide-react"
 import { ScoreBandCarousel } from "./score-band-carousel"
+import { TypeToggles } from "./type-toggles"
+import type { ReactNode } from "react"
 import type { MetricKey, PropertyType } from "@/lib/rankings"
 import type { RankedReview } from "@/server/rankings"
 import { TagCombobox } from "@/components/tag-combobox"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -16,12 +18,11 @@ import {
 import {
   BANDS_BEST_FIRST,
   METRICS,
-  PROPERTY_TYPES,
   averageScore,
   bandForScore,
-  typeLabel,
 } from "@/lib/rankings"
 import { exportRankingsPdf } from "@/lib/export-pdf"
+import { cn } from "@/lib/utils"
 
 type Direction = "desc" | "asc"
 /** The axis the board orders and bands by: the Average or one Metric. */
@@ -50,7 +51,7 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
 
   const allTags = useMemo(
     () => [...new Set(reviews.flatMap((r) => r.tags))].sort(),
-    [reviews],
+    [reviews]
   )
 
   const bands = useMemo(() => {
@@ -59,7 +60,7 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
         (selectedTypes.length === 0 ||
           r.types.some((t) => selectedTypes.includes(t as PropertyType))) &&
         selectedTags.every((tag) => r.tags.includes(tag)) &&
-        (completion === "all" || (completion === "incomplete") === r.incomplete),
+        (completion === "all" || (completion === "incomplete") === r.incomplete)
     )
     const byBand = new Map<string, Array<RankedReview>>()
     for (const item of filtered) {
@@ -86,7 +87,7 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
 
   function toggleType(type: PropertyType, checked: boolean) {
     setSelectedTypes((prev) =>
-      checked ? [...prev, type] : prev.filter((t) => t !== type),
+      checked ? [...prev, type] : prev.filter((t) => t !== type)
     )
   }
 
@@ -98,7 +99,7 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
       await exportRankingsPdf(bands.flatMap((b) => b.items))
     } catch (err) {
       setExportError(
-        err instanceof Error ? err.message : "Could not export PDF",
+        err instanceof Error ? err.message : "Could not export PDF"
       )
     } finally {
       setExporting(false)
@@ -107,10 +108,9 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
 
   return (
     <div>
-      <div className="mb-6 space-y-3">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <div className="flex items-center gap-2">
-            <Label htmlFor="rankings-axis">Rank by</Label>
+      <div className="mb-10 space-y-4 rounded-xl border border-border/80 bg-card p-4 md:p-5">
+        <div className="flex flex-wrap items-end gap-x-3 gap-y-3">
+          <FilterField label="Rank by" htmlFor="rankings-axis">
             <Select value={axis} onValueChange={(v) => setAxis(v as Axis)}>
               <SelectTrigger id="rankings-axis" className="w-32">
                 <SelectValue />
@@ -124,9 +124,8 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div className="flex items-center gap-2">
-            <Label htmlFor="rankings-direction">Order</Label>
+          </FilterField>
+          <FilterField label="Order" htmlFor="rankings-direction">
             <Select
               value={direction}
               onValueChange={(v) => setDirection(v as Direction)}
@@ -139,14 +138,13 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
                 <SelectItem value="asc">Worst to best</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          <div className="flex items-center gap-2">
-            <Label htmlFor="rankings-completion">Completion</Label>
+          </FilterField>
+          <FilterField label="Status" htmlFor="rankings-completion">
             <Select
               value={completion}
               onValueChange={(v) => setCompletion(v as Completion)}
             >
-              <SelectTrigger id="rankings-completion" className="w-32">
+              <SelectTrigger id="rankings-completion" className="w-36">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -155,76 +153,105 @@ export function RankingsBoard({ reviews }: { reviews: Array<RankedReview> }) {
                 <SelectItem value="incomplete">Incomplete</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          {hasFilters && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setSelectedTypes([])
-                setSelectedTags([])
-                setCompletion("all")
-              }}
+          </FilterField>
+          {allTags.length > 0 && (
+            <FilterField
+              label="Tags"
+              htmlFor="filter-tags"
+              className="min-w-48 flex-1 basis-56"
             >
-              Clear filters
-            </Button>
+              <TagCombobox
+                id="filter-tags"
+                options={allTags}
+                selected={selectedTags}
+                onChange={setSelectedTags}
+                placeholder="Filter by tags…"
+              />
+            </FilterField>
           )}
-          <div className="flex items-center gap-2 sm:ml-auto">
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 border-t border-border/60 pt-4">
+          <span className="mr-1 font-mono text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+            Type
+          </span>
+          <TypeToggles
+            idPrefix="filter-type"
+            selected={selectedTypes}
+            onToggle={toggleType}
+          />
+          <div className="ml-auto flex items-center gap-2">
+            {hasFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSelectedTypes([])
+                  setSelectedTags([])
+                  setCompletion("all")
+                }}
+              >
+                <X />
+                Clear
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
               disabled={exporting || reviews.length === 0}
               onClick={() => void onExportPdf()}
             >
+              <FileDown />
               {exporting ? "Exporting…" : "Export PDF"}
             </Button>
           </div>
         </div>
-        {exportError && <p className="text-sm text-red-600">{exportError}</p>}
-
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <span className="text-sm text-muted-foreground">Type</span>
-          {PROPERTY_TYPES.map((type) => (
-            <div key={type} className="flex items-center gap-1.5">
-              <Checkbox
-                id={`filter-type-${type}`}
-                checked={selectedTypes.includes(type)}
-                onCheckedChange={(checked) => toggleType(type, !!checked)}
-              />
-              <Label
-                htmlFor={`filter-type-${type}`}
-                className="text-sm font-normal"
-              >
-                {typeLabel(type)}
-              </Label>
-            </div>
-          ))}
-        </div>
-
-        {allTags.length > 0 && (
-          <div className="flex items-center gap-2">
-            <Label htmlFor="filter-tags" className="shrink-0">
-              Tags
-            </Label>
-            <TagCombobox
-              id="filter-tags"
-              options={allTags}
-              selected={selectedTags}
-              onChange={setSelectedTags}
-              placeholder="Filter by tags…"
-              className="max-w-xs"
-            />
-          </div>
+        {exportError && (
+          <p className="text-sm text-destructive">{exportError}</p>
         )}
       </div>
 
       {reviews.length === 0 ? (
-        <p>No Reviews yet.</p>
+        <EmptyState>No Reviews yet.</EmptyState>
+      ) : bands.every((b) => b.items.length === 0) ? (
+        <EmptyState>Nothing matches those filters.</EmptyState>
       ) : (
         bands.map(({ band, items }) => (
           <ScoreBandCarousel key={band} band={band} items={items} />
         ))
       )}
     </div>
+  )
+}
+
+function FilterField({
+  label,
+  htmlFor,
+  className,
+  children,
+}: {
+  label: string
+  htmlFor: string
+  className?: string
+  children: ReactNode
+}) {
+  return (
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      <Label
+        htmlFor={htmlFor}
+        className="text-[11px] tracking-wider text-muted-foreground uppercase"
+      >
+        {label}
+      </Label>
+      {children}
+    </div>
+  )
+}
+
+function EmptyState({ children }: { children: ReactNode }) {
+  return (
+    <p className="rounded-xl border border-dashed border-border py-16 text-center font-mono text-sm text-muted-foreground">
+      {children}
+    </p>
   )
 }

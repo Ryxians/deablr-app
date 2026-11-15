@@ -69,7 +69,7 @@ export function VideoPlayer({
   }
 
   return (
-    <div className="relative w-full overflow-hidden rounded-lg border bg-black">
+    <div className="relative w-full overflow-hidden rounded-xl bg-black ring-1 ring-border/80">
       <video
         ref={videoRef}
         src={src}
@@ -88,13 +88,13 @@ export function VideoPlayer({
           onClick={togglePlay}
           className="absolute inset-0 z-20 flex items-center justify-center bg-black/30 transition-colors hover:bg-black/40"
         >
-          <div className="flex size-16 items-center justify-center rounded-full bg-white/90 text-black shadow-lg">
-            <Play className="size-8 fill-current" />
+          <div className="flex size-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lift">
+            <Play className="ml-1 size-7 fill-current" />
           </div>
         </button>
       )}
 
-      <div className="absolute right-2 top-2 z-20 flex gap-2">
+      <div className="absolute top-2 right-2 z-20 flex gap-2">
         <Button
           type="button"
           variant="secondary"
@@ -102,11 +102,15 @@ export function VideoPlayer({
           className="bg-black/60 text-white hover:bg-black/80"
           onClick={() => onMutedChange(!muted)}
         >
-          {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+          {muted ? (
+            <VolumeX className="size-4" />
+          ) : (
+            <Volume2 className="size-4" />
+          )}
         </Button>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/80 to-transparent p-3">
+      <div className="absolute right-0 bottom-0 left-0 z-20 bg-gradient-to-t from-black/80 to-transparent p-3">
         <div className="flex items-center gap-3 text-xs text-white">
           <button
             type="button"

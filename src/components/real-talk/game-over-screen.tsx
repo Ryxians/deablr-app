@@ -1,73 +1,65 @@
-import { Sparkles, RotateCcw } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
 import { useSelector } from "@tanstack/react-store"
-import { store, resetGame } from "@/stores/real-talk"
+import { RotateCcw } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { resetGame, store } from "@/stores/real-talk"
 
 export function GameOverScreen() {
   const drawnCount = useSelector(
     store,
-    (s) => s.gameState?.drawnQuestions.length ?? 0,
+    (s) => s.gameState?.drawnQuestions.length ?? 0
   )
   const players = useSelector(store, (s) => s.gameState?.players ?? [])
   const roundNumber = useSelector(store, (s) => s.gameState?.roundNumber ?? 0)
-  const totalQuestions = useSelector(store, (s) => s.questions.length)
+
+  const stats = [
+    { label: "Questions", value: drawnCount },
+    { label: "Rounds", value: roundNumber },
+    { label: "Players", value: players.length },
+  ]
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 md:space-y-8">
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-primary/10 mb-2">
-          <Sparkles className="size-6 md:size-8 text-primary" />
-        </div>
-        <h1 className="text-3xl md:text-4xl font-bold">Game Over</h1>
-        <p className="text-muted-foreground">
-          All {totalQuestions} questions have been drawn!
-        </p>
-      </div>
+    <div className="mx-auto max-w-2xl text-center">
+      <p className="font-mono text-xs font-medium text-secondary">
+        ~/projects/real-talk
+      </p>
+      <h1 className="mt-2 text-4xl font-extrabold tracking-tight md:text-5xl">
+        That&apos;s the whole deck.
+      </h1>
+      <p className="mt-3 text-muted-foreground">
+        Every question has been drawn. Hope it got real.
+      </p>
 
-      <Card className="border-primary/20">
-        <CardContent className="space-y-8 py-8">
-          <div className="text-center space-y-2">
-            <div className="text-7xl font-bold text-primary">{drawnCount}</div>
-            <p className="text-muted-foreground">questions drawn</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2 text-center">
-              <Label className="text-xs text-muted-foreground uppercase tracking-wider">
-                Players
-              </Label>
-              <div className="flex flex-wrap justify-center gap-2">
-                {players.map((player) => (
-                  <div
-                    key={player}
-                    className="px-3 py-1.5 rounded-full bg-muted text-sm font-medium"
-                  >
-                    {player}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-2 text-center">
-              <Label className="text-xs text-muted-foreground uppercase tracking-wider">
-                Rounds Completed
-              </Label>
-              <p className="text-3xl font-bold">{roundNumber}</p>
-            </div>
-          </div>
-
-          <Button
-            onClick={resetGame}
-            variant="destructive"
-            className="w-full h-12"
-            size="lg"
+      <dl className="mt-8 grid grid-cols-3 gap-3">
+        {stats.map((stat) => (
+          <div
+            key={stat.label}
+            className="rounded-xl border border-border/80 bg-card px-3 py-5"
           >
-            <RotateCcw className="size-4 mr-2" />
-            Start New Game
-          </Button>
-        </CardContent>
-      </Card>
+            <dd className="font-mono text-3xl font-extrabold text-primary tabular-nums md:text-4xl">
+              {stat.value}
+            </dd>
+            <dt className="mt-1 font-mono text-xs text-muted-foreground">
+              {stat.label}
+            </dt>
+          </div>
+        ))}
+      </dl>
+
+      <ul className="mt-6 flex flex-wrap justify-center gap-2">
+        {players.map((player) => (
+          <li
+            key={player}
+            className="rounded-full border border-border bg-well/60 px-3 py-1 text-sm font-semibold"
+          >
+            {player}
+          </li>
+        ))}
+      </ul>
+
+      <Button onClick={resetGame} size="lg" className="mt-8 w-full sm:w-auto">
+        <RotateCcw />
+        Start a new game
+      </Button>
     </div>
   )
 }

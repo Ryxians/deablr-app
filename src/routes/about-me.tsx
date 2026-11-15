@@ -11,14 +11,8 @@ import {
   Wine,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item"
+import { PageHeader } from "@/components/page-header"
+import { SectionHeading } from "@/components/section-heading"
 import {
   Carousel,
   CarouselContent,
@@ -49,24 +43,24 @@ const goodToKnow: Array<{
   description: string
   icon: LucideIcon
 }> = [
-    {
-      title: "Bachelor's degree",
-      description: "Educated fool",
-      icon: GraduationCap,
-    },
-    { title: "Catholic", description: "God Oriented", icon: Church },
-    { title: "No Pets", description: "Want pets", icon: PawPrint },
-    { title: "No kids", description: "Want kids", icon: Baby },
-    { title: "Marijuana Gross", description: "hard pass", icon: Ban },
-    { title: "Wine Prince", description: "Parents own a winery", icon: Wine },
-  ]
+  {
+    title: "Bachelor's degree",
+    description: "Educated fool",
+    icon: GraduationCap,
+  },
+  { title: "Catholic", description: "God Oriented", icon: Church },
+  { title: "No Pets", description: "Want pets", icon: PawPrint },
+  { title: "No kids", description: "Want kids", icon: Baby },
+  { title: "Marijuana Gross", description: "hard pass", icon: Ban },
+  { title: "Wine Prince", description: "Parents own a winery", icon: Wine },
+]
 
 const playlists = [
   "https://open.spotify.com/embed/playlist/4Zxs6hjuX3HO5pd97OwyZ3?utm_source=generator&si=521fecaba4dc46f5",
   "https://open.spotify.com/embed/playlist/3xxRaISAq1WBippP2JdHoE?utm_source=generator&si=c73d9aa231a94db1",
   "https://open.spotify.com/embed/playlist/2FiV8RJINYdcYW0zO8mR7A?utm_source=generator&si=83caf61b6eb74255",
   "https://open.spotify.com/embed/playlist/4N7mTgHCyMjxyhiF2XzfpG?utm_source=generator&si=341fc5b347e346b9",
-  "https://open.spotify.com/embed/playlist/2wFOez3ihkVNqrrl7P2n7J?utm_source=generator&si=933981332b20498b"
+  "https://open.spotify.com/embed/playlist/2wFOez3ihkVNqrrl7P2n7J?utm_source=generator&si=933981332b20498b",
 ]
 
 const morePhotos = [
@@ -81,70 +75,86 @@ function AboutMe() {
   const age = calculateAge(new Date(2000, 4, 10))
 
   return (
-    <div className="mx-auto max-w-2xl space-y-8">
-      <section className="flex flex-col items-center text-center">
+    <div className="mx-auto max-w-3xl">
+      <PageHeader path="about-me" title="About Me" />
+
+      <section className="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-center sm:gap-8 sm:text-left">
         <img
           src="/jared/profile.JPG"
           alt="Jared"
-          className="w-full max-w-sm rounded-3xl object-cover shadow-sm"
+          className="aspect-square w-56 shrink-0 rounded-2xl object-cover ring-1 ring-border/80 sm:w-60"
         />
-        <h1 className="mt-4 text-3xl font-bold">Jared, {age}</h1>
-        <div className="mt-2 flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <MapPin className="h-4 w-4" />
-            Broken Arrow, OK
-          </span>
-          <span className="flex items-center gap-1">
-            <Ruler className="h-4 w-4" />
-            5&apos;8&quot;
-          </span>
-          <span className="flex items-center gap-1">
-            <Heart className="h-4 w-4" />
-            Long-term
-          </span>
+        <div className="min-w-0">
+          <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">
+            Jared, <span className="text-primary">{age}</span>
+          </h2>
+          <ul className="mt-3 flex flex-wrap justify-center gap-2 sm:justify-start">
+            {[
+              { icon: MapPin, label: "Broken Arrow, OK" },
+              { icon: Ruler, label: `5'8"` },
+              { icon: Heart, label: "Long-term" },
+            ].map(({ icon: Icon, label }) => (
+              <li
+                key={label}
+                className="flex items-center gap-1.5 rounded-full border border-border/80 bg-well/60 px-3 py-1 font-mono text-xs text-muted-foreground"
+              >
+                <Icon className="size-3.5 text-secondary" />
+                {label}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-5 text-[17px] leading-relaxed text-foreground/95">
+            Henlo, I am here! Local fool who likes to talk. Will be an extremist
+            if it&apos;s funny. Die hard Oklahoman (Okie). Red Truck. God &amp;
+            State. Scooby Doo is the pinnacle of animation (pre-youtube). Broken
+            Arrow native.
+          </p>
         </div>
       </section>
 
-      <section>
-        <p className="text-center">
-          Henlo, I am here! Local fool who likes to talk. Will be an extremist
-          if it&apos;s funny. Die hard Oklahoman (Okie). Red Truck. God & State.
-          Scooby Doo is the pinnacle of animation (pre-youtube). Broken Arrow
-          native.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="mb-3 border-b border-border pb-1 text-xl font-bold">
-          Good to Know
-        </h2>
-        <ItemGroup>
+      <section className="mt-14">
+        <SectionHeading>Good to Know</SectionHeading>
+        <ul className="grid gap-3 sm:grid-cols-2">
           {goodToKnow.map(({ title, description, icon: Icon }) => (
-            <Item key={title}>
-              <ItemMedia>
-                <Icon className="h-5 w-5 text-primary" />
-              </ItemMedia>
-              <ItemContent>
-                <ItemTitle>{title}</ItemTitle>
-                <ItemDescription>{description}</ItemDescription>
-              </ItemContent>
-            </Item>
+            <li
+              key={title}
+              className="flex items-center gap-3.5 rounded-lg border border-border/70 bg-card px-4 py-3.5"
+            >
+              <span className="grid size-10 shrink-0 place-items-center rounded-md bg-primary/15 text-primary">
+                <Icon className="size-5" />
+              </span>
+              <span className="min-w-0">
+                <span className="block font-mono text-sm font-bold">
+                  {title}
+                </span>
+                <span className="block text-sm text-muted-foreground">
+                  {description}
+                </span>
+              </span>
+            </li>
           ))}
-        </ItemGroup>
+        </ul>
       </section>
 
-      <section>
-        <h2 className="mb-3 border-b border-border pb-1 text-xl font-bold">
-          On Repeat
-        </h2>
-        <div className="px-10 md:px-12">
-          <Carousel>
-            <CarouselContent>
-              {playlists.map((src, index) => (
-                <CarouselItem key={src}>
+      <section className="mt-14">
+        <Carousel>
+          <SectionHeading
+            action={
+              <div className="flex gap-1.5">
+                <CarouselPrevious className="static size-8 translate-y-0" />
+                <CarouselNext className="static size-8 translate-y-0" />
+              </div>
+            }
+          >
+            On Repeat
+          </SectionHeading>
+          <CarouselContent>
+            {playlists.map((src, index) => (
+              <CarouselItem key={src}>
+                <div className="h-[352px] overflow-hidden rounded-xl bg-well ring-1 ring-border/70">
                   <iframe
                     title={`Spotify playlist ${index + 1}`}
-                    className="w-full rounded-xl"
+                    className="block w-full"
                     src={src}
                     height={352}
                     frameBorder={0}
@@ -152,26 +162,23 @@ function AboutMe() {
                     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                     loading="lazy"
                   />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
       </section>
 
-      <section>
-        <h2 className="mb-3 border-b border-border pb-1 text-xl font-bold">
-          More Photos
-        </h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+      <section className="mt-14">
+        <SectionHeading>More Photos</SectionHeading>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
           {morePhotos.map((src, index) => (
             <img
               key={src}
               src={src}
               alt={`Jared photo ${index + 1}`}
-              className="aspect-square w-full rounded-xl object-cover"
+              className="aspect-square w-full rounded-xl object-cover ring-1 ring-border/70"
+              loading="lazy"
             />
           ))}
         </div>

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { EQApp } from "@/components/eq/eq-app"
+import { PageHeader } from "@/components/page-header"
 
 export const Route = createFileRoute("/eq")({
   component: EQ,
@@ -7,18 +8,12 @@ export const Route = createFileRoute("/eq")({
 
 function EQ() {
   return (
-    <div className="space-y-6">
-      <section>
-        <h2 className="font-bold text-2xl border-b border-border mb-2 pb-2">
-          EQ
-        </h2>
-        <p className="text-muted-foreground mb-6">
-          Upload a video, shape its sound with a live EQ, compare before/after,
-          and export the processed video — all in your browser using wasm
-          ffmpeg.
-        </p>
-      </section>
-
+    <div>
+      <PageHeader
+        path="projects/eq"
+        title="EQ"
+        description="Upload a video, shape its sound with a live EQ, compare before and after, then export. Everything runs in your browser with ffmpeg.wasm."
+      />
       <EQApp />
     </div>
   )

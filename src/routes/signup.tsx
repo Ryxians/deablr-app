@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Field, FormCard, FormError } from "@/components/form-bits"
+import { PageHeader } from "@/components/page-header"
 import { requestAccount } from "@/server/onboarding"
 
 export const Route = createFileRoute("/signup")({
@@ -37,10 +38,8 @@ function SignupPage() {
 
   if (done) {
     return (
-      <section className="mb-6">
-        <h2 className="mb-2 border-b border-border text-xl font-bold">
-          Request Received
-        </h2>
+      <section>
+        <PageHeader path="signup" title="Request Received" />
         <p>
           Your account is pending approval. You can log in once an Admin
           approves it.
@@ -50,13 +49,10 @@ function SignupPage() {
   }
 
   return (
-    <section className="mb-6">
-      <h2 className="mb-2 border-b border-border text-xl font-bold">
-        Request an Account
-      </h2>
-      <form onSubmit={onSubmit} className="max-w-sm space-y-4">
-        <div className="space-y-1">
-          <Label htmlFor="signup-username">Username</Label>
+    <section>
+      <PageHeader path="signup" title="Request an Account" />
+      <FormCard onSubmit={onSubmit}>
+        <Field label="Username" htmlFor="signup-username">
           <Input
             id="signup-username"
             value={username}
@@ -64,9 +60,8 @@ function SignupPage() {
             autoComplete="username"
             required
           />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="signup-password">Password</Label>
+        </Field>
+        <Field label="Password" htmlFor="signup-password">
           <Input
             id="signup-password"
             type="password"
@@ -75,9 +70,8 @@ function SignupPage() {
             autoComplete="new-password"
             required
           />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="signup-confirm">Confirm password</Label>
+        </Field>
+        <Field label="Confirm password" htmlFor="signup-confirm">
           <Input
             id="signup-confirm"
             type="password"
@@ -86,12 +80,12 @@ function SignupPage() {
             autoComplete="new-password"
             required
           />
-        </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <Button type="submit" disabled={pending}>
+        </Field>
+        {error && <FormError>{error}</FormError>}
+        <Button type="submit" disabled={pending} className="w-full">
           {pending ? "Requesting…" : "Request account"}
         </Button>
-      </form>
+      </FormCard>
     </section>
   )
 }

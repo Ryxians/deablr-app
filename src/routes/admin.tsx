@@ -1,10 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute, useRouter } from "@tanstack/react-router"
 import { useState } from "react"
+import {
+  Ban,
+  Copy,
+  KeyRound,
+  Link2,
+  LogOut,
+  Trash2,
+  UserPlus,
+} from "lucide-react"
 import { NotFound } from "@/components/NotFound"
+import { PageHeader } from "@/components/page-header"
+import { Field, FormCard, FormError } from "@/components/form-bits"
+import { SectionHeading } from "@/components/section-heading"
+import { Chip } from "@/components/ui/chip"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -13,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { authClient } from "@/lib/auth-client"
+import { cn } from "@/lib/utils"
 import {
   createFirstAdmin,
   createUser,
@@ -47,16 +60,21 @@ function AdminPage() {
 
 function Section({
   title,
+  description,
   children,
 }: {
   title: string
+  description?: string
   children: React.ReactNode
 }) {
   return (
-    <section className="mb-6">
-      <h2 className="mb-2 border-b border-border text-xl font-bold">
-        {title}
-      </h2>
+    <section className="mb-10 last:mb-0">
+      <SectionHeading>{title}</SectionHeading>
+      {description && (
+        <p className="-mt-1 mb-4 text-[15px] text-muted-foreground">
+          {description}
+        </p>
+      )}
       {children}
     </section>
   )
@@ -90,49 +108,46 @@ function SetupForm() {
 
   return (
     <div>
-      <Section title="First Run Setup">
-        <p className="mb-4">
-          No Users exist yet. This one-time form creates the first Admin.
-        </p>
-        <form onSubmit={onSubmit} className="max-w-sm space-y-4">
-          <div className="space-y-1">
-            <Label htmlFor="setup-username">Username</Label>
-            <Input
-              id="setup-username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              autoComplete="username"
-              required
-            />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="setup-password">Password</Label>
-            <Input
-              id="setup-password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
-              required
-            />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="setup-confirm">Confirm password</Label>
-            <Input
-              id="setup-confirm"
-              type="password"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              autoComplete="new-password"
-              required
-            />
-          </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <Button type="submit" disabled={pending}>
-            {pending ? "Creating…" : "Create Admin"}
-          </Button>
-        </form>
-      </Section>
+      <PageHeader
+        path="admin"
+        title="First Run Setup"
+        description="No Users exist yet. This one-time form creates the first Admin."
+      />
+      <FormCard onSubmit={onSubmit}>
+        <Field label="Username" htmlFor="setup-username">
+          <Input
+            id="setup-username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="username"
+            required
+          />
+        </Field>
+        <Field label="Password" htmlFor="setup-password">
+          <Input
+            id="setup-password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="new-password"
+            required
+          />
+        </Field>
+        <Field label="Confirm password" htmlFor="setup-confirm">
+          <Input
+            id="setup-confirm"
+            type="password"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            autoComplete="new-password"
+            required
+          />
+        </Field>
+        {error && <FormError>{error}</FormError>}
+        <Button type="submit" disabled={pending} className="w-full">
+          {pending ? "Creating…" : "Create Admin"}
+        </Button>
+      </FormCard>
     </div>
   )
 }
@@ -157,7 +172,7 @@ function LoginForm() {
       setError(
         signInError.code === "BANNED_USER"
           ? "Your account is pending approval."
-          : "Invalid username or password.",
+          : "Invalid username or password."
       )
       return
     }
@@ -166,35 +181,36 @@ function LoginForm() {
 
   return (
     <div>
-      <Section title="Admin Login">
-        <form onSubmit={onSubmit} className="max-w-sm space-y-4">
-          <div className="space-y-1">
-            <Label htmlFor="login-username">Username</Label>
-            <Input
-              id="login-username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              autoComplete="username"
-              required
-            />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="login-password">Password</Label>
-            <Input
-              id="login-password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-            />
-          </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <Button type="submit" disabled={pending}>
-            {pending ? "Logging in…" : "Log in"}
-          </Button>
-        </form>
-      </Section>
+      <PageHeader
+        path="admin"
+        title="Log in"
+        description="Admins and Denizens only. Penny is watching."
+      />
+      <FormCard onSubmit={onSubmit}>
+        <Field label="Username" htmlFor="login-username">
+          <Input
+            id="login-username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="username"
+            required
+          />
+        </Field>
+        <Field label="Password" htmlFor="login-password">
+          <Input
+            id="login-password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+            required
+          />
+        </Field>
+        {error && <FormError>{error}</FormError>}
+        <Button type="submit" disabled={pending} className="w-full">
+          {pending ? "Logging in…" : "Log in"}
+        </Button>
+      </FormCard>
     </div>
   )
 }
@@ -212,7 +228,7 @@ function RoleSelect({
 }) {
   return (
     <Select value={value} onValueChange={(v) => onChange(v as Role)}>
-      <SelectTrigger className="w-32" disabled={disabled}>
+      <SelectTrigger size="sm" className="w-28" disabled={disabled}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -233,17 +249,27 @@ function Dashboard({ me }: { me: { id: string; username: string } }) {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <p>
-          Henlo, <span className="font-bold">{me.username}</span>.
-        </p>
-        <Button variant="outline" size="sm" onClick={signOut}>
-          Sign out
-        </Button>
-      </div>
+      <PageHeader
+        path="admin"
+        title="Dashboard"
+        description={
+          <>
+            Henlo,{" "}
+            <span className="font-bold text-foreground">{me.username}</span>.
+          </>
+        }
+        actions={
+          <Button variant="outline" size="sm" onClick={signOut}>
+            <LogOut />
+            Sign out
+          </Button>
+        }
+      />
       <UsersSection me={me} />
-      <CreateUserSection />
-      <InvitesSection />
+      <div className="grid gap-x-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+        <CreateUserSection />
+        <InvitesSection />
+      </div>
     </div>
   )
 }
@@ -265,10 +291,16 @@ function UsersSection({ me }: { me: { id: string } }) {
 
   return (
     <Section title="Users">
-      {error && <p className="mb-2 text-sm text-red-600">{error}</p>}
-      {users.isPending && <p>Loading…</p>}
+      {error && (
+        <div className="mb-3">
+          <FormError>{error}</FormError>
+        </div>
+      )}
+      {users.isPending && (
+        <p className="font-mono text-sm text-muted-foreground">Loading…</p>
+      )}
       {users.data && (
-        <ul className="space-y-2">
+        <ul className="divide-y divide-border/60 overflow-hidden rounded-xl border border-border/80 bg-card">
           {users.data.map((u) => {
             const isSelf = u.id === me.id
             const pendingApproval =
@@ -276,81 +308,106 @@ function UsersSection({ me }: { me: { id: string } }) {
             return (
               <li
                 key={u.id}
-                className="flex flex-wrap items-center gap-2 border border-border p-2"
+                className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3"
               >
-                <span className="font-bold">{u.username}</span>
-                {pendingApproval ? (
-                  <span className="text-sm text-yellow-600">Pending</span>
-                ) : u.banned ? (
-                  <span className="text-sm text-red-600">Banned</span>
-                ) : null}
+                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary/15 font-mono text-sm font-bold text-primary uppercase">
+                  {(u.username ?? "?").slice(0, 1)}
+                </span>
+                <span className="flex min-w-0 items-center gap-2">
+                  <span className="truncate font-bold">{u.username}</span>
+                  {isSelf && (
+                    <Chip tone="secondary" size="xs">
+                      You
+                    </Chip>
+                  )}
+                  {pendingApproval ? (
+                    <Chip tone="sun" size="xs">
+                      Pending
+                    </Chip>
+                  ) : u.banned ? (
+                    <Chip tone="muted" size="xs" className="text-destructive">
+                      Banned
+                    </Chip>
+                  ) : null}
+                </span>
                 <span className="grow" />
-                <RoleSelect
-                  value={u.role === "admin" ? "admin" : "denizen"}
-                  disabled={isSelf}
-                  onChange={(role) =>
-                    run(() => setUserRole({ data: { userId: u.id, role } }))
-                  }
-                />
-                {u.banned ? (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() =>
-                      run(() =>
-                        setUserBanned({
-                          data: { userId: u.id, banned: false },
-                        }),
-                      )
-                    }
-                  >
-                    {pendingApproval ? "Approve" : "Unban"}
-                  </Button>
-                ) : (
-                  <Button
-                    size="sm"
-                    variant="outline"
+                <div className="flex items-center gap-1.5">
+                  <RoleSelect
+                    value={u.role === "admin" ? "admin" : "denizen"}
                     disabled={isSelf}
-                    onClick={() =>
-                      run(() =>
-                        setUserBanned({ data: { userId: u.id, banned: true } }),
-                      )
+                    onChange={(role) =>
+                      run(() => setUserRole({ data: { userId: u.id, role } }))
                     }
-                  >
-                    Ban
-                  </Button>
-                )}
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    const newPassword = window.prompt(
-                      `New password for ${u.username} (min 8 chars):`,
-                    )
-                    if (newPassword) {
-                      void run(() =>
-                        resetUserPassword({
-                          data: { userId: u.id, newPassword },
-                        }),
-                      )
-                    }
-                  }}
-                >
-                  Reset password
-                </Button>
-                {!isSelf && (
+                  />
+                  {u.banned ? (
+                    <Button
+                      size="sm"
+                      variant={pendingApproval ? "default" : "outline"}
+                      onClick={() =>
+                        run(() =>
+                          setUserBanned({
+                            data: { userId: u.id, banned: false },
+                          })
+                        )
+                      }
+                    >
+                      {pendingApproval ? "Approve" : "Unban"}
+                    </Button>
+                  ) : (
+                    <Button
+                      size="icon-sm"
+                      variant="ghost"
+                      disabled={isSelf}
+                      title={`Ban ${u.username}`}
+                      aria-label={`Ban ${u.username}`}
+                      onClick={() =>
+                        run(() =>
+                          setUserBanned({
+                            data: { userId: u.id, banned: true },
+                          })
+                        )
+                      }
+                    >
+                      <Ban />
+                    </Button>
+                  )}
                   <Button
-                    size="sm"
-                    variant="outline"
+                    size="icon-sm"
+                    variant="ghost"
+                    title={`Reset password for ${u.username}`}
+                    aria-label={`Reset password for ${u.username}`}
                     onClick={() => {
-                      if (window.confirm(`Delete ${u.username}?`)) {
-                        void run(() => deleteUser({ data: { userId: u.id } }))
+                      const newPassword = window.prompt(
+                        `New password for ${u.username} (min 8 chars):`
+                      )
+                      if (newPassword) {
+                        void run(() =>
+                          resetUserPassword({
+                            data: { userId: u.id, newPassword },
+                          })
+                        )
                       }
                     }}
                   >
-                    Delete
+                    <KeyRound />
                   </Button>
-                )}
+                  {!isSelf && (
+                    <Button
+                      size="icon-sm"
+                      variant="ghost"
+                      className="hover:bg-destructive/10 hover:text-destructive"
+                      title={`Delete ${u.username}`}
+                      aria-label={`Delete ${u.username}`}
+                      onClick={() => {
+                        if (window.confirm(`Delete ${u.username}?`)) {
+                          void run(() => deleteUser({ data: { userId: u.id } }))
+                        }
+                      }}
+                    >
+                      <Trash2 />
+                    </Button>
+                  )}
+                </div>
               </li>
             )
           })}
@@ -385,24 +442,21 @@ function CreateUserSection() {
 
   return (
     <Section title="Create User">
-      <form
+      <FormCard
         onSubmit={(e) => {
           e.preventDefault()
           mutation.mutate()
         }}
-        className="max-w-sm space-y-4"
       >
-        <div className="space-y-1">
-          <Label htmlFor="create-username">Username</Label>
+        <Field label="Username" htmlFor="create-username">
           <Input
             id="create-username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="create-password">Password</Label>
+        </Field>
+        <Field label="Password" htmlFor="create-password">
           <Input
             id="create-password"
             type="password"
@@ -410,17 +464,21 @@ function CreateUserSection() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-        </div>
-        <div className="space-y-1">
-          <Label>Role</Label>
+        </Field>
+        <Field label="Role">
           <RoleSelect value={role} onChange={setRole} />
-        </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        {message && <p className="text-sm text-green-700">{message}</p>}
+        </Field>
+        {error && <FormError>{error}</FormError>}
+        {message && (
+          <p className="rounded-lg border border-accent/50 bg-accent/10 px-3 py-2 text-sm text-accent">
+            {message}
+          </p>
+        )}
         <Button type="submit" disabled={mutation.isPending}>
-          {mutation.isPending ? "Creating…" : "Create User"}
+          <UserPlus />
+          {mutation.isPending ? "Creating…" : "Create user"}
         </Button>
-      </form>
+      </FormCard>
     </Section>
   )
 }
@@ -449,56 +507,76 @@ function InvitesSection() {
   }
 
   return (
-    <Section title="Invite Links">
-      {error && <p className="mb-2 text-sm text-red-600">{error}</p>}
+    <Section
+      title="Invite Links"
+      description="One-use links that let someone claim an account."
+    >
+      {error && (
+        <div className="mb-3">
+          <FormError>{error}</FormError>
+        </div>
+      )}
       <div className="mb-4 flex items-center gap-2">
         <RoleSelect value={role} onChange={setRole} />
-        <Button
-          size="sm"
-          onClick={() => run(() => createInvite({ data: { role } }))}
-        >
+        <Button onClick={() => run(() => createInvite({ data: { role } }))}>
+          <Link2 />
           Generate invite
         </Button>
       </div>
-      {invites.data && invites.data.length === 0 && <p>No invites yet.</p>}
-      {invites.data && (
-        <ul className="space-y-2">
+      {invites.data && invites.data.length === 0 && (
+        <p className="rounded-xl border border-dashed border-border py-8 text-center font-mono text-sm text-muted-foreground">
+          No invites yet.
+        </p>
+      )}
+      {invites.data && invites.data.length > 0 && (
+        <ul className="divide-y divide-border/60 overflow-hidden rounded-xl border border-border/80 bg-card">
           {invites.data.map((inv) => {
             const used = !!inv.usedAt
             const expired = !used && inv.expiresAt < new Date()
+            const active = !used && !expired
             return (
               <li
                 key={inv.id}
-                className="flex flex-wrap items-center gap-2 border border-border p-2 text-sm"
+                className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 text-sm"
               >
-                <code className="break-all">
-                  {used || expired ? inv.token.slice(0, 8) + "…" : inviteUrl(inv.token)}
+                <code
+                  className={cn(
+                    "min-w-0 flex-1 basis-60 font-mono text-xs break-all",
+                    active ? "text-foreground" : "text-muted-foreground"
+                  )}
+                >
+                  {active ? inviteUrl(inv.token) : inv.token.slice(0, 8) + "…"}
                 </code>
-                <span className="grow" />
-                <span>{inv.role}</span>
-                <span className="text-muted-foreground">
+                <Chip tone="muted" size="xs">
+                  {inv.role}
+                </Chip>
+                <Chip tone={active ? "accent" : "muted"} size="xs">
                   {used ? "Used" : expired ? "Expired" : "Active"}
-                </span>
-                {!used && !expired && (
+                </Chip>
+                <div className="flex items-center gap-1.5">
+                  {active && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        navigator.clipboard.writeText(inviteUrl(inv.token))
+                      }
+                    >
+                      <Copy />
+                      Copy
+                    </Button>
+                  )}
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant="ghost"
+                    className="hover:bg-destructive/10 hover:text-destructive"
                     onClick={() =>
-                      navigator.clipboard.writeText(inviteUrl(inv.token))
+                      run(() => revokeInvite({ data: { inviteId: inv.id } }))
                     }
                   >
-                    Copy
+                    Revoke
                   </Button>
-                )}
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    run(() => revokeInvite({ data: { inviteId: inv.id } }))
-                  }
-                >
-                  Revoke
-                </Button>
+                </div>
               </li>
             )
           })}
