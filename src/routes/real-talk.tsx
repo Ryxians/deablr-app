@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { useSelector } from "@tanstack/react-store"
-import { store, loadQuestions } from "@/stores/real-talk"
+import { loadQuestions, store } from "@/stores/real-talk"
 import { LoadingScreen } from "@/components/real-talk/loading-screen"
 import { SetupScreen } from "@/components/real-talk/setup-screen"
 import { GameOverScreen } from "@/components/real-talk/game-over-screen"

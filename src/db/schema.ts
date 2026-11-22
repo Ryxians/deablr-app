@@ -108,8 +108,8 @@ export const verification = sqliteTable("verification", {
 export const property = sqliteTable("property", {
   id: text("id").primaryKey(),
   title: text("title").notNull(),
-  types: text("types", { mode: "json" }).$type<string[]>().notNull(),
-  tags: text("tags", { mode: "json" }).$type<string[]>().notNull(),
+  types: text("types", { mode: "json" }).$type<Array<string>>().notNull(),
+  tags: text("tags", { mode: "json" }).$type<Array<string>>().notNull(),
   artPath: text("art_path").notNull(),
   incomplete: integer("incomplete", { mode: "boolean" })
     .default(false)
