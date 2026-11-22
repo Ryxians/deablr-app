@@ -15,8 +15,8 @@ import { Stage } from "./stage"
 import {
   aspectRatioFor,
   centeredCrop,
-  clamp,
-  layerHeightFraction,
+  clampStart,
+  fitLayer,
   outputDuration,
   outputFrame,
 } from "./timeline-math"
@@ -39,23 +39,6 @@ import type {
 } from "./types"
 import { Button, buttonVariants } from "@/components/ui/button"
 
-/** Keep a layer inside the output frame and no bigger than it. */
-function fitLayer(
-  layer: VideoLayer,
-  frame: { width: number; height: number } | null
-): VideoLayer {
-  if (!frame) return layer
-  const heightPerWidth = layerHeightFraction({ ...layer, w: 1 }, frame)
-  const w = clamp(layer.w, 0.05, Math.min(1, 1 / heightPerWidth))
-  const h = w * heightPerWidth
-  return {
-    ...layer,
-    w,
-    x: clamp(layer.x, 0, Math.max(0, 1 - w)),
-    y: clamp(layer.y, 0, Math.max(0, 1 - h)),
-  }
-}
-
 function newId() {
   return typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
@@ -77,7 +60,7 @@ export function VideoEditorApp() {
   )
   const [source, setSource] = useState<SourceInfo | null>(null)
 
-  const [trimOverride, setTrim] = useState<TimeRange | null>(null)
+  const [trimOverride, setTrimOverride] = useState<TimeRange | null>(null)
   const [crop, setCrop] = useState<CropRect>(FULL_CROP)
   const [aspect, setAspect] = useState<AspectId>("free")
   const [speed, setSpeed] = useState(DEFAULT_SPEED)
@@ -151,7 +134,7 @@ export function VideoEditorApp() {
     setVideoUrl(url)
     // Trim and crop are tied to the old clip's length and frame.
     setSource(null)
-    setTrim(null)
+    setTrimOverride(null)
     setCrop(FULL_CROP)
     setAspect("free")
     setExportedFile(null)
@@ -169,8 +152,7 @@ export function VideoEditorApp() {
     )
   }, [])
 
-  const startForNewTrack = () =>
-    clamp(store.time, 0, Math.max(0, duration - 0.05))
+  const startForNewTrack = () => clampStart(store.time, duration)
 
   const handleAddFiles = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -220,18 +202,19 @@ export function VideoEditorApp() {
     }
   }
 
-  const updateTrack = useCallback((id: string, patch: Partial<Track>) => {
-    setLayers((prev) =>
-      prev.map((l) => (l.id === id ? ({ ...l, ...patch } as VideoLayer) : l))
-    )
-    setAudioTracks((prev) =>
-      prev.map((t) => (t.id === id ? ({ ...t, ...patch } as AudioTrack) : t))
-    )
-  }, [])
-
-  const updateLayer = useCallback(
-    (id: string, patch: Partial<VideoLayer>) => updateTrack(id, patch),
-    [updateTrack]
+  /** Layers are also kept inside the output frame as they're moved. */
+  const updateTrack = useCallback(
+    (id: string, patch: Partial<Track>) => {
+      setLayers((prev) =>
+        prev.map((l) =>
+          l.id === id ? fitLayer({ ...l, ...patch } as VideoLayer, frame) : l
+        )
+      )
+      setAudioTracks((prev) =>
+        prev.map((t) => (t.id === id ? ({ ...t, ...patch } as AudioTrack) : t))
+      )
+    },
+    [frame]
   )
 
   const removeTrack = (id: string) => {
@@ -422,7 +405,7 @@ export function VideoEditorApp() {
               audioTracks={audioTracks}
               selectedId={selectedId}
               onSelect={setSelectedId}
-              onLayerChange={updateLayer}
+              onLayerChange={updateTrack}
               muted={muted}
               analyser={analyserRef.current}
               showLiveEQ={showLiveEQ}
@@ -455,7 +438,7 @@ export function VideoEditorApp() {
                 type="button"
                 aria-label="Dismiss"
                 onClick={() => setNotice(null)}
-                className="-m-1 shrink-0 cursor-pointer p-1"
+                className="-m-2 grid size-10 shrink-0 cursor-pointer place-items-center rounded-md md:size-8"
               >
                 <X className="size-4" />
               </button>
@@ -485,7 +468,7 @@ export function VideoEditorApp() {
                 store={store}
                 source={source}
                 trim={trim}
-                onTrimChange={setTrim}
+                onTrimChange={setTrimOverride}
                 crop={crop}
                 aspect={aspect}
                 onAspectChange={handleAspectChange}

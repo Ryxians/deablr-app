@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react"
-import { clamp, outputToSource } from "./timeline-math"
+import { clamp, outputDuration, outputToSource } from "./timeline-math"
 import type { TimeRange } from "./types"
 
 /**
@@ -29,7 +29,7 @@ export class PlayerStore {
   getPlaying = () => this.playing
 
   get duration() {
-    return Math.max(0, this.trim.end - this.trim.start) / this.speed
+    return outputDuration(this.trim, this.speed)
   }
 
   update(time: number, playing: boolean) {

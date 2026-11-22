@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest"
 import { buildExportPlan, needsVideoReencode } from "./export-plan"
 import {
   centeredCrop,
+  clampStart,
   cropPixels,
+  fitLayer,
   formatTime,
   outputDuration,
   resizeCrop,
@@ -128,8 +130,8 @@ describe("export plan", () => {
     expect(reencode).toBe(false)
     expect(args).toContain("copy")
     expect(filterOf(args)).toContain("amix=inputs=3:duration=first")
-    // The music is read from 0:10 for at most its trimmed length.
-    expect(args.join(" ")).toContain("-ss 10 -t 50 -i audio0.mp3")
+    // The music is read from 0:10, and only for as long as the video runs.
+    expect(args.join(" ")).toContain("-ss 10 -t 20 -i audio0.mp3")
   })
 
   it("trims, crops, speeds up and overlays in one pass", () => {
@@ -149,15 +151,16 @@ describe("export plan", () => {
     expect(duration).toBe(5)
     const joined = args.join(" ")
     expect(joined).toContain("-ss 4 -t 10 -i main.mp4")
-    expect(joined).toContain("-ss 1 -t 4 -i layer0.mp4")
+    // The layer starts at 2s of a 5s output, so only 3s of it is used.
+    expect(joined).toContain("-ss 1 -t 3 -i layer0.mp4")
     const filter = filterOf(args)
     expect(filter).toContain("crop=960:540:0:0")
     expect(filter).toContain("setpts=PTS/2")
     expect(filter).toContain("atempo=2")
-    // Layer: 40% of a 960px frame, placed at (480, 54), visible 2s–6s.
+    // Layer: 40% of a 960px frame, placed at (480, 54), visible 2s–5s.
     expect(filter).toContain("scale=384:-2")
     expect(filter).toContain("overlay=x=480:y=54")
-    expect(filter).toContain("between(t,2,6)")
+    expect(filter).toContain("between(t,2,5)")
     expect(filter).toContain("adelay=2000:all=1")
     expect(args).toContain("libx264")
   })
@@ -186,5 +189,49 @@ describe("export plan", () => {
       "out.mp4"
     )
     expect(args).toContain("-an")
+  })
+})
+
+describe("review fixes", () => {
+  it("cuts a long layer off where the video ends", () => {
+    const longLayer = {
+      ...layer,
+      start: 2,
+      trim: { start: 0, end: 10 },
+      duration: 30,
+    }
+    const { args } = buildExportPlan(
+      { ...base, trim: { start: 0, end: 5 }, layers: [longLayer] },
+      inputs,
+      "out.mp4"
+    )
+    // 5s video, layer from 2s → only 3s of it is read and shown.
+    expect(args.join(" ")).toContain("-t 3 -i layer0.mp4")
+    expect(filterOf(args)).toContain("between(t,2,5)")
+    expect(args.slice(-3)).toEqual(["-t", "5", "out.mp4"])
+  })
+
+  it("scales to the displayed size before cropping", () => {
+    const { args } = buildExportPlan({ ...base, speed: 2 }, inputs, "out.mp4")
+    expect(filterOf(args)).toContain(
+      "scale=1920:1080,setsar=1,crop=1920:1080:0:0"
+    )
+  })
+
+  it("clamps clip starts to just before the end", () => {
+    expect(clampStart(-1, 10)).toBe(0)
+    expect(clampStart(12, 10)).toBe(9.95)
+  })
+
+  it("fits a layer back inside the frame", () => {
+    const frame = { width: 1920, height: 1080 }
+    const fitted = fitLayer({ ...layer, x: 0.9, y: -0.2, w: 0.4 }, frame)
+    expect(fitted.x).toBeCloseTo(0.6)
+    expect(fitted.y).toBe(0)
+    // A layer can't be wider than the frame allows for its height.
+    const tall = fitLayer({ ...layer, width: 720, height: 1280, w: 1 }, frame)
+    expect(tall.w * frame.width * (1280 / 720)).toBeLessThanOrEqual(
+      frame.height + 0.001
+    )
   })
 })

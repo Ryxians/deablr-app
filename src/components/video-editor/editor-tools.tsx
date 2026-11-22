@@ -8,6 +8,8 @@ import {
 } from "lucide-react"
 import { useId, useRef } from "react"
 import { EQControls } from "./eq-controls"
+import { isTrimmed } from "./export-plan"
+import { togglePill } from "./toggle-pill"
 import { RangeSlider } from "./range-slider"
 import { SpeedControls } from "./speed-controls"
 import { ASPECTS, cropPixels, formatTime, isFullCrop } from "./timeline-math"
@@ -25,9 +27,6 @@ const TABS: Array<{ id: ToolTab; label: string; icon: typeof Scissors }> = [
   { id: "speed", label: "Speed", icon: Gauge },
   { id: "sound", label: "Sound", icon: AudioLines },
 ]
-
-const pill =
-  "h-10 cursor-pointer rounded-full border border-border bg-well/50 px-3.5 font-mono text-xs font-semibold text-muted-foreground tabular-nums transition-colors outline-none hover:border-secondary/60 hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-pressed:border-secondary aria-pressed:bg-secondary aria-pressed:text-secondary-foreground md:h-8 md:px-3"
 
 interface EditorToolsProps {
   tab: ToolTab
@@ -125,7 +124,7 @@ export function EditorTools(props: EditorToolsProps) {
 const card = "space-y-4 rounded-xl border border-border/50 bg-card p-4"
 
 function TrimPanel({ store, source, trim, onTrimChange }: EditorToolsProps) {
-  const full = trim.start <= 0.001 && trim.end >= source.duration - 0.001
+  const full = !isTrimmed({ trim, source })
   const sourceNow = () => store.video?.currentTime ?? 0
   const lastHandle = useRef<"start" | "end">("start")
 
@@ -253,14 +252,15 @@ function CropPanel({
             type="button"
             aria-pressed={aspect === a.id}
             onClick={() => onAspectChange(a.id)}
-            className={cn(pill, "sm:min-w-16")}
+            className={cn(togglePill, "sm:min-w-16")}
           >
             {a.label}
           </button>
         ))}
       </div>
       <p className="text-sm text-muted-foreground">
-        Drag the box on the video to move it, or its corners to resize. Layers
+        Drag the box on the video to move it, or its corners to resize. With a
+        keyboard, focus the box and use the arrow keys (Shift to resize). Layers
         are hidden while you crop.
       </p>
     </div>
@@ -284,7 +284,7 @@ function SoundPanel({
       <div className="flex flex-wrap items-center gap-2">
         <Button
           type="button"
-          variant={showLiveEQ ? "default" : "outline"}
+          variant={showLiveEQ ? "secondary" : "outline"}
           size="sm"
           aria-pressed={showLiveEQ}
           onClick={() => onShowLiveEQChange(!showLiveEQ)}
@@ -294,7 +294,7 @@ function SoundPanel({
         </Button>
         <Button
           type="button"
-          variant={compare ? "default" : "outline"}
+          variant={compare ? "secondary" : "outline"}
           size="sm"
           className="touch-none select-none"
           onPointerDown={() => onCompareChange(true)}

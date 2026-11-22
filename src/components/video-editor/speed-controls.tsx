@@ -1,7 +1,10 @@
 import { RotateCcw } from "lucide-react"
 import { useId } from "react"
 import { DEFAULT_SPEED, MAX_SPEED, MIN_SPEED, SPEED_PRESETS } from "./types"
+import { formatTime } from "./timeline-math"
+import { togglePill } from "./toggle-pill"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 /**
  * The slider is piecewise-linear so 1× sits dead centre: the left half covers
@@ -34,14 +37,6 @@ export function positionToSpeed(position: number) {
 
 export function formatSpeed(speed: number) {
   return `${Number(speed.toFixed(2))}×`
-}
-
-function formatDuration(seconds: number) {
-  const total = Math.round(seconds)
-  const h = Math.floor(total / 3600)
-  const m = Math.floor((total % 3600) / 60)
-  const s = (total % 60).toString().padStart(2, "0")
-  return h > 0 ? `${h}:${m.toString().padStart(2, "0")}:${s}` : `${m}:${s}`
 }
 
 interface SpeedControlsProps {
@@ -137,7 +132,7 @@ export function SpeedControls({
             type="button"
             aria-pressed={speed === preset}
             onClick={() => onChange(preset)}
-            className="h-10 cursor-pointer rounded-full border border-border bg-well/50 px-3.5 font-mono text-xs font-semibold text-muted-foreground tabular-nums transition-colors outline-none hover:border-secondary/60 hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-pressed:border-secondary aria-pressed:bg-secondary aria-pressed:text-secondary-foreground sm:min-w-14 md:h-8 md:px-3"
+            className={cn(togglePill, "sm:min-w-14")}
           >
             {formatSpeed(preset)}
           </button>
@@ -151,16 +146,16 @@ export function SpeedControls({
             changed ? (
               <>
                 <span className="tabular-nums line-through decoration-muted-foreground/60">
-                  {formatDuration(duration)}
+                  {formatTime(duration)}
                 </span>{" "}
                 →{" "}
                 <span className="font-semibold text-foreground tabular-nums">
-                  {formatDuration(duration / speed)}
+                  {formatTime(duration / speed)}
                 </span>
               </>
             ) : (
               <span className="text-foreground tabular-nums">
-                {formatDuration(duration)}
+                {formatTime(duration)}
               </span>
             )
           ) : (

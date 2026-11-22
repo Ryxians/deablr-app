@@ -4,7 +4,7 @@ import {
   outputDuration,
   trackLength,
 } from "./timeline-math"
-import type { VideoEdits } from "./types"
+import type { Track, VideoEdits } from "./types"
 
 /** What ffmpeg found in each file written to its virtual filesystem. */
 export interface ExportInputs {
@@ -91,6 +91,10 @@ export function buildExportPlan(
         trackLength(track) > 0
     )
 
+  // How much of a layer/track actually plays before the video ends.
+  const playedLength = (track: Track) =>
+    Math.min(trackLength(track), duration - track.start)
+
   const args: Array<string> = []
   // Input 0 is the main video. A trimmed main clip has to be re-encoded
   // anyway, so seeking on input is both fast and frame-accurate.
@@ -101,20 +105,22 @@ export function buildExportPlan(
   let inputCount = 1
 
   // Maps a layer/track (by its index in edits) to its ffmpeg input number.
-  const layerIndex = new Map<number, number>()
+  // Inputs are cut to what plays before the video ends, so a long layer
+  // can't keep the overlay running (and the export growing) past the end.
+  const layerInput = new Map<number, number>()
   for (const { layer, input } of layers) {
-    layerIndex.set(edits.layers.indexOf(layer), inputCount++)
+    layerInput.set(edits.layers.indexOf(layer), inputCount++)
     args.push(
-      ...seekArgs(layer.trim.start, trackLength(layer), layer.duration),
+      ...seekArgs(layer.trim.start, playedLength(layer), layer.duration),
       "-i",
       input.name
     )
   }
-  const audioIndex = new Map<number, number>()
+  const trackInput = new Map<number, number>()
   for (const { track, input } of audioTracks) {
-    audioIndex.set(edits.audioTracks.indexOf(track), inputCount++)
+    trackInput.set(edits.audioTracks.indexOf(track), inputCount++)
     args.push(
-      ...seekArgs(track.trim.start, trackLength(track), track.duration),
+      ...seekArgs(track.trim.start, playedLength(track), track.duration),
       "-i",
       input.name
     )
@@ -127,6 +133,11 @@ export function buildExportPlan(
     const px = cropPixels(crop, source)
     const chain = [
       "setpts=PTS-STARTPTS",
+      // Crop maths uses the size the browser displays. Scaling to exactly
+      // that first fixes non-square-pixel (anamorphic) files and is a
+      // no-op for everything else.
+      `scale=${source.width}:${source.height}`,
+      "setsar=1",
       `crop=${px.w}:${px.h}:${px.x}:${px.y}`,
     ]
     if (speed !== 1) chain.push(`setpts=PTS/${num(speed)}`)
@@ -134,8 +145,8 @@ export function buildExportPlan(
 
     let current = "v0"
     layers.forEach(({ layer }, i) => {
-      const idx = layerIndex.get(edits.layers.indexOf(layer))!
-      const end = layer.start + trackLength(layer)
+      const idx = layerInput.get(edits.layers.indexOf(layer))!
+      const end = layer.start + playedLength(layer)
       const width = Math.max(2, Math.round((layer.w * px.w) / 2) * 2)
       const x = Math.round(layer.x * px.w)
       const y = Math.round(layer.y * px.h)
@@ -166,7 +177,8 @@ export function buildExportPlan(
     filters.push(`[0:a]${chain.join(",")}[a0]`)
     mixInputs.push("[a0]")
   }
-  const delayed = (
+  /** Adds a layer's or track's sound to the mix, shifted to its start. */
+  const addMixInput = (
     idx: number,
     volume: number,
     start: number,
@@ -180,16 +192,16 @@ export function buildExportPlan(
   }
   layers.forEach(({ layer, input }, i) => {
     if (!layer.includeAudio || !input.hasAudio || layer.volume <= 0) return
-    delayed(
-      layerIndex.get(edits.layers.indexOf(layer))!,
+    addMixInput(
+      layerInput.get(edits.layers.indexOf(layer))!,
       layer.volume,
       layer.start,
       `al${i}`
     )
   })
   audioTracks.forEach(({ track }, i) => {
-    delayed(
-      audioIndex.get(edits.audioTracks.indexOf(track))!,
+    addMixInput(
+      trackInput.get(edits.audioTracks.indexOf(track))!,
       track.volume,
       track.start,
       `at${i}`
@@ -232,11 +244,21 @@ export function buildExportPlan(
     args.push("-an")
   }
 
-  args.push("-map_metadata", "0", "-movflags", "+faststart", outputName)
+  const planDuration = reencode ? duration : source.duration
+  args.push(
+    "-map_metadata",
+    "0",
+    "-movflags",
+    "+faststart",
+    // Belt and braces: never write more than the edited length.
+    "-t",
+    num(planDuration),
+    outputName
+  )
 
   return {
     args,
-    duration: reencode ? duration : source.duration,
+    duration: planDuration,
     reencode,
   }
 }

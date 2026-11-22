@@ -2,6 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router"
 import { ArrowRight } from "lucide-react"
 import type { ReactNode } from "react"
 import { PageHeader } from "@/components/page-header"
+import { Chip } from "@/components/ui/chip"
 import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/projects")({
@@ -39,9 +40,9 @@ function VideoEditorArt() {
           />
         </div>
       ))}
-      <span className="absolute top-3 right-4 rounded-full bg-secondary px-2 py-0.5 font-mono text-xs font-bold text-secondary-foreground">
+      <Chip tone="secondary" className="absolute top-3 right-4">
         2×
-      </span>
+      </Chip>
     </div>
   )
 }

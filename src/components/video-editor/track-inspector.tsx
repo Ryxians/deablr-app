@@ -1,14 +1,8 @@
-import {
-  ArrowDownToLine,
-  ArrowUpToLine,
-  Check,
-  Layers,
-  Music,
-  Trash2,
-} from "lucide-react"
+import { ArrowDownToLine, ArrowUpToLine, Check, Trash2 } from "lucide-react"
 import { useId } from "react"
 import { RangeSlider } from "./range-slider"
-import { clamp, formatTime, trackLength } from "./timeline-math"
+import { clamp, clampStart, formatTime, trackLength } from "./timeline-math"
+import { TRACK_KINDS } from "./track-kinds"
 import type { PlayerStore } from "./player-store"
 import type { Track, VideoLayer } from "./types"
 import { Button } from "@/components/ui/button"
@@ -44,27 +38,24 @@ export function TrackInspector({
 }: TrackInspectorProps) {
   const ids = useId()
   const isVideo = track.kind === "video"
+  const kind = TRACK_KINDS[track.kind]
   const length = trackLength(track)
   const ends = track.start + length
   const audioOn = !isVideo || track.includeAudio
 
   return (
     <section
-      aria-label={`${isVideo ? "Video layer" : "Audio track"} settings`}
+      aria-label={`${kind.label} settings`}
       className="space-y-5 rounded-xl border-2 border-secondary/50 bg-card p-4"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2">
           <span className="grid size-9 shrink-0 place-items-center rounded-md bg-well text-secondary">
-            {isVideo ? (
-              <Layers className="size-4" />
-            ) : (
-              <Music className="size-4" />
-            )}
+            <kind.icon className="size-4" />
           </span>
           <div className="min-w-0">
             <p className="font-mono text-[11px] text-muted-foreground uppercase">
-              {isVideo ? "Video layer" : "Audio track"}
+              {kind.label}
             </p>
             <h3 className="truncate font-mono text-sm font-bold">
               {track.name}
@@ -74,7 +65,7 @@ export function TrackInspector({
         <div className="flex shrink-0 gap-2">
           <Button
             type="button"
-            variant="outline"
+            variant="ghost-destructive"
             size="icon-sm"
             aria-label="Remove"
             onClick={onRemove}
@@ -82,7 +73,7 @@ export function TrackInspector({
           >
             <Trash2 />
           </Button>
-          <Button type="button" size="sm" onClick={onDone}>
+          <Button type="button" variant="secondary" size="sm" onClick={onDone}>
             <Check />
             Done
           </Button>
@@ -98,7 +89,7 @@ export function TrackInspector({
             size="sm"
             onClick={() =>
               onChange({
-                start: clamp(store.time, 0, Math.max(0, duration - 0.05)),
+                start: clampStart(store.time, duration),
               })
             }
           >

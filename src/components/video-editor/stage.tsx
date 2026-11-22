@@ -5,7 +5,6 @@ import { formatSpeed } from "./speed-controls"
 import {
   clamp,
   cropPixels,
-  layerHeightFraction,
   outputDuration,
   resizeCrop,
   sourceToOutput,
@@ -84,6 +83,16 @@ export function Stage(props: StageProps) {
   const frameRef = useRef<HTMLDivElement | null>(null)
   const mediaRefs = useRef(new Map<string, HTMLMediaElement>())
   const layerBoxRefs = useRef(new Map<string, HTMLDivElement>())
+  /**
+   * Layers/tracks play through their own AudioContext so volume works on
+   * iOS, where HTMLMediaElement.volume is read-only. Created on the first
+   * play gesture; kept separate from the EQ graph so it is never recreated
+   * (an element can only ever be bound to one context).
+   */
+  const trackAudioRef = useRef<{
+    ctx: AudioContext
+    gains: Map<HTMLMediaElement, GainNode>
+  } | null>(null)
   // The rAF loop reads the latest edits without restarting on every change.
   const latest = useRef(props)
   useLayoutEffect(() => {
@@ -122,6 +131,41 @@ export function Stage(props: StageProps) {
     }
   }, [store])
 
+  /** Set each track's loudness, through its gain node once one exists. */
+  const applyTrackVolumes = useCallback(() => {
+    const { layers: ls, audioTracks: ts, muted: allMuted } = latest.current
+    const audio = trackAudioRef.current
+    for (const track of [...ls, ...ts]) {
+      const el = mediaRefs.current.get(track.id)
+      if (!el) continue
+      const silent = allMuted || (track.kind === "video" && !track.includeAudio)
+      const level = silent ? 0 : clamp(track.volume, 0, 1)
+      if (!audio) {
+        el.volume = level
+        continue
+      }
+      let gain = audio.gains.get(el)
+      if (!gain) {
+        gain = audio.ctx.createGain()
+        audio.ctx
+          .createMediaElementSource(el)
+          .connect(gain)
+          .connect(audio.ctx.destination)
+        audio.gains.set(el, gain)
+        el.volume = 1
+      }
+      gain.gain.value = level
+    }
+  }, [])
+
+  useEffect(
+    () => () => {
+      void trackAudioRef.current?.ctx.close()
+      trackAudioRef.current = null
+    },
+    []
+  )
+
   // Wire the main video to the store and run the sync loop while playing.
   useEffect(() => {
     const video = videoRef.current
@@ -137,18 +181,36 @@ export function Stage(props: StageProps) {
       cancelAnimationFrame(frame)
       frame = requestAnimationFrame(tick)
     }
-    const onMeta = () => {
+    // Some files (often browser-recorded WebM) report an Infinity duration
+    // until played through. Seeking far past the end makes the browser
+    // work out the real length, then we jump back to the start.
+    let probingLength = false
+    const reportSource = () => {
+      if (!Number.isFinite(video.duration) || video.duration <= 0) return
+      if (probingLength) {
+        probingLength = false
+        video.currentTime = 0
+      }
       onSourceInfo({
         width: video.videoWidth,
         height: video.videoHeight,
         duration: video.duration,
       })
     }
+    const onMeta = () => {
+      if (video.duration === Infinity) {
+        probingLength = true
+        video.currentTime = 1e9
+      } else {
+        reportSource()
+      }
+    }
     video.addEventListener("play", onPlay)
     video.addEventListener("pause", sync)
     video.addEventListener("seeked", sync)
     video.addEventListener("timeupdate", sync)
     video.addEventListener("loadedmetadata", onMeta)
+    video.addEventListener("durationchange", reportSource)
     if (video.readyState >= 1) onMeta()
     return () => {
       cancelAnimationFrame(frame)
@@ -157,6 +219,7 @@ export function Stage(props: StageProps) {
       video.removeEventListener("seeked", sync)
       video.removeEventListener("timeupdate", sync)
       video.removeEventListener("loadedmetadata", onMeta)
+      video.removeEventListener("durationchange", reportSource)
       store.video = null
       onVideoElement(null)
     }
@@ -167,6 +230,11 @@ export function Stage(props: StageProps) {
   useEffect(() => {
     store.onUserPlay = () => {
       onUserPlay()
+      if (!trackAudioRef.current) {
+        trackAudioRef.current = { ctx: new AudioContext(), gains: new Map() }
+      }
+      void trackAudioRef.current.ctx.resume()
+      applyTrackVolumes()
       for (const el of mediaRefs.current.values()) {
         if (el.paused) {
           void el.play().catch(() => {})
@@ -178,14 +246,17 @@ export function Stage(props: StageProps) {
     return () => {
       store.onUserPlay = null
     }
-  }, [store, onUserPlay, sync])
+  }, [store, onUserPlay, sync, applyTrackVolumes])
 
-  // Re-sync whenever the edit changes (trim, speed, track timing…).
+  // After any edit (trim, speed, track timing, volume…) bring the media
+  // elements back in line. Playback itself doesn't re-render this
+  // component, so this only runs when props change.
   useEffect(() => {
     store.trim = props.trim
     store.speed = speed
     sync()
-  }, [store, props.trim, speed, layers, audioTracks, sync])
+    applyTrackVolumes()
+  })
 
   // Loading a new source resets playbackRate to defaultPlaybackRate, so set
   // both. Pitch is preserved to match the atempo filter used on export.
@@ -196,15 +267,6 @@ export function Stage(props: StageProps) {
     video.defaultPlaybackRate = speed
     video.playbackRate = speed
   }, [speed, src])
-
-  useEffect(() => {
-    for (const track of [...layers, ...audioTracks]) {
-      const el = mediaRefs.current.get(track.id)
-      if (!el) continue
-      el.volume = clamp(track.volume, 0, 1)
-      el.muted = muted || (track.kind === "video" && !track.includeAudio)
-    }
-  }, [layers, audioTracks, muted])
 
   // Space toggles playback unless you're typing or on a control.
   useEffect(() => {
@@ -259,13 +321,11 @@ export function Stage(props: StageProps) {
     (layer: VideoLayer) => (e: React.PointerEvent<HTMLDivElement>) => {
       e.stopPropagation()
       onSelect(layer.id)
-      if (!frame) return
       const rect = frameRect()
-      const h = layerHeightFraction(layer, { width: frame.w, height: frame.h })
       startDrag(e, (dx, dy) =>
         onLayerChange(layer.id, {
-          x: clamp(layer.x + dx / rect.width, 0, Math.max(0, 1 - layer.w)),
-          y: clamp(layer.y + dy / rect.height, 0, Math.max(0, 1 - h)),
+          x: layer.x + dx / rect.width,
+          y: layer.y + dy / rect.height,
         })
       )
     }
@@ -274,17 +334,9 @@ export function Stage(props: StageProps) {
     (layer: VideoLayer) => (e: React.PointerEvent<HTMLDivElement>) => {
       e.stopPropagation()
       onSelect(layer.id)
-      if (!frame) return
       const rect = frameRect()
-      const hPerW = layerHeightFraction(
-        { ...layer, w: 1 },
-        { width: frame.w, height: frame.h }
-      )
-      const maxW = Math.min(1 - layer.x, (1 - layer.y) / hPerW)
       startDrag(e, (dx) =>
-        onLayerChange(layer.id, {
-          w: clamp(layer.w + dx / rect.width, 0.08, maxW),
-        })
+        onLayerChange(layer.id, { w: layer.w + dx / rect.width })
       )
     }
 
@@ -298,13 +350,9 @@ export function Stage(props: StageProps) {
         ArrowDown: [0, step],
       }
       const move = moves[e.key]
-      if (!move || !frame) return
+      if (!move) return
       e.preventDefault()
-      const h = layerHeightFraction(layer, { width: frame.w, height: frame.h })
-      onLayerChange(layer.id, {
-        x: clamp(layer.x + move[0], 0, Math.max(0, 1 - layer.w)),
-        y: clamp(layer.y + move[1], 0, Math.max(0, 1 - h)),
-      })
+      onLayerChange(layer.id, { x: layer.x + move[0], y: layer.y + move[1] })
     }
 
   // Crop lock converted from pixel ratio to fraction-of-frame ratio.
@@ -320,6 +368,30 @@ export function Stage(props: StageProps) {
         x: clamp(orig.x + dx / rect.width, 0, 1 - orig.w),
         y: clamp(orig.y + dy / rect.height, 0, 1 - orig.h),
       })
+    )
+  }
+
+  /** Arrows move the crop; Shift+arrows resize it from the bottom-right. */
+  const onCropKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const step = 0.01
+    const deltas: Partial<Record<string, [number, number]>> = {
+      ArrowLeft: [-step, 0],
+      ArrowRight: [step, 0],
+      ArrowUp: [0, -step],
+      ArrowDown: [0, step],
+    }
+    const delta = deltas[e.key]
+    if (!delta) return
+    e.preventDefault()
+    const [dx, dy] = delta
+    onCropChange(
+      e.shiftKey
+        ? resizeCrop(crop, "se", dx, dy, lock)
+        : {
+            ...crop,
+            x: clamp(crop.x + dx, 0, 1 - crop.w),
+            y: clamp(crop.y + dy, 0, 1 - crop.h),
+          }
     )
   }
 
@@ -398,7 +470,7 @@ export function Stage(props: StageProps) {
                 <div
                   aria-hidden
                   onPointerDown={onLayerResizeDown(layer)}
-                  className="absolute -right-3 -bottom-3 grid size-8 cursor-nwse-resize touch-none place-items-center"
+                  className="absolute -right-5 -bottom-5 grid size-11 cursor-nwse-resize touch-none place-items-center"
                 >
                   <span className="size-3.5 rounded-full bg-secondary ring-2 ring-black/60" />
                 </div>
@@ -409,9 +481,13 @@ export function Stage(props: StageProps) {
 
         {cropEditing && source && (
           <div
-            aria-label="Crop area. Drag to move, drag corners to resize."
+            role="group"
+            tabIndex={0}
+            aria-roledescription="crop area"
+            aria-label="Crop. Drag to move and drag corners to resize, or use arrow keys to move and Shift with arrow keys to resize."
             onPointerDown={onCropBoxDown}
-            className="absolute cursor-move touch-none ring-2 ring-white"
+            onKeyDown={onCropKeyDown}
+            className="absolute cursor-move touch-none ring-2 ring-white outline-none focus-visible:ring-4 focus-visible:ring-sun"
             style={{
               left: `${crop.x * 100}%`,
               top: `${crop.y * 100}%`,
@@ -470,7 +546,7 @@ export function Stage(props: StageProps) {
       <EQVisualizer analyser={analyser} show={showLiveEQ && !cropEditing} />
 
       {speed !== 1 && !cropEditing && (
-        <span className="pointer-events-none absolute top-2 left-2 z-20 rounded-full bg-black/60 px-2.5 py-1 font-mono text-xs font-bold text-white tabular-nums">
+        <span className="pointer-events-none absolute top-2 left-2 z-20 rounded-sm bg-black/60 px-2.5 py-1 font-mono text-xs font-bold text-white tabular-nums">
           {formatSpeed(speed)}
         </span>
       )}

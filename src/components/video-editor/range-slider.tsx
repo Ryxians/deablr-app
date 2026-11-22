@@ -46,7 +46,14 @@ export function RangeSlider({
   const pct = (v: number) => (clamp(v, min, max) - min) / span
 
   const setHandle = (handle: Handle, raw: number) => {
-    const value = Math.round(raw / step) * step
+    // Snap to the ends first: rounding to the step alone can leave the
+    // handle just short of a max that isn't a multiple of the step.
+    const value =
+      raw >= max - step / 2
+        ? max
+        : raw <= min + step / 2
+          ? min
+          : Math.round(raw / step) * step
     if (handle === "start") {
       onChange(clamp(value, min, end - minGap), end, "start")
     } else {

@@ -175,3 +175,24 @@ export function resizeCrop(
     h,
   }
 }
+
+/** Latest a clip may start: just before the video ends. */
+export function clampStart(start: number, duration: number) {
+  return clamp(start, 0, Math.max(0, duration - 0.05))
+}
+
+/** Keep a layer inside the output frame and no bigger than it. */
+export function fitLayer<
+  T extends { x: number; y: number; w: number; width: number; height: number },
+>(layer: T, frame: { width: number; height: number } | null): T {
+  if (!frame) return layer
+  const heightPerWidth = layerHeightFraction({ ...layer, w: 1 }, frame)
+  const w = clamp(layer.w, 0.05, Math.min(1, 1 / heightPerWidth))
+  const h = w * heightPerWidth
+  return {
+    ...layer,
+    w,
+    x: clamp(layer.x, 0, Math.max(0, 1 - w)),
+    y: clamp(layer.y, 0, Math.max(0, 1 - h)),
+  }
+}

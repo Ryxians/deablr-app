@@ -2,7 +2,8 @@ import { Film, Layers, Music, Plus } from "lucide-react"
 import { useRef } from "react"
 import { startDrag } from "./drag"
 import { usePlayerTime } from "./player-store"
-import { clamp, formatTime, trackLength } from "./timeline-math"
+import { clamp, clampStart, formatTime, trackLength } from "./timeline-math"
+import { TRACK_KINDS } from "./track-kinds"
 import type { PlayerStore } from "./player-store"
 import type { AudioTrack, Track, VideoLayer } from "./types"
 import { Button } from "@/components/ui/button"
@@ -62,9 +63,15 @@ export function Timeline({
   /** Press-and-drag on the ruler or an empty lane scrubs the playhead. */
   const onScrubDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.target !== e.currentTarget || e.button !== 0) return
+    // On touch, lanes must let the page scroll; they seek on tap instead.
+    if (e.pointerType === "touch" && e.currentTarget.dataset.lane) return
     const x0 = e.clientX
     store.seek(timeAt(x0))
     startDrag(e, (dx) => store.seek(timeAt(x0 + dx)))
+  }
+
+  const onLaneTap = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) store.seek(timeAt(e.clientX))
   }
 
   const onClipDown =
@@ -77,7 +84,7 @@ export function Timeline({
         for (const target of [0, store.time]) {
           if (Math.abs(start - target) < total * SNAP) start = target
         }
-        onStartChange(track.id, clamp(start, 0, Math.max(0, total - 0.05)))
+        onStartChange(track.id, clampStart(start, total))
       })
     }
 
@@ -87,7 +94,7 @@ export function Timeline({
       if (!delta) return
       e.preventDefault()
       const start = track.start + delta * (e.shiftKey ? 1 : 0.1)
-      onStartChange(track.id, clamp(start, 0, Math.max(0, total - 0.05)))
+      onStartChange(track.id, clampStart(start, total))
     }
 
   // Front-most layer on top, like the stacking order on screen.
@@ -140,7 +147,7 @@ export function Timeline({
       <div className="flex gap-2">
         {/* Row codes; spacer matches the ruler height. */}
         <div aria-hidden className="flex w-8 shrink-0 flex-col gap-1.5">
-          <div className="h-6" />
+          <div className="h-8 md:h-6" />
           {rows.map((row) => (
             <div
               key={row.kind === "main" ? "main" : row.track.id}
@@ -154,7 +161,7 @@ export function Timeline({
         <div ref={lanesRef} className="relative min-w-0 flex-1">
           <div
             onPointerDown={onScrubDown}
-            className="relative h-6 cursor-pointer touch-none border-b border-border/60 select-none"
+            className="relative h-8 cursor-pointer touch-none border-b border-border/60 select-none md:h-6"
           >
             {ticks.map((t) => (
               <span
@@ -182,8 +189,7 @@ export function Timeline({
                 return (
                   <div
                     key="main"
-                    onPointerDown={onScrubDown}
-                    className="relative h-10 touch-none rounded-md bg-well/70"
+                    className="relative h-10 rounded-md bg-well/70"
                   >
                     <button
                       type="button"
@@ -202,25 +208,28 @@ export function Timeline({
                 )
               }
               const { track } = row
+              const Icon = TRACK_KINDS[row.kind].icon
               const selected = selectedId === track.id
               const length = trackLength(track)
               const late = track.start >= total
               return (
                 <div
                   key={track.id}
+                  data-lane
                   onPointerDown={onScrubDown}
-                  className="relative h-10 touch-none overflow-hidden rounded-md bg-well/70"
+                  onClick={onLaneTap}
+                  className="relative h-10 touch-pan-y overflow-hidden rounded-md bg-well/70"
                 >
                   <button
                     type="button"
-                    aria-label={`${row.kind === "video" ? "Video layer" : "Audio track"} ${track.name}, starts at ${formatTime(track.start, true)}. Arrow keys move it.`}
+                    aria-label={`${TRACK_KINDS[row.kind].label} ${track.name}, starts at ${formatTime(track.start, true)}. Arrow keys move it.`}
                     aria-pressed={selected}
                     onPointerDown={onClipDown(track)}
                     onClick={() => onSelect(track.id)}
                     onKeyDown={onClipKeyDown(track)}
                     title={late ? "Starts after the video ends" : undefined}
                     className={cn(
-                      "absolute inset-y-0 flex cursor-grab touch-none items-center gap-1.5 overflow-hidden rounded-md px-2 text-left font-mono text-xs font-semibold ring-1 outline-none select-none ring-inset focus-visible:ring-[3px] focus-visible:ring-ring/60 active:cursor-grabbing",
+                      "absolute inset-y-0 flex cursor-grab touch-pan-y items-center gap-1.5 overflow-hidden rounded-md px-2 text-left font-mono text-xs font-semibold ring-1 outline-none select-none ring-inset focus-visible:ring-[3px] focus-visible:ring-ring/60 active:cursor-grabbing",
                       TONES[row.kind],
                       selected && "z-10 ring-2",
                       late && "opacity-50"
@@ -230,11 +239,7 @@ export function Timeline({
                       width: `max(${(length / total) * 100}%, 1.5rem)`,
                     }}
                   >
-                    {row.kind === "video" ? (
-                      <Layers className="size-3.5 shrink-0" />
-                    ) : (
-                      <Music className="size-3.5 shrink-0" />
-                    )}
+                    <Icon className="size-3.5 shrink-0" />
                     <span className="truncate">{track.name}</span>
                   </button>
                 </div>
