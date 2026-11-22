@@ -6,6 +6,7 @@ const navItems = [
   // { to: "/wordle", label: "Wordle" },
   // { to: "/manifesto", label: "Manifesto" },
   { to: "/rankings", label: "Rankings", also: [] },
+  { to: "/wishlist", label: "Wishlist", also: [] },
   {
     to: "/projects",
     label: "Projects",

@@ -21,11 +21,15 @@ import { Route as EqRouteImport } from './routes/eq'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutMeRouteImport } from './routes/about-me'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WishlistIndexRouteImport } from './routes/wishlist/index'
 import { Route as RankingsIndexRouteImport } from './routes/rankings/index'
+import { Route as WishlistNewRouteImport } from './routes/wishlist/new'
 import { Route as RankingsNewRouteImport } from './routes/rankings/new'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as RankingsReviewIdIndexRouteImport } from './routes/rankings/$reviewId/index'
+import { Route as WishlistItemIdEditRouteImport } from './routes/wishlist/$itemId/edit'
 import { Route as RankingsReviewIdEditRouteImport } from './routes/rankings/$reviewId/edit'
+import { Route as ApiWishlistPhotoSplatRouteImport } from './routes/api/wishlist-photo/$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiArtSplatRouteImport } from './routes/api/art/$'
 
@@ -89,9 +93,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WishlistIndexRoute = WishlistIndexRouteImport.update({
+  id: '/wishlist/',
+  path: '/wishlist/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RankingsIndexRoute = RankingsIndexRouteImport.update({
   id: '/rankings/',
   path: '/rankings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WishlistNewRoute = WishlistNewRouteImport.update({
+  id: '/wishlist/new',
+  path: '/wishlist/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RankingsNewRoute = RankingsNewRouteImport.update({
@@ -109,9 +123,19 @@ const RankingsReviewIdIndexRoute = RankingsReviewIdIndexRouteImport.update({
   path: '/rankings/$reviewId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WishlistItemIdEditRoute = WishlistItemIdEditRouteImport.update({
+  id: '/wishlist/$itemId/edit',
+  path: '/wishlist/$itemId/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RankingsReviewIdEditRoute = RankingsReviewIdEditRouteImport.update({
   id: '/rankings/$reviewId/edit',
   path: '/rankings/$reviewId/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWishlistPhotoSplatRoute = ApiWishlistPhotoSplatRouteImport.update({
+  id: '/api/wishlist-photo/$',
+  path: '/api/wishlist-photo/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -140,10 +164,14 @@ export interface FileRoutesByFullPath {
   '/wordle': typeof WordleRoute
   '/invite/$token': typeof InviteTokenRoute
   '/rankings/new': typeof RankingsNewRoute
+  '/wishlist/new': typeof WishlistNewRoute
   '/rankings/': typeof RankingsIndexRoute
+  '/wishlist/': typeof WishlistIndexRoute
   '/api/art/$': typeof ApiArtSplatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/wishlist-photo/$': typeof ApiWishlistPhotoSplatRoute
   '/rankings/$reviewId/edit': typeof RankingsReviewIdEditRoute
+  '/wishlist/$itemId/edit': typeof WishlistItemIdEditRoute
   '/rankings/$reviewId/': typeof RankingsReviewIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -161,10 +189,14 @@ export interface FileRoutesByTo {
   '/wordle': typeof WordleRoute
   '/invite/$token': typeof InviteTokenRoute
   '/rankings/new': typeof RankingsNewRoute
+  '/wishlist/new': typeof WishlistNewRoute
   '/rankings': typeof RankingsIndexRoute
+  '/wishlist': typeof WishlistIndexRoute
   '/api/art/$': typeof ApiArtSplatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/wishlist-photo/$': typeof ApiWishlistPhotoSplatRoute
   '/rankings/$reviewId/edit': typeof RankingsReviewIdEditRoute
+  '/wishlist/$itemId/edit': typeof WishlistItemIdEditRoute
   '/rankings/$reviewId': typeof RankingsReviewIdIndexRoute
 }
 export interface FileRoutesById {
@@ -183,10 +215,14 @@ export interface FileRoutesById {
   '/wordle': typeof WordleRoute
   '/invite/$token': typeof InviteTokenRoute
   '/rankings/new': typeof RankingsNewRoute
+  '/wishlist/new': typeof WishlistNewRoute
   '/rankings/': typeof RankingsIndexRoute
+  '/wishlist/': typeof WishlistIndexRoute
   '/api/art/$': typeof ApiArtSplatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/wishlist-photo/$': typeof ApiWishlistPhotoSplatRoute
   '/rankings/$reviewId/edit': typeof RankingsReviewIdEditRoute
+  '/wishlist/$itemId/edit': typeof WishlistItemIdEditRoute
   '/rankings/$reviewId/': typeof RankingsReviewIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -206,10 +242,14 @@ export interface FileRouteTypes {
     | '/wordle'
     | '/invite/$token'
     | '/rankings/new'
+    | '/wishlist/new'
     | '/rankings/'
+    | '/wishlist/'
     | '/api/art/$'
     | '/api/auth/$'
+    | '/api/wishlist-photo/$'
     | '/rankings/$reviewId/edit'
+    | '/wishlist/$itemId/edit'
     | '/rankings/$reviewId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -227,10 +267,14 @@ export interface FileRouteTypes {
     | '/wordle'
     | '/invite/$token'
     | '/rankings/new'
+    | '/wishlist/new'
     | '/rankings'
+    | '/wishlist'
     | '/api/art/$'
     | '/api/auth/$'
+    | '/api/wishlist-photo/$'
     | '/rankings/$reviewId/edit'
+    | '/wishlist/$itemId/edit'
     | '/rankings/$reviewId'
   id:
     | '__root__'
@@ -248,10 +292,14 @@ export interface FileRouteTypes {
     | '/wordle'
     | '/invite/$token'
     | '/rankings/new'
+    | '/wishlist/new'
     | '/rankings/'
+    | '/wishlist/'
     | '/api/art/$'
     | '/api/auth/$'
+    | '/api/wishlist-photo/$'
     | '/rankings/$reviewId/edit'
+    | '/wishlist/$itemId/edit'
     | '/rankings/$reviewId/'
   fileRoutesById: FileRoutesById
 }
@@ -270,10 +318,14 @@ export interface RootRouteChildren {
   WordleRoute: typeof WordleRoute
   InviteTokenRoute: typeof InviteTokenRoute
   RankingsNewRoute: typeof RankingsNewRoute
+  WishlistNewRoute: typeof WishlistNewRoute
   RankingsIndexRoute: typeof RankingsIndexRoute
+  WishlistIndexRoute: typeof WishlistIndexRoute
   ApiArtSplatRoute: typeof ApiArtSplatRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiWishlistPhotoSplatRoute: typeof ApiWishlistPhotoSplatRoute
   RankingsReviewIdEditRoute: typeof RankingsReviewIdEditRoute
+  WishlistItemIdEditRoute: typeof WishlistItemIdEditRoute
   RankingsReviewIdIndexRoute: typeof RankingsReviewIdIndexRoute
 }
 
@@ -363,11 +415,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wishlist/': {
+      id: '/wishlist/'
+      path: '/wishlist'
+      fullPath: '/wishlist/'
+      preLoaderRoute: typeof WishlistIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/rankings/': {
       id: '/rankings/'
       path: '/rankings'
       fullPath: '/rankings/'
       preLoaderRoute: typeof RankingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wishlist/new': {
+      id: '/wishlist/new'
+      path: '/wishlist/new'
+      fullPath: '/wishlist/new'
+      preLoaderRoute: typeof WishlistNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rankings/new': {
@@ -391,11 +457,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RankingsReviewIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wishlist/$itemId/edit': {
+      id: '/wishlist/$itemId/edit'
+      path: '/wishlist/$itemId/edit'
+      fullPath: '/wishlist/$itemId/edit'
+      preLoaderRoute: typeof WishlistItemIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/rankings/$reviewId/edit': {
       id: '/rankings/$reviewId/edit'
       path: '/rankings/$reviewId/edit'
       fullPath: '/rankings/$reviewId/edit'
       preLoaderRoute: typeof RankingsReviewIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/wishlist-photo/$': {
+      id: '/api/wishlist-photo/$'
+      path: '/api/wishlist-photo/$'
+      fullPath: '/api/wishlist-photo/$'
+      preLoaderRoute: typeof ApiWishlistPhotoSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
@@ -430,10 +510,14 @@ const rootRouteChildren: RootRouteChildren = {
   WordleRoute: WordleRoute,
   InviteTokenRoute: InviteTokenRoute,
   RankingsNewRoute: RankingsNewRoute,
+  WishlistNewRoute: WishlistNewRoute,
   RankingsIndexRoute: RankingsIndexRoute,
+  WishlistIndexRoute: WishlistIndexRoute,
   ApiArtSplatRoute: ApiArtSplatRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiWishlistPhotoSplatRoute: ApiWishlistPhotoSplatRoute,
   RankingsReviewIdEditRoute: RankingsReviewIdEditRoute,
+  WishlistItemIdEditRoute: WishlistItemIdEditRoute,
   RankingsReviewIdIndexRoute: RankingsReviewIdIndexRoute,
 }
 export const routeTree = rootRouteImport
