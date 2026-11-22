@@ -1,26 +1,31 @@
 import { Pause, Play, Volume2, VolumeX } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { EQVisualizer } from "./eq-visualizer"
+import { formatSpeed } from "./speed-controls"
 import { Button } from "@/components/ui/button"
 
 interface VideoPlayerProps {
   src: string
   analyser: AnalyserNode | null
   showLiveEQ: boolean
+  speed: number
   muted: boolean
   onMutedChange: (muted: boolean) => void
   onPlay: () => void
   onVideoElement: (element: HTMLVideoElement | null) => void
+  onDurationChange: (duration: number) => void
 }
 
 export function VideoPlayer({
   src,
   analyser,
   showLiveEQ,
+  speed,
   muted,
   onMutedChange,
   onPlay,
   onVideoElement,
+  onDurationChange,
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -34,7 +39,10 @@ export function VideoPlayer({
     onVideoElement(video)
 
     const handleTimeUpdate = () => setCurrentTime(video.currentTime)
-    const handleDurationChange = () => setDuration(video.duration)
+    const handleDurationChange = () => {
+      setDuration(video.duration)
+      onDurationChange(video.duration)
+    }
     const handlePlay = () => setIsPlaying(true)
     const handlePause = () => setIsPlaying(false)
 
@@ -50,7 +58,17 @@ export function VideoPlayer({
       video.removeEventListener("pause", handlePause)
       onVideoElement(null)
     }
-  }, [src, onVideoElement])
+  }, [src, onVideoElement, onDurationChange])
+
+  // Loading a new source resets playbackRate to defaultPlaybackRate, so set
+  // both. Pitch is preserved to match the atempo filter used on export.
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    video.preservesPitch = true
+    video.defaultPlaybackRate = speed
+    video.playbackRate = speed
+  }, [speed, src])
 
   const togglePlay = () => {
     const video = videoRef.current
@@ -94,12 +112,19 @@ export function VideoPlayer({
         </button>
       )}
 
+      {speed !== 1 && (
+        <span className="pointer-events-none absolute top-2 left-2 z-20 rounded-full bg-black/60 px-2.5 py-1 font-mono text-xs font-bold text-white tabular-nums">
+          {formatSpeed(speed)}
+        </span>
+      )}
+
       <div className="absolute top-2 right-2 z-20 flex gap-2">
         <Button
           type="button"
           variant="secondary"
           size="icon-sm"
           className="bg-black/60 text-white hover:bg-black/80"
+          aria-label={muted ? "Unmute" : "Mute"}
           onClick={() => onMutedChange(!muted)}
         >
           {muted ? (

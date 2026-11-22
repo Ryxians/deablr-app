@@ -26,11 +26,11 @@ function RealTalkArt() {
   )
 }
 
-/** Six slider faders at a smiley-curve EQ setting. */
-function EQArt() {
+/** Six slider faders at a smiley-curve EQ setting, played at 2×. */
+function VideoEditorArt() {
   const gains = [70, 45, 30, 35, 55, 75]
   return (
-    <div className="flex h-full items-end justify-center gap-4 px-6 pt-4 pb-3">
+    <div className="relative flex h-full items-end justify-center gap-4 px-6 pt-4 pb-3">
       {gains.map((g, i) => (
         <div key={i} className="relative h-full w-1.5 rounded-full bg-muted">
           <span
@@ -39,6 +39,9 @@ function EQArt() {
           />
         </div>
       ))}
+      <span className="absolute top-3 right-4 rounded-full bg-secondary px-2 py-0.5 font-mono text-xs font-bold text-secondary-foreground">
+        2×
+      </span>
     </div>
   )
 }
@@ -70,7 +73,7 @@ function WordleArt() {
 }
 
 const projects: Array<{
-  to: "/real-talk" | "/eq" | "/wordle"
+  to: "/real-talk" | "/video-editor" | "/wordle"
   title: string
   kind: string
   description: string
@@ -87,13 +90,13 @@ const projects: Array<{
     art: <RealTalkArt />,
   },
   {
-    to: "/eq",
-    title: "EQ",
-    kind: "audio tool",
+    to: "/video-editor",
+    title: "Video Editor",
+    kind: "video tool",
     description:
-      "Upload a video, tweak its EQ, compare before and after, and export the result. Runs in your browser.",
+      "Upload a video, change its speed from 0.5× to 3×, tweak its EQ, and export the result. Runs in your browser.",
     cta: "Open",
-    art: <EQArt />,
+    art: <VideoEditorArt />,
   },
   {
     to: "/wordle",

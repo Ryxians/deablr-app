@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Activity, Download, Loader2, Share, Upload } from "lucide-react"
-import { DEFAULT_BANDS, DEFAULT_VOLUME } from "./types"
+import { DEFAULT_BANDS, DEFAULT_SPEED, DEFAULT_VOLUME } from "./types"
 import { EQControls } from "./eq-controls"
+import { SpeedControls } from "./speed-controls"
 import { useEQAudio } from "./use-eq-audio"
 import { useFFmpeg } from "./use-ffmpeg"
 import { VideoPlayer } from "./video-player"
@@ -43,7 +44,7 @@ async function tryShareFile(file: File): Promise<ShareResult> {
   }
 }
 
-export function EQApp() {
+export function VideoEditorApp() {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const videoUrlRef = useRef<string | null>(null)
   const [videoFile, setVideoFile] = useState<File | null>(null)
@@ -53,6 +54,8 @@ export function EQApp() {
   )
   const [bands, setBands] = useState<Array<EQBand>>(DEFAULT_BANDS)
   const [volume, setVolume] = useState(DEFAULT_VOLUME)
+  const [speed, setSpeed] = useState(DEFAULT_SPEED)
+  const [duration, setDuration] = useState(0)
   const [compare, setCompare] = useState(false)
   const [showLiveEQ, setShowLiveEQ] = useState(false)
   const [muted, setMuted] = useState(false)
@@ -94,6 +97,7 @@ export function EQApp() {
       setVideoFile(file)
       setExportedFile(null)
       setShareDialogOpen(false)
+      setDuration(0)
       updateVideoUrl(file)
     },
     [updateVideoUrl]
@@ -105,7 +109,11 @@ export function EQApp() {
     setShareDialogOpen(false)
 
     try {
-      const outputFile = await processVideo(videoFile, bands, volume)
+      const outputFile = await processVideo(videoFile, {
+        bands,
+        volume,
+        speed,
+      })
       setExportedFile(outputFile)
 
       const result = await tryShareFile(outputFile)
@@ -115,7 +123,7 @@ export function EQApp() {
     } catch {
       // Error state is already set by processVideo; no need to rethrow.
     }
-  }, [videoFile, bands, volume, exporting, loading, processVideo])
+  }, [videoFile, bands, volume, speed, exporting, loading, processVideo])
 
   const handleDialogShare = useCallback(() => {
     if (!exportedFile) return
@@ -220,7 +228,7 @@ export function EQApp() {
               Pick a video
             </span>
             <span className="mt-1 block text-[15px] text-muted-foreground">
-              EQ changes play live. Nothing leaves your device.
+              Speed and EQ changes play live. Nothing leaves your device.
             </span>
           </span>
           <span className={buttonVariants({ className: "mt-1" })}>
@@ -234,10 +242,12 @@ export function EQApp() {
             src={videoUrl}
             analyser={analyserRef.current}
             showLiveEQ={showLiveEQ}
+            speed={speed}
             muted={muted}
             onMutedChange={setMuted}
             onPlay={resumeContext}
             onVideoElement={setVideoElement}
+            onDurationChange={setDuration}
           />
 
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -283,6 +293,12 @@ export function EQApp() {
                       : "Press Export to process"}
             </div>
           </div>
+
+          <SpeedControls
+            speed={speed}
+            duration={duration}
+            onChange={setSpeed}
+          />
 
           <EQControls bands={bands} onChange={setBands} onReset={handleReset} />
 
@@ -332,7 +348,7 @@ export function EQApp() {
                       Export ready
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      Your EQ&apos;d video is ready to share.
+                      Your edited video is ready to share.
                     </p>
                   </div>
                   <div className="grid gap-2">

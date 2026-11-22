@@ -6,7 +6,7 @@ export function useEQAudio(
   bands: Array<EQBand>,
   volume: number,
   compare: boolean,
-  muted: boolean,
+  muted: boolean
 ) {
   const audioContextRef = useRef<AudioContext | null>(null)
   const filtersRef = useRef<Array<BiquadFilterNode>>([])

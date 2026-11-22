@@ -15,3 +15,15 @@ export const DEFAULT_BANDS: Array<EQBand> = [
 ]
 
 export const DEFAULT_VOLUME = 1
+
+export const MIN_SPEED = 0.5
+export const MAX_SPEED = 3
+export const DEFAULT_SPEED = 1
+export const SPEED_PRESETS = [0.5, 0.75, 1, 1.25, 1.5, 2, 3] as const
+
+/** Every edit the export bakes into the output file. */
+export interface VideoEdits {
+  bands: Array<EQBand>
+  volume: number
+  speed: number
+}

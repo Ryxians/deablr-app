@@ -1,9 +1,37 @@
 import { useCallback, useRef, useState } from "react"
 import { FFmpeg } from "@ffmpeg/ffmpeg"
 import { fetchFile } from "@ffmpeg/util"
-import type { EQBand } from "./types"
+import type { VideoEdits } from "./types"
 
 const LOAD_TIMEOUT_MS = 120_000
+const REMUX_TIMEOUT_MS = 10 * 60 * 1000
+/** Speed changes re-encode every frame in wasm, which is far slower. */
+const REENCODE_TIMEOUT_MS = 30 * 60 * 1000
+
+/**
+ * atempo has historically been limited to 0.5–2 per instance, so chain
+ * factors to reach anything outside that range (e.g. 3× → 2 × 1.5).
+ */
+export function atempoChain(speed: number) {
+  const factors: Array<number> = []
+  let remaining = speed
+  while (remaining > 2) {
+    factors.push(2)
+    remaining /= 2
+  }
+  while (remaining < 0.5) {
+    factors.push(0.5)
+    remaining /= 0.5
+  }
+  factors.push(remaining)
+  return factors.map((f) => `atempo=${Number(f.toFixed(6))}`).join(",")
+}
+
+function getOutputName(filename: string) {
+  const dot = filename.lastIndexOf(".")
+  const base = (dot > 0 ? filename.slice(0, dot) : filename) || "video"
+  return `${base}-edited.mp4`
+}
 
 function getExtension(filename: string) {
   const ext = filename.slice(filename.lastIndexOf("."))
@@ -24,7 +52,11 @@ function getVideoMimeType(filename: string) {
   return map[ext] ?? "video/mp4"
 }
 
-function withTimeout<T>(promise: Promise<T>, ms: number, message: string): Promise<T> {
+function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number,
+  message: string
+): Promise<T> {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error(message)), ms)
     promise
@@ -43,6 +75,8 @@ export function useFFmpeg() {
   const ffmpegRef = useRef<FFmpeg | null>(null)
   const loadPromiseRef = useRef<Promise<void> | null>(null)
   const processingRef = useRef(false)
+  /** ffmpeg reports progress against output time, which speed rescales. */
+  const speedRef = useRef(1)
   const [loaded, setLoaded] = useState(false)
   const [loading, setLoading] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -59,7 +93,8 @@ export function useFFmpeg() {
         console.log(message)
       })
       ffmpeg.on("progress", ({ progress: value }) => {
-        setProgress(Math.round(value * 100))
+        const scaled = value * speedRef.current
+        setProgress(Math.round(Math.min(1, Math.max(0, scaled)) * 100))
       })
       ffmpegRef.current = ffmpeg
     }
@@ -98,8 +133,11 @@ export function useFFmpeg() {
         const wasmURL = `${base}/ffmpeg/ffmpeg-core.wasm`
         const controller = new AbortController()
         const timeoutId = setTimeout(
-          () => controller.abort(new DOMException("Loading ffmpeg.wasm timed out", "TimeoutError")),
-          LOAD_TIMEOUT_MS,
+          () =>
+            controller.abort(
+              new DOMException("Loading ffmpeg.wasm timed out", "TimeoutError")
+            ),
+          LOAD_TIMEOUT_MS
         )
         try {
           await ffmpeg.load(
@@ -107,14 +145,15 @@ export function useFFmpeg() {
               coreURL,
               wasmURL,
             },
-            { signal: controller.signal },
+            { signal: controller.signal }
           )
         } finally {
           clearTimeout(timeoutId)
         }
         setLoaded(true)
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to load ffmpeg.wasm"
+        const message =
+          err instanceof Error ? err.message : "Failed to load ffmpeg.wasm"
         const timedOut = /abort|timeout/i.test(message)
         if (timedOut) {
           resetFFmpeg()
@@ -135,7 +174,7 @@ export function useFFmpeg() {
   }, [loaded, getFFmpeg, resetFFmpeg])
 
   const processVideo = useCallback(
-    async (file: File, bands: Array<EQBand>, volume: number) => {
+    async (file: File, { bands, volume, speed }: VideoEdits) => {
       if (processingRef.current) {
         throw new Error("An export is already in progress")
       }
@@ -144,6 +183,7 @@ export function useFFmpeg() {
       try {
         await load()
         setExporting(true)
+        speedRef.current = speed
         setProgress(0)
         setError(null)
 
@@ -151,24 +191,44 @@ export function useFFmpeg() {
 
         const inputName = `input${getExtension(file.name)}`
         const outputName = "output.mp4"
+        const changeSpeed = speed !== 1
 
         await ffmpeg.writeFile(inputName, await fetchFile(file))
 
         const eqFilters = bands
           .map(
             (band) =>
-              `equalizer=f=${band.freq}:width_type=q:width=${band.q}:g=${band.gain}`,
+              `equalizer=f=${band.freq}:width_type=q:width=${band.q}:g=${band.gain}`
           )
           .join(",")
         const volumeFilter = volume !== 1 ? `volume=${volume}` : ""
-        const audioFilter = [eqFilters, volumeFilter].filter(Boolean).join(",")
+        const tempoFilter = changeSpeed ? atempoChain(speed) : ""
+        const audioFilter = [eqFilters, volumeFilter, tempoFilter]
+          .filter(Boolean)
+          .join(",")
+
+        // Without a speed change the video stream is copied untouched; with
+        // one, every frame gets new timestamps so it must be re-encoded.
+        const videoArgs = changeSpeed
+          ? [
+              "-filter:v",
+              `setpts=PTS/${speed}`,
+              "-c:v",
+              "libx264",
+              "-preset",
+              "veryfast",
+              "-crf",
+              "20",
+              "-pix_fmt",
+              "yuv420p",
+            ]
+          : ["-c:v", "copy"]
 
         const args = [
           "-i",
           inputName,
           ...(audioFilter ? ["-af", audioFilter] : []),
-          "-c:v",
-          "copy",
+          ...videoArgs,
           "-map_metadata",
           "0",
           "-map_metadata:s:v",
@@ -186,8 +246,8 @@ export function useFFmpeg() {
 
         await withTimeout(
           ffmpeg.exec(args),
-          10 * 60 * 1000,
-          "Export took too long and was stopped.",
+          changeSpeed ? REENCODE_TIMEOUT_MS : REMUX_TIMEOUT_MS,
+          "Export took too long and was stopped."
         )
 
         const data = await ffmpeg.readFile(outputName)
@@ -202,7 +262,7 @@ export function useFFmpeg() {
         const blob = new Blob([data as BlobPart], {
           type: getVideoMimeType(outputName),
         })
-        return new File([blob], outputName, {
+        return new File([blob], getOutputName(file.name), {
           type: getVideoMimeType(outputName),
         })
       } catch (err) {
@@ -218,7 +278,7 @@ export function useFFmpeg() {
         processingRef.current = false
       }
     },
-    [load, getFFmpeg, resetFFmpeg],
+    [load, getFFmpeg, resetFFmpeg]
   )
 
   return { loaded, loading, progress, exporting, error, load, processVideo }
