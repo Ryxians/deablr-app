@@ -12,7 +12,7 @@ function VideoEditor() {
       <PageHeader
         path="projects/video-editor"
         title="Video Editor"
-        description="Upload a video, change its speed, shape its sound with a live EQ, compare before and after, then export. Everything runs in your browser with ffmpeg.wasm."
+        description="Trim, crop and speed up or slow down a video, layer other clips on top, mix in music, and shape the sound with a live EQ. Everything runs in your browser with ffmpeg.wasm."
       />
       <VideoEditorApp />
     </div>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { positionToSpeed, speedToPosition } from "./speed-controls"
-import { atempoChain } from "./use-ffmpeg"
+import { atempoChain } from "./export-plan"
 import { MAX_SPEED, MIN_SPEED, SPEED_PRESETS } from "./types"
 
 describe("speed slider mapping", () => {

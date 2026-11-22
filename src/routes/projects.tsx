@@ -94,7 +94,7 @@ const projects: Array<{
     title: "Video Editor",
     kind: "video tool",
     description:
-      "Upload a video, change its speed from 0.5× to 3×, tweak its EQ, and export the result. Runs in your browser.",
+      "Trim, crop, change speed, layer clips and mix in music, then export. Runs entirely in your browser.",
     cta: "Open",
     art: <VideoEditorArt />,
   },
