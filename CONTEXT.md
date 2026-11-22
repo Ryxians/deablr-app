@@ -57,6 +57,26 @@ The catch-all Score Band holding every Review with a negative Score.
 **Incomplete**:
 A flag on a Property marking that the Admin has not finished it (still watching, reading, playing). Visitors can filter the Rankings on it.
 
+### Wishlist
+
+A prioritized list of things the Admin plans to buy.
+
+**Wishlist Item**:
+Something the Admin plans to buy: a name, an optional photo, zero or more purchase Links, an optional Unit Cost, and a Quantity.
+_Avoid_: Shopping list, wish
+
+**Priority**:
+A Wishlist Item's place in the manually ordered list; 1 is the most wanted. Set by moving Items up, down, or to the top.
+
+**Link**:
+A URL to a store selling a Wishlist Item.
+
+**Unit Cost**:
+The price of one unit of a Wishlist Item, in USD. Unknown is allowed.
+
+**Quantity**:
+How many units of a Wishlist Item are wanted; at least 1. An Item's total is Unit Cost × Quantity.
+
 ### Real Talk
 
 A social question game where players take turns drawing random questions from a numbered deck and answering them honestly.
@@ -91,6 +111,7 @@ A complete cycle where every Player has taken one Turn. After each Round, the Pl
 - A **Property** has zero or more **Tags**
 - A **Review** has at least one **Score**, at most one per **Metric**
 - A **Review** belongs to exactly one **Score Band**
+- A **Wishlist Item** has exactly one **Priority**, zero or more **Links**, and at most one photo
 - A **Game** has one or more **Players**
 - A **Game** has one **Question Deck**
 - A **Player** takes one **Turn** at a time
@@ -119,6 +140,14 @@ A complete cycle where every Player has taken one Turn. After each Round, the Pl
 - **First Admin:** Created through a one-time setup form at /admin, available only while no Users exist.
 - **Auth UI:** /admin is the only auth surface. Logged out it shows a login form; an Admin sees the dashboard; a Denizen sees the not-found page.
 - **Permissions:** Roles map to named permission statements (e.g. question:submit, user:manage) that server code checks. Statements are global, not per project.
+
+### Wishlist
+
+- **Authorship:** Same rules as Rankings — only an Admin can create, edit, reorder, or delete Wishlist Items. Denizens and anonymous visitors see the read-only Wishlist.
+- **Hard deletes:** Deleting a Wishlist Item removes the row and its photo file permanently; no history is kept.
+- **Priority ordering:** Manual, not derived. New Items join at the bottom; the Admin moves them up, down, or to the top. A reorder submits the full order and is rejected if the list changed underneath it.
+- **Photos:** Uploaded like Property Art (stored in the data volume under `wishlist/`, served from `/api/wishlist-photo/`), but fitted inside 800px without cropping, since product shots vary in shape.
+- **Totals:** The Wishlist shows each Item's total and a grand total of Items with a known Unit Cost, noting how many have no cost. When no Item has a Unit Cost, the grand total is hidden (each Item still reads "Cost unknown").
 
 ### Real Talk
 

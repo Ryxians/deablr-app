@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 /** Path segments that are real pages, so the breadcrumb can link them. */
 const SEGMENT_ROUTES: Record<string, string> = {
   rankings: "/rankings",
+  wishlist: "/wishlist",
   projects: "/projects",
   "about-me": "/about-me",
   admin: "/admin",
