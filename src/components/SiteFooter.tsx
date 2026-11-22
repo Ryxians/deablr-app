@@ -4,13 +4,12 @@ export function SiteFooter() {
       <span>Popped into existence, don't think about it.</span>
       <span className="flex items-center gap-2">
         <span className="grid size-7 place-items-center overflow-hidden rounded-full bg-[oklch(0.94_0.03_230)] ring-1 ring-secondary/60">
-          <img
-            src="/penny.svg"
-            alt=""
-            className="size-full scale-[1.15] -rotate-12 mix-blend-multiply"
+          <span
+            aria-hidden
+            className="block size-full scale-[1.15] -rotate-12 bg-(image:--dog-footer) bg-contain bg-center bg-no-repeat mix-blend-multiply"
           />
         </span>
-        Penny approved.
+        <span className="before:content-(--dog-footer-name)"> approved.</span>
       </span>
     </footer>
   )

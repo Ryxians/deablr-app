@@ -7,6 +7,7 @@ import "../styles.css"
 import { Header } from "@/components/Header"
 import { SiteFooter } from "@/components/SiteFooter"
 import { NotFound } from "@/components/NotFound"
+import { dogShuffleScript } from "@/lib/dogs"
 
 const queryClient = new QueryClient()
 
@@ -31,8 +32,10 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    // The dog shuffle script writes CSS variables onto <html> before hydration.
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: dogShuffleScript }} />
         <HeadContent />
       </head>
       <body>
