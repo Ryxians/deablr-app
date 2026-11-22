@@ -6,17 +6,17 @@ export interface Question {
 }
 
 export interface GameState {
-  players: string[]
+  players: Array<string>
   currentPlayerIndex: number
-  shuffledOrder: number[]
+  shuffledOrder: Array<number>
   roundNumber: number
-  drawnQuestions: number[]
+  drawnQuestions: Array<number>
   currentQuestion: Question | null
   gameOver: boolean
 }
 
 interface RealTalkStore {
-  questions: Question[]
+  questions: Array<Question>
   gameState: GameState | null
   isLoading: boolean
   loadError: string | null
@@ -40,7 +40,7 @@ function saveAnimationsEnabled(value: boolean) {
   localStorage.setItem(ANIMATIONS_KEY, value ? "true" : "false")
 }
 
-function shuffleArray<T>(array: T[]): T[] {
+function shuffleArray<T>(array: Array<T>): Array<T> {
   const shuffled = [...array]
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
@@ -78,7 +78,7 @@ function clearGameState() {
 
 function drawQuestionInternal(
   state: GameState,
-  questions: Question[],
+  questions: Array<Question>,
 ): Question | null {
   const available = questions.filter(
     (q) => !state.drawnQuestions.includes(q.number),
@@ -107,7 +107,7 @@ export async function loadQuestions() {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`)
     }
     const text = await response.text()
-    const parsed: Question[] = []
+    const parsed: Array<Question> = []
     text.split("\n").forEach((line) => {
       const trimmed = line.trim()
       if (!trimmed) return
@@ -139,14 +139,14 @@ export async function loadQuestions() {
   }
 }
 
-export function startGame(playerNames: string[]) {
+export function startGame(playerNames: Array<string>) {
   const { questions } = store.state
   if (playerNames.length === 0 || questions.length === 0) return
 
   const shuffledOrder = shuffleArray(
     Array.from({ length: playerNames.length }, (_, i) => i),
   )
-  const initialState: GameState = {
+  const newGame: GameState = {
     players: [...playerNames],
     currentPlayerIndex: 0,
     shuffledOrder,
@@ -155,15 +155,15 @@ export function startGame(playerNames: string[]) {
     currentQuestion: null,
     gameOver: false,
   }
-  const firstQuestion = drawQuestionInternal(initialState, questions)
+  const firstQuestion = drawQuestionInternal(newGame, questions)
   if (firstQuestion) {
-    initialState.currentQuestion = firstQuestion
-    initialState.drawnQuestions = [firstQuestion.number]
+    newGame.currentQuestion = firstQuestion
+    newGame.drawnQuestions = [firstQuestion.number]
   }
-  saveGameState(initialState)
+  saveGameState(newGame)
   store.setState((prev) => ({
     ...prev,
-    gameState: initialState,
+    gameState: newGame,
     savedGameExists: true,
   }))
 }

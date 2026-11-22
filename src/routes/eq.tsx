@@ -1,20 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { EQApp } from "@/components/eq/eq-app"
-import { PageHeader } from "@/components/page-header"
+import { createFileRoute, redirect } from "@tanstack/react-router"
 
+// The EQ grew into the Video Editor; keep old links working.
 export const Route = createFileRoute("/eq")({
-  component: EQ,
+  beforeLoad: () => {
+    throw redirect({ to: "/video-editor", statusCode: 301 })
+  },
 })
-
-function EQ() {
-  return (
-    <div>
-      <PageHeader
-        path="projects/eq"
-        title="EQ"
-        description="Upload a video, shape its sound with a live EQ, compare before and after, then export. Everything runs in your browser with ffmpeg.wasm."
-      />
-      <EQApp />
-    </div>
-  )
-}

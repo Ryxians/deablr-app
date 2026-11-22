@@ -18,7 +18,7 @@ export function EQControls({ bands, onChange, onReset }: EQControlsProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="font-mono text-sm font-bold">Bands</h3>
+        <h3 className="font-mono text-sm font-bold">EQ</h3>
         <div className="flex gap-2">
           <Button type="button" variant="outline" size="sm" onClick={onReset}>
             Reset

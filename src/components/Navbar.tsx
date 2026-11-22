@@ -10,7 +10,7 @@ const navItems = [
     to: "/projects",
     label: "Projects",
     // Project pages live at the top level but belong under Projects.
-    also: ["/real-talk", "/eq", "/wordle"],
+    also: ["/real-talk", "/video-editor", "/wordle"],
   },
 ] as const
 

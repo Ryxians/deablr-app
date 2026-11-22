@@ -2,6 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router"
 import { ArrowRight } from "lucide-react"
 import type { ReactNode } from "react"
 import { PageHeader } from "@/components/page-header"
+import { Chip } from "@/components/ui/chip"
 import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/projects")({
@@ -26,11 +27,11 @@ function RealTalkArt() {
   )
 }
 
-/** Six slider faders at a smiley-curve EQ setting. */
-function EQArt() {
+/** Six slider faders at a smiley-curve EQ setting, played at 2×. */
+function VideoEditorArt() {
   const gains = [70, 45, 30, 35, 55, 75]
   return (
-    <div className="flex h-full items-end justify-center gap-4 px-6 pt-4 pb-3">
+    <div className="relative flex h-full items-end justify-center gap-4 px-6 pt-4 pb-3">
       {gains.map((g, i) => (
         <div key={i} className="relative h-full w-1.5 rounded-full bg-muted">
           <span
@@ -39,6 +40,9 @@ function EQArt() {
           />
         </div>
       ))}
+      <Chip tone="secondary" className="absolute top-3 right-4">
+        2×
+      </Chip>
     </div>
   )
 }
@@ -70,7 +74,7 @@ function WordleArt() {
 }
 
 const projects: Array<{
-  to: "/real-talk" | "/eq" | "/wordle"
+  to: "/real-talk" | "/video-editor" | "/wordle"
   title: string
   kind: string
   description: string
@@ -87,13 +91,13 @@ const projects: Array<{
     art: <RealTalkArt />,
   },
   {
-    to: "/eq",
-    title: "EQ",
-    kind: "audio tool",
+    to: "/video-editor",
+    title: "Video Editor",
+    kind: "video tool",
     description:
-      "Upload a video, tweak its EQ, compare before and after, and export the result. Runs in your browser.",
+      "Trim, crop, change speed, layer clips and mix in music, then export. Runs entirely in your browser.",
     cta: "Open",
-    art: <EQArt />,
+    art: <VideoEditorArt />,
   },
   {
     to: "/wordle",

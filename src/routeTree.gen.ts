@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WordleRouteImport } from './routes/wordle'
+import { Route as VideoEditorRouteImport } from './routes/video-editor'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as RealTalkRouteImport } from './routes/real-talk'
 import { Route as ProjectsRouteImport } from './routes/projects'
@@ -31,6 +32,11 @@ import { Route as ApiArtSplatRouteImport } from './routes/api/art/$'
 const WordleRoute = WordleRouteImport.update({
   id: '/wordle',
   path: '/wordle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VideoEditorRoute = VideoEditorRouteImport.update({
+  id: '/video-editor',
+  path: '/video-editor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRoute
   '/real-talk': typeof RealTalkRoute
   '/signup': typeof SignupRoute
+  '/video-editor': typeof VideoEditorRoute
   '/wordle': typeof WordleRoute
   '/invite/$token': typeof InviteTokenRoute
   '/rankings/new': typeof RankingsNewRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRoute
   '/real-talk': typeof RealTalkRoute
   '/signup': typeof SignupRoute
+  '/video-editor': typeof VideoEditorRoute
   '/wordle': typeof WordleRoute
   '/invite/$token': typeof InviteTokenRoute
   '/rankings/new': typeof RankingsNewRoute
@@ -171,6 +179,7 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRoute
   '/real-talk': typeof RealTalkRoute
   '/signup': typeof SignupRoute
+  '/video-editor': typeof VideoEditorRoute
   '/wordle': typeof WordleRoute
   '/invite/$token': typeof InviteTokenRoute
   '/rankings/new': typeof RankingsNewRoute
@@ -193,6 +202,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/real-talk'
     | '/signup'
+    | '/video-editor'
     | '/wordle'
     | '/invite/$token'
     | '/rankings/new'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/real-talk'
     | '/signup'
+    | '/video-editor'
     | '/wordle'
     | '/invite/$token'
     | '/rankings/new'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/real-talk'
     | '/signup'
+    | '/video-editor'
     | '/wordle'
     | '/invite/$token'
     | '/rankings/new'
@@ -254,6 +266,7 @@ export interface RootRouteChildren {
   ProjectsRoute: typeof ProjectsRoute
   RealTalkRoute: typeof RealTalkRoute
   SignupRoute: typeof SignupRoute
+  VideoEditorRoute: typeof VideoEditorRoute
   WordleRoute: typeof WordleRoute
   InviteTokenRoute: typeof InviteTokenRoute
   RankingsNewRoute: typeof RankingsNewRoute
@@ -271,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/wordle'
       fullPath: '/wordle'
       preLoaderRoute: typeof WordleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/video-editor': {
+      id: '/video-editor'
+      path: '/video-editor'
+      fullPath: '/video-editor'
+      preLoaderRoute: typeof VideoEditorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -406,6 +426,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsRoute: ProjectsRoute,
   RealTalkRoute: RealTalkRoute,
   SignupRoute: SignupRoute,
+  VideoEditorRoute: VideoEditorRoute,
   WordleRoute: WordleRoute,
   InviteTokenRoute: InviteTokenRoute,
   RankingsNewRoute: RankingsNewRoute,
