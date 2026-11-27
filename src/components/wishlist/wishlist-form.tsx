@@ -2,14 +2,22 @@ import { useNavigate } from "@tanstack/react-router"
 import { ImageIcon, Plus, Upload, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import type { ReactNode } from "react"
-import type { WishlistEntry } from "@/server/wishlist"
+import type { WishlistCategoryEntry, WishlistEntry } from "@/server/wishlist"
 import { FormError } from "@/components/form-bits"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   MAX_NAME_LENGTH,
   MAX_QUANTITY,
+  MISC_CATEGORY_NAME,
   costInputValue,
   formatCost,
   parseCost,
@@ -17,10 +25,20 @@ import {
 import { cn } from "@/lib/utils"
 import { createWishlistItem, updateWishlistItem } from "@/server/wishlist"
 
+/** Radix Select forbids an empty value, so Misc needs a stand-in. */
+const MISC_VALUE = "misc"
+
 /** The Admin form for creating and editing a Wishlist Item. */
-export function WishlistForm({ initial }: { initial?: WishlistEntry }) {
+export function WishlistForm({
+  initial,
+  categories,
+}: {
+  initial?: WishlistEntry
+  categories: Array<WishlistCategoryEntry>
+}) {
   const navigate = useNavigate()
   const [name, setName] = useState(initial?.name ?? "")
+  const [category, setCategory] = useState(initial?.categoryId ?? MISC_VALUE)
   const [links, setLinks] = useState<Array<string>>(initial?.links ?? [])
   const [unitCost, setUnitCost] = useState(
     costInputValue(initial?.unitCostCents ?? null)
@@ -70,6 +88,7 @@ export function WishlistForm({ initial }: { initial?: WishlistEntry }) {
     setError(null)
     const fd = new FormData()
     fd.set("name", name)
+    fd.set("categoryId", category === MISC_VALUE ? "" : category)
     fd.set("links", JSON.stringify(links))
     fd.set("unitCost", unitCost)
     fd.set("quantity", quantity)
@@ -104,6 +123,29 @@ export function WishlistForm({ initial }: { initial?: WishlistEntry }) {
             maxLength={MAX_NAME_LENGTH}
             required
           />
+        </Field>
+        <Field
+          label="Category"
+          htmlFor="wish-category"
+          hint={
+            categories.length === 0
+              ? "Add categories from the Wishlist page."
+              : undefined
+          }
+        >
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger id="wish-category" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((c) => (
+                <SelectItem key={c.categoryId} value={c.categoryId}>
+                  {c.name}
+                </SelectItem>
+              ))}
+              <SelectItem value={MISC_VALUE}>{MISC_CATEGORY_NAME}</SelectItem>
+            </SelectContent>
+          </Select>
         </Field>
         <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_8rem]">
           <Field

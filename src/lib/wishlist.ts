@@ -74,3 +74,40 @@ export function linkLabel(link: string): string {
     return link
   }
 }
+
+export const MAX_CATEGORY_NAME_LENGTH = 50
+/** The name shown for Items in no Category; no Category may take it. */
+export const MISC_CATEGORY_NAME = "Misc"
+
+export interface WishlistGroup<TItem> {
+  /** Null for Misc. */
+  categoryId: string | null
+  name: string
+  items: Array<TItem>
+}
+
+/**
+ * Splits Items into one group per Category, in the order given, followed by
+ * Misc. Items keep their relative order. Empty groups are included.
+ */
+export function groupByCategory<TItem extends { categoryId: string | null }>(
+  categories: Array<{ categoryId: string; name: string }>,
+  items: Array<TItem>
+): Array<WishlistGroup<TItem>> {
+  const groups: Array<WishlistGroup<TItem>> = categories.map((c) => ({
+    categoryId: c.categoryId,
+    name: c.name,
+    items: [],
+  }))
+  const misc: WishlistGroup<TItem> = {
+    categoryId: null,
+    name: MISC_CATEGORY_NAME,
+    items: [],
+  }
+  const byId = new Map(groups.map((g) => [g.categoryId, g]))
+  for (const item of items) {
+    // An unknown id (its Category was deleted between reads) lands in Misc.
+    ;(byId.get(item.categoryId) ?? misc).items.push(item)
+  }
+  return [...groups, misc]
+}

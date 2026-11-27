@@ -19,6 +19,9 @@ sqlite.run("PRAGMA foreign_keys = ON")
 
 export const db = drizzle(sqlite, { schema })
 
+/** The handle `db.transaction` passes to its callback. */
+export type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
+
 /**
  * Applies pending migrations. Called once at server boot by the nitro plugin
  * (server/plugins/migrate.ts). Idempotent.
