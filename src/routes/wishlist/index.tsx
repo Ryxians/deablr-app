@@ -3,19 +3,23 @@ import { Plus } from "lucide-react"
 import { PageHeader } from "@/components/page-header"
 import { WishlistList } from "@/components/wishlist/wishlist-list"
 import { Button } from "@/components/ui/button"
-import { listWishlist } from "@/server/wishlist"
+import { listWishlist, listWishlistCategories } from "@/server/wishlist"
 import { getCurrentUser } from "@/server/session"
 
 export const Route = createFileRoute("/wishlist/")({
   loader: async () => {
-    const [items, user] = await Promise.all([listWishlist(), getCurrentUser()])
-    return { items, user }
+    const [items, categories, user] = await Promise.all([
+      listWishlist(),
+      listWishlistCategories(),
+      getCurrentUser(),
+    ])
+    return { items, categories, user }
   },
   component: WishlistPage,
 })
 
 function WishlistPage() {
-  const { items, user } = Route.useLoaderData()
+  const { items, categories, user } = Route.useLoaderData()
   const isAdmin = user?.role === "admin"
   return (
     <div>
@@ -34,7 +38,7 @@ function WishlistPage() {
           )
         }
       />
-      <WishlistList items={items} canManage={isAdmin} />
+      <WishlistList items={items} categories={categories} canManage={isAdmin} />
     </div>
   )
 }

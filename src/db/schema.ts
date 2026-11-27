@@ -166,8 +166,24 @@ export const reviewScore = sqliteTable(
 
 
 /**
+ * A named group of Wishlist Items (Kitchen, Office). `position` orders the
+ * Categories among themselves (lowest first). Misc is not a row: it is every
+ * Item whose `categoryId` is null.
+ */
+export const wishlistCategory = sqliteTable("wishlist_category", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  position: integer("position").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
+})
+
+/**
  * Something the Admin plans to buy. `position` orders the manual Priority
- * (lowest first); deletes may leave gaps, and a reorder rewrites it densely. `photoPath` points at
+ * within its Category (lowest first); deletes and moves may leave gaps, and a
+ * reorder rewrites that Category densely. `categoryId` is null for Misc.
+ * `photoPath` points at
  * the processed photo on disk (data/wishlist/). `links` holds 0..n purchase
  * URLs. `unitCostCents` is the cost of one unit in integer cents (null when
  * unknown); `quantity` is how many units are wanted. Deletes are hard.
@@ -175,6 +191,9 @@ export const reviewScore = sqliteTable(
 export const wishlistItem = sqliteTable("wishlist_item", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
+  categoryId: text("category_id").references(() => wishlistCategory.id, {
+    onDelete: "set null",
+  }),
   photoPath: text("photo_path"),
   links: text("links", { mode: "json" }).$type<Array<string>>().notNull(),
   unitCostCents: integer("unit_cost_cents"),

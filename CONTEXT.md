@@ -59,14 +59,20 @@ A flag on a Property marking that the Admin has not finished it (still watching,
 
 ### Wishlist
 
-A prioritized list of things the Admin plans to buy.
+A prioritized list of things the Admin plans to buy, grouped into Categories.
 
 **Wishlist Item**:
 Something the Admin plans to buy: a name, an optional photo, zero or more purchase Links, an optional Unit Cost, and a Quantity.
 _Avoid_: Shopping list, wish
 
+**Category**:
+A named group of Wishlist Items (e.g. Kitchen). Categories are manually ordered among themselves.
+
+**Misc**:
+The group of Wishlist Items that are in no Category. It always comes after every Category.
+
 **Priority**:
-A Wishlist Item's place in the manually ordered list; 1 is the most wanted. Set by moving Items up, down, or to the top.
+A Wishlist Item's place in the manually ordered list of its Category (or Misc); 1 is the most wanted. Set by moving Items up, down, or to the top.
 
 **Link**:
 A URL to a store selling a Wishlist Item.
@@ -112,6 +118,7 @@ A complete cycle where every Player has taken one Turn. After each Round, the Pl
 - A **Review** has at least one **Score**, at most one per **Metric**
 - A **Review** belongs to exactly one **Score Band**
 - A **Wishlist Item** has exactly one **Priority**, zero or more **Links**, and at most one photo
+- A **Wishlist Item** belongs to at most one **Category**; with none, it is in **Misc**
 - A **Game** has one or more **Players**
 - A **Game** has one **Question Deck**
 - A **Player** takes one **Turn** at a time
@@ -143,9 +150,10 @@ A complete cycle where every Player has taken one Turn. After each Round, the Pl
 
 ### Wishlist
 
-- **Authorship:** Same rules as Rankings — only an Admin can create, edit, reorder, or delete Wishlist Items. Denizens and anonymous visitors see the read-only Wishlist.
+- **Authorship:** Same rules as Rankings — only an Admin can create, edit, reorder, or delete Wishlist Items and Categories. Denizens and anonymous visitors see the read-only Wishlist.
 - **Hard deletes:** Deleting a Wishlist Item removes the row and its photo file permanently; no history is kept.
-- **Priority ordering:** Manual, not derived. New Items join at the bottom; the Admin moves them up, down, or to the top. A reorder submits the full order and is rejected if the list changed underneath it.
+- **Priority ordering:** Manual, not derived. New Items, and Items moved to another Category, join at the bottom; the Admin moves them up, down, or to the top within their Category. A reorder submits that Category's full order and is rejected if it changed underneath.
+- **Categories:** The Admin creates, renames, reorders, and deletes Categories on the Wishlist page and picks an Item's Category on its form. Names are unique ignoring case, and "Misc" is reserved. Deleting a Category keeps its Items, which move to the bottom of Misc. Empty Categories are shown only to the Admin.
 - **Photos:** Uploaded like Property Art (stored in the data volume under `wishlist/`, served from `/api/wishlist-photo/`), but fitted inside 800px without cropping, since product shots vary in shape.
 - **Totals:** The Wishlist shows each Item's total and a grand total of Items with a known Unit Cost, noting how many have no cost. When no Item has a Unit Cost, the grand total is hidden (each Item still reads "Cost unknown").
 
